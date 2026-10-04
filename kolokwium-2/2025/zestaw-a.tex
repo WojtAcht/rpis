@@ -1,0 +1,122 @@
+% \documentclass[polish, 8pt]{article}
+\documentclass[polish, 10pt]{extarticle}
+\usepackage[a4paper,top=1.2cm,bottom=1.2cm,left=1.2cm,right=1.2cm]{geometry}
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage{placeins}
+\usepackage{dirtytalk}
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage{csquotes}
+% Useful packages
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{float}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+\hypersetup{
+    colorlinks=true,
+    linktoc=all     %set to all if you want both sections and subsections linked
+}
+\usepackage{mdframed}
+\usepackage{titling}
+\setlength{\droptitle}{-2cm} 
+
+\begin{document}
+
+\title{Kolokwium II -- Zestaw A}
+\author{}
+\date{}
+
+\maketitle
+\vspace{-2cm}
+
+\section*{Zadanie 1 (30 pkt)}
+Niech dwuwymiarowa zmienna losowa $(X, Y)$ ma rozkład ciągły o gęstości:
+\[
+f(x,y) = 
+\begin{cases} 
+cx & \text{dla } 0 \le x \le 1, \,\, x^2 \le y \le 1, \\
+0 & \text{w przeciwnym przypadku,}
+\end{cases}
+\]
+gdzie $c \in \mathbb{R_+}$ jest pewną stałą.
+
+\begin{enumerate}
+    \item[a)] \textbf{Wyznacz wartość stałej $c$} \hfill (5 pkt).
+    \item[b)] \textbf{Wyznacz gęstości brzegowe} \hfill (5 pkt).
+    \item[c)] \textbf{Wyznacz gęstości warunkowe} \hfill (5 pkt).
+    \item[d)] \textbf{Wyznacz $\mathbb P\!\left(Y>\tfrac12\mid X=\tfrac12\right)$} \hfill (5 pkt).
+    \item[e)] \textbf{Oblicz kowariancję $\text{Cov}(X, Y)$} \hfill (5 pkt).
+    \item[f)] \textbf{Opisz sposób wyznaczenia współczynnika korelacji $\rho_{X,Y}$},\\rozpisując wzory i całki niezbędne do jego obliczenia \hfill (5 pkt).
+\end{enumerate}
+
+\section*{Zadanie 2 (20 pkt)}
+Dla zmiennej losowej $X\sim \mathrm{Pois}(\lambda)$:
+\begin{enumerate}
+  \item[a)] Wyznacz funkcję tworzącą momenty (MGF) \hfill (10 pkt).
+  \item[b)] Korzystając z MGF oblicz wartość oczekiwaną $\mathrm{E}(X)$ \hfill (5 pkt).
+  \item[c)] Korzystając z MGF oblicz wariancję $\mathrm{Var}(X)$ \hfill (5 pkt).
+\end{enumerate}. 
+
+\section*{Zadanie 3 (25 pkt)}
+Firma serwisująca drukarki przemysłowe analizuje dane dotyczące awarii. Dla 5 drukarek tego samego modelu zarejestrowano czas (w miesiącach) od instalacji do pierwszej poważnej awarii: 8.2, 14.7, 3.1, 22.5, 11.3.
+Zakładając, że zmienne są niezależne i czas do awarii ma rozkład wykładniczy:
+\begin{enumerate}
+    \item[a)] Oszacuj parametr rozkładu przy pomocy metody największej wiarygodności \hfill (10 pkt).
+    \item[b)] Niech $S=X_1+\cdots+X_5$ oznacza sumę czasów do pierwszej awarii pięciu niezależnych drukarek. Wyznacz $\mathrm{Var}(S)$ w funkcji parametru $\lambda$, a następnie oszacuj tę wariancję, podstawiając $\hat{\lambda}$ z punktu a). \hfill (5 pkt).
+    \item[c)] Oszacuj parametr rozkładu przy pomocy metody momentów \hfill (5 pkt).
+    \item[d)] Firma rozważa oferowanie 12-miesięcznej gwarancji. \\Oszacuj, jaki procent drukarek ulegnie awarii w okresie gwarancyjnym \hfill (5 pkt).
+\end{enumerate}
+
+\section*{Zadanie 4 (25 pkt)}
+W pewnym zakładzie produkcyjnym kontroluje się czas (w minutach) potrzebny na wykonanie standardowej operacji. Przyjmuje się, że czasy wykonywania tej operacji w populacji mają rozkład normalny. Wylosowano próbę \textbf{$n = 64$} pomiarów, dla których uzyskano $\bar{x} = 12{,}8$ min przy $s = 3{,}2$ min.
+
+\begin{enumerate}
+    \item \textbf{Opisz sposób konstrukcji $95\%$ przedziału ufności dla $\mu$}, tj.:
+    \begin{itemize}
+        \item jaka statystyka jest wykorzystywana do budowy przedziału, jaki jest jej rozkład, \hfill (5 pkt),
+        \item dlaczego wybieramy akurat tę statystykę w tej sytuacji, \hfill (5 pkt),
+        \item opisz sposób konstrukcji (jeśli wprowadzasz zmienne, wyjaśnij  co oznaczają) \hfill (10 pkt).
+    \end{itemize}
+
+    \item Ktoś interpretuje wynik następująco:
+    \begin{quote}
+    ``Z prawdopodobieństwem $95\%$ prawdziwa wartość średniej $\mu$ leży w wyznaczonym przedziale.''
+    \end{quote}
+    Czy ta interpretacja jest \textbf{prawdziwa}? Uzasadnij. \hfill (5 pkt).
+\end{enumerate}
+
+\end{document}
+

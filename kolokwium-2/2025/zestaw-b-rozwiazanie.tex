@@ -1,0 +1,716 @@
+% \documentclass[polish, 8pt]{article}
+\documentclass[polish, 10pt]{extarticle}
+% \usepackage[top=2cm, bottom=2cm, left=3cm, right=3cm]{geometry}
+\usepackage[a4paper,top=1.2cm,bottom=1.2cm,left=1.2cm,right=1.2cm]{geometry}
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage{placeins}
+\usepackage{dirtytalk}
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage{csquotes}
+% Useful packages
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{float}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+\hypersetup{
+    colorlinks=true,
+    linktoc=all     %set to all if you want both sections and subsections linked
+}
+\usepackage{mdframed}
+\usepackage{titling}
+\setlength{\droptitle}{-2cm} 
+
+\begin{document}
+
+\title{Kolokwium II -- Zestaw B}
+\author{}
+\date{}
+
+\maketitle
+\vspace{-2cm}
+
+\section*{Zadanie 1 (30 pkt)}
+Niech dwuwymiarowa zmienna losowa $(X, Y)$ ma rozkład ciągły o gęstości:
+\[
+f(x,y) = 
+\begin{cases} 
+cx & \text{dla } 0 \le x \le 1, \,\, x^2 \le y \le 1, \\
+0 & \text{w przeciwnym przypadku,}
+\end{cases}
+\]
+gdzie $c \in \mathbb{R_+}$ jest pewną stałą.
+
+\begin{enumerate}
+    \item[a)] \textbf{Wyznacz wartość stałej $c$} \hfill (5 pkt).
+    \item[b)] \textbf{Wyznacz gęstości brzegowe} \hfill (5 pkt).
+    \item[c)] \textbf{Wyznacz gęstości warunkowe} \hfill (5 pkt).
+    \item[d)] \textbf{Wyznacz $\mathbb P\!\left(Y>\tfrac12\mid X=\tfrac12\right)$} \hfill (5 pkt).
+    \item[e)] \textbf{Oblicz kowariancję $\text{Cov}(X, Y)$} \hfill (5 pkt).
+    \item[f)] \textbf{Opisz sposób wyznaczenia współczynnika korelacji $\rho_{X,Y}$},\\rozpisując wzory i całki niezbędne do jego obliczenia \hfill (5 pkt).
+\end{enumerate}
+
+\section*{Rozwiązanie -- Zadanie 1}
+
+Dany jest rozkład ciągły $(X,Y)$ o gęstości
+\[
+f(x,y)=
+\begin{cases}
+cx & \text{dla } 0\le x\le 1,\;\; x^2\le y\le 1,\\
+0 & \text{w p.p.}
+\end{cases}
+\]
+Obszar, gdzie $f>0$ ma postać
+\[
+D=\{(x,y): 0\le x\le 1,\; x^2\le y\le 1\}.
+\]
+
+\begin{enumerate}
+\item[a)] \textbf{Wyznaczenie stałej $c$.}
+
+Warunek normalizacji:
+\[
+\iint_{\mathbb{R}^2} f(x,y)\,dx\,dy=1
+\quad\Longleftrightarrow\quad
+\int_{0}^{1}\int_{x^2}^{1} cx\,dy\,dx=1.
+\]
+Liczymy całki:
+\[
+\int_{0}^{1}\int_{x^2}^{1} cx\,dy\,dx
+=\int_{0}^{1} cx\,(1-x^2)\,dx
+=c\int_{0}^{1}(x-x^3)\,dx
+=c\left(\frac12-\frac14\right)=\frac{c}{4}.
+\]
+Zatem $\frac{c}{4}=1$, czyli
+\[
+\boxed{c=4.}
+\]
+
+\item[b)] \textbf{Gęstości brzegowe.}
+
+\underline{Uwaga (częsty błąd!)} Przy wyznaczaniu gęstości brzegowych trzeba \textbf{koniecznie podać poprawne przedziały}, tzn. dla jakich $x$ (lub $y$) dana gęstość jest dodatnia. Za brak przedziałów odejmowałem 1 punkt.
+
+\smallskip
+\textbf{Gęstość brzegowa $X$.}
+Dla ustalonego $x$ gęstość jest niezerowa wtedy i tylko wtedy, gdy $0\le x\le 1$ oraz $y\in[x^2,1]$. Zatem
+\[
+f_X(x)=\int_{-\infty}^{\infty} f(x,y)\,dy=\int_{x^2}^{1} 4x\,dy
+=4x(1-x^2),
+\]
+czyli
+\[
+\boxed{
+f_X(x)=
+\begin{cases}
+4x(1-x^2), & 0\le x\le 1,\\
+0, & \text{w p.p.}
+\end{cases}}
+\]
+
+\smallskip
+\textbf{Gęstość brzegowa $Y$.}
+Dla ustalonego $y$ warunki $0\le x\le 1$ i $x^2\le y\le 1$ oznaczają:
+\[
+0\le y\le 1
+\quad\text{oraz}\quad
+0\le x\le \sqrt{y}.
+\]
+Stąd
+\[
+f_Y(y)=\int_{-\infty}^{\infty} f(x,y)\,dx=\int_{0}^{\sqrt{y}} 4x\,dx
+=4\cdot \frac{x^2}{2}\Big|_{0}^{\sqrt{y}}=2y,
+\]
+czyli
+\[
+\boxed{
+f_Y(y)=
+\begin{cases}
+2y, & 0\le y\le 1,\\
+0, & \text{w p.p.}
+\end{cases}}
+\]
+
+\item[c)] \textbf{Gęstości warunkowe.}
+
+\underline{Uwaga (częsty błąd!)} Tak jak w punkcie (b), \textbf{trzeba podać warunki/przedziały dla obu zmiennych}.
+
+\smallskip
+\textbf{Gęstość $Y|X=x$.}
+Dla $0<x<1$ mamy $f_X(x)=4x(1-x^2)>0$ oraz
+\[
+f_{Y|X=x}(y)=\frac{f(x,y)}{f_X(x)}
+=\frac{4x}{4x(1-x^2)}=\frac{1}{1-x^2} \quad\text{dla } y\in[x^2,1].
+\]
+
+\smallskip
+\textbf{Gęstość $X|Y=y$.}
+Dla $0<y\le 1$ mamy $f_Y(y)=2y>0$. Ponadto nośnik w $x$ to $0\le x\le \sqrt{y}$. Zatem
+\[
+f_{X|Y=y}(x)=\frac{f(x,y)}{f_Y(y)}=\frac{4x}{2y}=\frac{2x}{y}
+\quad\text{dla } 0\le x\le \sqrt{y}.
+\]
+
+\item[d)] \textbf{Obliczenie $\mathbb{P}\!\left(Y>\frac12\mid X=\frac12\right)$.}
+
+Najpierw ustalamy \textbf{nośnik warunkowy} $Y|X=\tfrac12$.
+Jeśli $X=\tfrac12$, to z warunku nośnika $x^2\le y\le 1$ dostajemy
+\[
+\left(\frac12\right)^2\le y\le 1 \quad\Longleftrightarrow\quad \frac14\le y\le 1.
+\]
+\underline{Uwaga (częsty błąd!)} Trzeba uwzględnić dla jakiego przedziału gęstość warunkowa jest niezerowa i w ten sposób uzasadnić dobrane granie w całce. Za brak uzasadnienia odejmowałem 1 punkt.
+
+Korzystamy z gęstości warunkowej z (c):
+\[
+f_{Y|X=1/2}(y)=\frac{1}{1-(1/2)^2}=\frac{1}{1-\frac14}=\frac{4}{3},
+\quad y\in\left[\frac14,1\right].
+\]
+Zatem
+\[
+\mathbb{P}\!\left(Y>\frac12\mid X=\frac12\right)
+=\int_{1/2}^{1} \frac{4}{3}\,dy
+=\frac{4}{3}\left(1-\frac12\right)=\frac{2}{3}.
+\]
+Ostatecznie
+\[
+\boxed{\mathbb{P}\!\left(Y>\frac12\mid X=\frac12\right)=\frac{2}{3}.}
+\]
+
+\item[e)] \textbf{Kowariancja $\mathrm{Cov}(X,Y)$.}
+
+\[
+\mathrm{Cov}(X,Y)=\mathbb{E}[XY]-\mathbb{E}[X]\mathbb{E}[Y].
+\]
+
+\smallskip
+\textbf{1) Liczymy $\mathbb{E}[X]$.}
+\[
+\mathbb{E}[X]=\int_0^1\int_{x^2}^{1} x\cdot 4x\,dy\,dx
+=\int_0^1 4x^2(1-x^2)\,dx
+=4\int_0^1 (x^2-x^4)\,dx
+=4\left(\frac13-\frac15\right)=\frac{8}{15}.
+\]
+
+\smallskip
+\textbf{2) Liczymy $\mathbb{E}[Y]$.} Wygodnie z gęstości brzegowej:
+\[
+\mathbb{E}[Y]=\int_0^1 y\,f_Y(y)\,dy=\int_0^1 y\cdot 2y\,dy
+=2\int_0^1 y^2\,dy=\frac{2}{3}.
+\]
+
+\smallskip
+\textbf{3) Liczymy $\mathbb{E}[XY]$.}
+\[
+\mathbb{E}[XY]=\int_0^1\int_{x^2}^{1} xy\cdot 4x\,dy\,dx
+=\int_0^1 4x^2\left(\int_{x^2}^{1} y\,dy\right)\,dx.
+\]
+\[
+\int_{x^2}^{1} y\,dy=\frac{y^2}{2}\Big|_{x^2}^{1}=\frac{1-x^4}{2},
+\]
+więc
+\[
+\mathbb{E}[XY]=\int_0^1 4x^2\cdot \frac{1-x^4}{2}\,dx
+=2\int_0^1 (x^2-x^6)\,dx
+=2\left(\frac13-\frac17\right)=\frac{8}{21}.
+\]
+
+\smallskip
+Zatem
+\[
+\mathrm{Cov}(X,Y)=\frac{8}{21}-\frac{8}{15}\cdot\frac{2}{3}
+=\frac{8}{21}-\frac{16}{45}
+=\frac{120}{315}-\frac{112}{315}
+=\frac{8}{315}.
+\]
+\[
+\boxed{\mathrm{Cov}(X,Y)=\frac{8}{315}.}
+\]
+
+\item[f)] \textbf{Opis sposobu wyznaczenia współczynnika korelacji $\rho_{X,Y}$.}
+
+Współczynnik korelacji:
+\[
+\rho_{X,Y}=\frac{\mathrm{Cov}(X,Y)}{\sqrt{\mathrm{Var}(X)\,\mathrm{Var}(Y)}}.
+\]
+A więc potrzebujemy:
+\[
+\mathrm{Cov}(X,Y)=\mathbb{E}[XY]-\mathbb{E}[X]\mathbb{E}[Y],
+\quad
+\mathrm{Var}(X)=\mathbb{E}[X^2]-(\mathbb{E}[X])^2,
+\quad
+\mathrm{Var}(Y)=\mathbb{E}[Y^2]-(\mathbb{E}[Y])^2.
+\]
+
+\smallskip
+\textbf{Krok 1: policzyć wartości oczekiwane} (podpunkt e):
+\[
+\mathbb{E}[X]=\int_{0}^{1}\int_{x^2}^{1} x\,f(x,y)\,dy\,dx,
+\qquad
+\mathbb{E}[Y]=\int_{0}^{1}\int_{x^2}^{1} y\,f(x,y)\,dy\,dx,
+\]
+\[
+\mathbb{E}[XY]=\int_{0}^{1}\int_{x^2}^{1} xy\,f(x,y)\,dy\,dx.
+\]
+
+\smallskip
+\textbf{Krok 2: policzyć drugie momenty}:
+\[
+\mathbb{E}[X^2]=\int_{0}^{1}\int_{x^2}^{1} x^2\,f(x,y)\,dy\,dx
+\quad\text{(również można: } \mathbb{E}[X^2]=\int_0^1 x^2 f_X(x)\,dx\text{)},
+\]
+\[
+\mathbb{E}[Y^2]=\int_{0}^{1}\int_{x^2}^{1} y^2\,f(x,y)\,dy\,dx
+\quad\text{(również można: } \mathbb{E}[Y^2]=\int_0^1 y^2 f_Y(y)\,dy\text{)}.
+\]
+
+\smallskip
+\textbf{Krok 3: złożyć wszystko we wzór na korelację}:
+\[
+\rho_{X,Y}
+=\frac{\mathbb{E}[XY]-\mathbb{E}[X]\mathbb{E}[Y]}
+{\sqrt{\big(\mathbb{E}[X^2]-(\mathbb{E}[X])^2\big)\big(\mathbb{E}[Y^2]-(\mathbb{E}[Y])^2\big)}}.
+\]
+
+\end{enumerate}
+
+\section*{Zadanie 2 (15 pkt)}
+Dla zmiennej losowej $X\sim \mathrm{Pois}(\lambda)$:
+\begin{enumerate}
+  \item[a)] Wyznacz funkcję tworzącą momenty (MGF) \hfill (10 pkt).
+  \item[b)] Korzystając z MGF oblicz wariancję $\mathrm{Var}(X)$ \hfill (5 pkt).
+\end{enumerate}
+
+\section*{Rozwiązanie -- Zadanie 2}
+
+Dla zmiennej losowej $X\sim \mathrm{Pois}(\lambda)$ mamy
+\[
+\mathbb{P}(X=k)=e^{-\lambda}\frac{\lambda^k}{k!},\quad k=0,1,2,\dots
+\]
+
+\begin{enumerate}
+\item[a)] \textbf{Wyznaczenie funkcji tworzącej momenty (MGF).}
+
+Z definicji:
+\[
+M_X(t)=\mathbb{E}\!\left(e^{tX}\right)=\sum_{k=0}^{\infty} e^{tk}\,\mathbb{P}(X=k).
+\]
+Podstawiamy postać $\mathbb{P}(X=k)$:
+\[
+\begin{aligned}
+M_X(t)
+&=\sum_{k=0}^{\infty} e^{tk}\,e^{-\lambda}\frac{\lambda^k}{k!}
+= e^{-\lambda}\sum_{k=0}^{\infty}\frac{(\lambda e^t)^k}{k!}
+= e^{-\lambda}\exp(\lambda e^t)\\
+&=\exp\!\big(\lambda(e^t-1)\big).
+\end{aligned}
+\]
+Wyżej korzystamy z rozwinięcia wykładniczej w szereg potęgowy:
+\[
+e^u=\sum_{k=0}^{\infty}\frac{u^k}{k!}\quad \text{dla każdego } u\in\mathbb{R}.
+\]
+Zatem
+\[
+\boxed{M_X(t)=\exp\!\big(\lambda(e^t-1)\big).}
+\]
+
+\item[b)] \textbf{Obliczenie wariancji $\mathrm{Var}(X)$ z MGF.}
+
+\smallskip
+
+Najpierw liczymy wartość oczekiwaną:
+\[
+\mathbb{E}(X)=M_X'(0).
+\]
+Liczymy pochodną:
+\[
+M_X(t)=\exp\!\big(\lambda(e^t-1)\big)
+\quad\Longrightarrow\quad
+M_X'(t)=\exp\!\big(\lambda(e^t-1)\big)\cdot \lambda e^t
+=\lambda e^t\,M_X(t).
+\]
+Podstawiamy $t=0$:
+\[
+M_X'(0)=\lambda e^0\,M_X(0)=\lambda\cdot 1\cdot \exp(\lambda(1-1))=\lambda.
+\]
+Stąd:
+\[
+\mathbb{E}(X)=\lambda.
+\]
+
+Do wyznaczenia wariancji korzystamy ze wzoru:
+
+\[
+\boxed{\mathrm{Var}(X)=\mathbb{E}(X^2)-(\mathbb{E}(X))^2}
+\]
+
+Z własności MGF:
+\[
+\mathbb{E}(X^2)=M_X''(0).
+\]
+Mamy już
+\[
+M_X'(t)=\lambda e^t\,M_X(t).
+\]
+Różniczkujemy drugi raz:
+\[
+\begin{aligned}
+M_X''(t)
+&=\frac{d}{dt}\big(\lambda e^t M_X(t)\big)
+=\lambda e^t M_X(t)+\lambda e^t M_X'(t).
+\end{aligned}
+\]
+Podstawiamy ponownie $M_X'(t)=\lambda e^t M_X(t)$:
+\[
+M_X''(t)=\lambda e^t M_X(t)+\lambda e^t\big(\lambda e^t M_X(t)\big)
+=\big(\lambda e^t+\lambda^2 e^{2t}\big)M_X(t).
+\]
+Podstawiamy $t=0$:
+\[
+M_X''(0)=\big(\lambda+\lambda^2\big)M_X(0)=\lambda+\lambda^2.
+\]
+Zatem
+\[
+\mathbb{E}(X^2)=\lambda+\lambda^2,\qquad \mathbb{E}(X)=\lambda,
+\]
+a więc
+\[
+\mathrm{Var}(X)=\mathbb{E}(X^2)-(\mathbb{E}(X))^2
+=(\lambda+\lambda^2)-\lambda^2=\lambda.
+\]
+Ostatecznie
+\[
+\boxed{\mathrm{Var}(X)=\lambda.}
+\]
+
+\end{enumerate}
+
+\section*{Zadanie 3 (30 pkt)}
+System zasilania awaryjnego w serwerowni składa się z $n$ niezależnych modułów bateryjnych. Moduły te włączają się sekwencyjnie – gdy pierwszy się wyczerpie, natychmiast startuje drugi, itd. Czas pracy każdego $i$-tego modułu (w godzinach) jest zmienną losową $X_i$ o rozkładzie wykładniczym z parametrem $\lambda = 2$: $X_i \sim \text{Exp}(2)$. Niech $T$ oznacza całkowity czas pracy systemu do momentu wyczerpania wszystkich baterii:
+\[
+T = X_1 + X_2 + \dots + X_n
+\]
+
+\begin{enumerate}
+    \item[a)] Oblicz wartość oczekiwaną $\mathbb{E}[T]$ i wariancję $\text{Var}(T)$ \hfill (5 pkt).
+    \item[b)] Korzystając z własności sumy niezależnych zmiennych losowych, podaj dokładny rozkład zmiennej $T$ \hfill (5 pkt).
+    \item[c)] Załóżmy, że system składa się z $n=100$ modułów. Oszacuj prawdopodobieństwo, że system będzie działał dłużej niż 55 godzin. Powołaj się na odpowiednie twierdzenie \hfill (10 pkt).
+    \item[d)] Traktując parametr $\lambda$ jako nieznany, a czasy pracy modułów $x_1,\dots,x_n$ jako zaobserwowane realizacje niezależnych zmiennych $X_1,\dots,X_n \sim \mathrm{Exp}(\lambda)$, wyznacz estymator największej wiarygodności $\hat\lambda_{\text{MLE}}$. \hfill (10 pkt)
+\end{enumerate}
+
+\section*{Rozwiązanie -- Zadanie 3}
+
+Mamy $n$ niezależnych modułów, a czas pracy $i$-tego modułu:
+\[
+X_i\sim \mathrm{Exp}(2),\qquad f_{X}(x)=2e^{-2x}\ (x\ge 0).
+\]
+Całkowity czas pracy systemu:
+\[
+T=X_1+\cdots+X_n.
+\]
+
+\begin{enumerate}
+\item[a)] \textbf{Wartość oczekiwana i wariancja $T$.}
+
+Dla rozkładu wykładniczego $X\sim \mathrm{Exp}(\lambda)$ zachodzi:
+\[
+\mathbb{E}[X]=\frac{1}{\lambda},\qquad \mathrm{Var}(X)=\frac{1}{\lambda^2}.
+\]
+Stąd dla $\lambda=2$:
+\[
+\mathbb{E}[X_i]=\frac{1}{2},\qquad \mathrm{Var}(X_i)=\frac{1}{4}.
+\]
+Ponieważ $X_1,\dots,X_n$ są \textbf{niezależne}:
+\[
+\mathbb{E}[T]=\sum_{i=1}^n \mathbb{E}[X_i]=n\cdot \frac{1}{2}=\frac{n}{2},
+\]
+\[
+\mathrm{Var}(T)=\sum_{i=1}^n \mathrm{Var}(X_i)=n\cdot \frac{1}{4}=\frac{n}{4}.
+\]
+\[
+\boxed{\mathbb{E}[T]=\frac{n}{2},\qquad \mathrm{Var}(T)=\frac{n}{4}.}
+\]
+
+\item[b)] \textbf{Dokładny rozkład zmiennej $T$.}
+
+Najpierw zauważmy, że rozkład wykładniczy jest szczególnym przypadkiem rozkładu gamma:
+\[
+X\sim \mathrm{Exp}(\lambda)\quad \Longleftrightarrow \quad X\sim Gamma(1,\ \lambda),
+\]
+Zatem dla każdego $i$:
+\[
+X_i\sim Gamma(1,2).
+\]
+
+\textbf{Własność (suma niezależnych zmiennych gamma o tym samym parametrze rate).}
+Jeżeli $Y_1,\dots,Y_n$ są niezależne oraz
+\[
+Y_i\sim Gamma(s_i,\lambda)\quad \text{dla tego samego }\lambda,
+\]
+to
+\[
+\sum_{i=1}^n Y_i \sim Gamma\!\left(\sum_{i=1}^n s_i,\ \lambda\right).
+\]
+
+Stosując to do $T=\sum_{i=1}^n X_i$ z $s_i=1$ i $\lambda=2$:
+\[
+T\sim \Gamma\!\left(\sum_{i=1}^n 1,\ 2\right)=\Gamma(n,2).
+\]
+
+Gęstość $T$:
+\[
+f_T(t)=\frac{2^n}{\Gamma(n)}t^{n-1}e^{-2t},\qquad t> 0.
+\]
+\[
+\boxed{T\sim Gamma(n,2)}
+\]
+
+\item[c)] \textbf{Dla $n=100$: oszacowanie $\mathbb{P}(T>55)$.}
+
+Z punktu (a):
+\[
+\mu=\mathbb{E}[T]=\frac{100}{2}=50,\qquad \sigma^2=\mathrm{Var}(T)=\frac{100}{4}=25,\qquad \sigma=5.
+\]
+
+\textbf{Twierdzenie (Centralne Twierdzenie Graniczne).}
+Dla dużego $n$ zmienna
+\[
+\frac{T-\mu}{\sigma}\approx \mathcal{N}(0,1).
+\]
+Zatem:
+\[
+\mathbb{P}(T>55)=\mathbb{P}\!\left(\frac{T-50}{5}>\frac{55-50}{5}\right)
+\approx \mathbb{P}(Z>1),
+\]
+gdzie $Z\sim \mathcal{N}(0,1)$.
+\[
+\boxed{\mathbb{P}(Z>1)=1-\Phi(1)}
+\]
+
+\item[d)] \textbf{Estymator największej wiarygodności $\hat\lambda_{\mathrm{MLE}}$ dla $\lambda$ przy $X_i\sim \mathrm{Exp}(\lambda)$.}
+
+Załóżmy obserwacje $x_1,\dots,x_n$ niezależne oraz
+\[
+f(x\mid \lambda)=\lambda e^{-\lambda x}\ (x\ge 0),\qquad \lambda>0.
+\]
+
+\textbf{Krok 1: funkcja wiarygodności.}
+\[
+L(\lambda)=\prod_{i=1}^n \lambda e^{-\lambda x_i}
+=\lambda^n \exp\!\left(-\lambda\sum_{i=1}^n x_i\right).
+\]
+
+\textbf{Krok 2: log-wiarygodność.}
+\[
+\ell(\lambda)=\ln L(\lambda)=n\ln\lambda-\lambda\sum_{i=1}^n x_i.
+\]
+
+\textbf{Krok 3: pochodna i warunek konieczny.}
+\[
+\ell'(\lambda)=\frac{n}{\lambda}-\sum_{i=1}^n x_i.
+\]
+Równanie $\ell'(\lambda)=0$ daje:
+\[
+\frac{n}{\lambda}=\sum_{i=1}^n x_i
+\quad\Longrightarrow\quad
+\hat\lambda_{\mathrm{MLE}}=\frac{n}{\sum_{i=1}^n x_i}.
+\]
+
+\textbf{Krok 4: sprawdzenie maksimum.}
+\[
+\ell''(\lambda)=-\frac{n}{\lambda^2}<0\quad (\lambda>0),
+\]
+więc otrzymany punkt jest maksimum.
+
+\[
+\boxed{\hat\lambda_{\mathrm{MLE}}=\dfrac{n}{\sum_{i=1}^n x_i}=\dfrac{1}{\bar x}.}
+\]
+
+\end{enumerate}
+
+\section*{Zadanie 4 (25 pkt)}
+W pewnym zakładzie produkcyjnym kontroluje się czas (w minutach) potrzebny na wykonanie standardowej operacji. Przyjmuje się, że czasy wykonywania tej operacji w populacji mają rozkład normalny. Wylosowano próbę \textbf{$n = 14$} pomiarów, dla których uzyskano $\bar{x} = 12{,}8$ min przy $s = 3{,}2$ min.
+
+\begin{enumerate}
+    \item \textbf{Opisz sposób konstrukcji $95\%$ przedziału ufności dla $\mu$}, tj.:
+    \begin{itemize}
+        \item jaka statystyka jest wykorzystywana do budowy przedziału i jaki jest jej rozkład, \hfill (5 pkt),
+        \item dlaczego wybieramy akurat tę statystykę w tej sytuacji, \hfill (5 pkt),
+        \item opisz sposób konstrukcji (jeśli wprowadzasz zmienne, wyjaśnij  co oznaczają) \hfill (10 pkt).
+    \end{itemize}
+
+    \item Ktoś interpretuje wynik następująco:
+    \begin{quote}
+    ``Z prawdopodobieństwem $95\%$ prawdziwa wartość średniej $\mu$ leży w wyznaczonym przedziale.''
+    \end{quote}
+    Czy ta interpretacja jest \textbf{prawdziwa}? Uzasadnij. \hfill (5 pkt).
+\end{enumerate}
+
+\section*{Rozwiązanie -- Zadanie 4}
+
+\begin{enumerate}
+\item \textbf{Opis sposobu konstrukcji $95\%$ przedziału ufności dla $\mu$.}
+
+\begin{itemize}
+\item[a)] \textbf{Jaka statystyka jest wykorzystywana do budowy przedziału, jaki jest jej rozkład.}
+
+Ponieważ $\sigma$ jest nieznane, wykorzystujemy statystykę t-Studenta:
+\[
+T=\frac{\bar{X}-\mu}{S/\sqrt{n}},
+\]
+gdzie $\bar{X}$ jest średnią z próby, a $S$ jest odchyleniem standardowym z próby.
+Przy założeniu normalności populacji mamy
+\[
+T\sim t_{n-1}.
+\]
+
+\item[b)] \textbf{Dlaczego wybieramy akurat tę statystykę w tej sytuacji?}
+
+Ponieważ zakładamy, że populacja ma rozkład normalny, to średnia z próby $\bar X$ jest naturalnym estymatorem $\mu$.
+Kluczowe jest jednak to, że nie znamy odchylenia standardowego populacji $\sigma$, więc w standaryzacji musimy je zastąpić
+odchyleniem z próby $S$. Wtedy statystyka
+\[
+T=\frac{\bar{X}-\mu}{S/\sqrt{n}}
+\]
+ma \emph{dokładnie} rozkład t-Studenta z $n-1$ stopniami swobody (przy założeniu normalności populacji). Dlatego
+przedział ufności dla $\mu$ konstruujemy w oparciu o kwantyle rozkładu $t_{n-1}$.
+
+Gdyby $\sigma$ było znane, to moglibyśmy użyć statystyki
+\[
+Z=\frac{\bar{X}-\mu}{\sigma/\sqrt{n}}\sim\mathcal{N}(0,1),
+\]
+ale w tym zadaniu $\sigma$ jest nieznane, więc poprawnym wyborem jest $t$-statystyka.
+
+\item[c)] \textbf{Krok 1: ``wycięcie'' środkowych $95\%$ rozkładu statystyki.}
+
+Ponieważ
+\[
+T\sim t_{n-1},
+\]
+to dla $\alpha=0{,}05$ zachodzi
+\[
+\mathbb{P}\!\left(t_{\alpha/2,\;n-1}\le T\le t_{1-\alpha/2,\;n-1}\right)=1-\alpha=0{,}95,
+\]
+czyli wprost
+\[
+\mathbb{P}\!\left(t_{0.025,\;n-1}\le T\le t_{0.975,\;n-1}\right)=0{,}95.
+\]
+
+Przypomnijmy, że $t_{p,\;n-1}$ oznacza \textbf{kwantyl rzędu $p$} rozkładu $t_{n-1}$, tzn.
+\[
+\mathbb{P}\!\left(T\le t_{0.025,\;n-1}\right)=0{,}025,
+\qquad
+\mathbb{P}\!\left(T\le t_{0.975,\;n-1}\right)=0{,}975.
+\]
+Stąd
+\[
+\mathbb{P}\!\left(T\ge t_{0.975,\;n-1}\right)=1-0{,}975=0{,}025.
+\]
+Zatem prawdopodobieństwo znalezienia się $T$ pomiędzy tymi kwantylami wynosi
+\[
+\mathbb{P}\!\left(t_{0.025,\;n-1}\le T\le t_{0.975,\;n-1}\right)
+=1-0{,}025-0{,}025=0{,}95.
+\]
+
+Ponieważ rozkład $t_{n-1}$ jest symetryczny względem zera, kwantyle spełniają zależność
+\[
+t_{0.025,\;n-1}=-t_{0.975,\;n-1}.
+\]
+W konsekwencji równoważnie możemy zapisać
+\[
+\mathbb{P}\!\left(-t_{0.975,\;n-1}\le T\le t_{0.975,\;n-1}\right)=0{,}95.
+\]
+
+\smallskip
+\textbf{Krok 2: podstawienie definicji $T$ i rozwiązanie nierówności względem $\mu$.}
+Z kroku 2 mamy:
+\[
+\mathbb{P}\!\left(
+-t_{0.975,\;n-1}
+\le
+\frac{\bar{X}-\mu}{S/\sqrt{n}}
+\le
+t_{0.975,\;n-1}
+\right)=0{,}95.
+\]
+Mnożymy nierówność przez dodatnią liczbę $S/\sqrt{n}$ (nie zmienia znaku nierówności):
+\[
+\mathbb{P}\!\left(
+-t_{0.975,\;n-1}\frac{S}{\sqrt{n}}
+\le
+\bar{X}-\mu
+\le
+t_{0.975,\;n-1}\frac{S}{\sqrt{n}}
+\right)=0{,}95.
+\]
+Teraz przekształcamy tak, aby w środku był parametr $\mu$. 
+\[
+\mathbb{P}\!\left(
+\bar{X}- t_{0.975,\;n-1}\frac{S}{\sqrt{n}}
+\le
+\mu
+\le
+\bar{X}+ t_{0.975,\;n-1}\frac{S}{\sqrt{n}}
+\right)=0{,}95.
+\]
+Z definicji oznacza to, że
+\[
+\boxed{
+CI_{0.95}(\mu)=
+\left(
+\bar{X}- t_{0.975,\;n-1}\frac{S}{\sqrt{n}},
+\;
+\bar{X}+ t_{0.975,\;n-1}\frac{S}{\sqrt{n}}
+\right)
+}
+\]
+jest $95\%$ przedziałem ufności dla $\mu$.
+
+\end{itemize}
+
+
+\item \textbf{Ocena interpretacji:}
+\begin{quote}
+``Z prawdopodobieństwem $95\%$ prawdziwa wartość średniej $\mu$ leży w wyznaczonym przedziale.''
+\end{quote}
+
+Ta interpretacja \textbf{nie jest poprawna} w sensie częstotliwościowym. Parametr $\mu$ jest stałą (nie jest zmienną losową), więc nie ma sensu mówić, że ``z prawdopodobieństwem $95\%$ $\mu$ leży w przedziale'' \emph{po} wyznaczeniu konkretnego przedziału na podstawie danych.
+
+Poprawna interpretacja jest następująca:
+gdybyśmy wielokrotnie losowali próby tej samej liczebności $n=14$ i za każdym razem konstruowali przedział ufności tą samą metodą, to \textbf{w $95\%$ takich prób} otrzymany przedział zawierałby prawdziwą wartość $\mu$, gdzie losowość dotyczy \textbf{przedziału} (bo zależy od losowej próby), a nie parametru $\mu$.
+
+\end{enumerate}
+
+\end{document}
+

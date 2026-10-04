@@ -1,0 +1,118 @@
+% \documentclass[polish, 8pt]{article}
+\documentclass[polish, 10pt]{extarticle}
+\usepackage[top=2cm, bottom=2cm, left=3cm, right=3cm]{geometry}
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage{placeins}
+\usepackage{dirtytalk}
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage{csquotes}
+% Useful packages
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{float}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+\hypersetup{
+    colorlinks=true,
+    linktoc=all     %set to all if you want both sections and subsections linked
+}
+\usepackage{mdframed}
+\usepackage{titling}
+\setlength{\droptitle}{-2cm} 
+
+\begin{document}
+
+\title{Rachunek Prawdopodobieństwa i Statystyka -- Kolokwium I}
+\author{}
+\date{}
+
+\maketitle
+\vspace{-2cm}
+
+\section*{Zadanie 1 (20 pkt)}
+Sędziowie prowadzący popularny program telewizyjny \textit{Taniec ze Statystykami}, wykorzystują swoją władzę i przyjmują łapówki od uczestników. W każdym odcinku dany uczestnik może albo zostać w programie, albo zostać wyrzucony.
+\begin{itemize}
+\item Jeśli uczestnik daje łapówki, na pewno zostanie w programie.
+\item Jeśli uczestnik nie daje łapówek, zostanie wyrzucony z programu w $\frac{2}{3}$ przypadków.
+\end{itemize}
+Załóżmy, że 25\% uczestników oszukuje. Ci sami uczestnicy dają łapówki w obu rundach, tj. jeśli uczestnik daje łapówki w pierwszej rundzie, robi to również w drugiej (i vice versa).
+\begin{itemize}
+\item[a)] Jeśli wybierzesz losowego uczestnika, który został w programie podczas pierwszego odcinka, jakie jest prawdopodobieństwo, że dawał łapówki sędziom?
+\item[b)] Jeśli wybierzesz losowego uczestnika, jakie jest prawdopodobieństwo, że zostanie w programie podczas obu pierwszych odcinków?
+\item[c)] Jeśli wybierzesz losowego uczestnika, który został w programie podczas pierwszego odcinka, jakie jest prawdopodobieństwo, że zostanie wyrzucony w drugim odcinku?
+\end{itemize}
+
+\section*{Zadanie 2 (15 pkt)}
+\begin{itemize} 
+\item Podaj definicję miary probabilistycznej oraz przynajmniej 4 z (podanych na wykładzie) jej podstawowych własności.
+\item Udowodnij, że dla dowolnych dwóch zdarzeń $A, B \in \Sigma$ spełniona jest nierówność:
+$$ P(A, B) \geq P(A) + P(B) - 1 $$
+\end{itemize}
+
+\section*{Zadanie 3 (30 pkt)}
+Funkcja $f$ jest funkcją gęstości prawdopodobieństwa zmiennej losowej $X$:
+\[
+f(x) = 
+\begin{cases} 
+ax + bx^2 & \text{dla } 0 \leq x \leq 1, \\
+0 & \text{w przeciwnym przypadku}.
+\end{cases}
+\]
+Wiedząc, że wartość oczekiwaną $\mathbb{E}(X) = \frac{7}{12}$, wyznacz współczynniki $a$ i $b$, oblicz wariancję i modę, wyznacz dystrybuantę $F_X(x)$. Oblicz $P(|X| < \frac{1}{2})$.
+
+
+\section*{Zadanie 4 (20 pkt)}
+Na dwóch lotniskach w ciągu 30 minut mają wylądować niezależnie
+dwie pary samolotów. W każdej parze jest maszyna typu A i maszyna typu B.
+Samolot typu A zajmuje w czasie lądowania pas na 7 minut, a samolot typu B
+na 9 minut. Jakie jest prawdopodobieństwo tego, że na przynajmniej jednym
+z lotnisk samoloty nie będą na siebie czekać?
+
+\section*{Zadanie 5 (15 pkt)}
+Niech $X \sim U(a, b)$ dla $0 < a < b$. Wyznacz rozkład zmiennej losowej $Y = \ln X$. Dla jakich wartości $c, d \in \mathbb{R}$ spełniona jest poniższa równość?
+$$P(c < Y \leq d) = f_Y(d) - f_Y(c)$$
+% \section*{Zadanie 5 (20 pkt)}
+% $X_1$, $X_2$ i $X_3$ to zmienne o rozkładzie jednostajnym: $X_1, X_2, X_3 \sim U(0, 1)$. Wyznacz rozkład:
+% \begin{itemize}
+%     \item zmiennej $Y = \sqrt{X1}$,
+%     \item zmiennej $Z = \max(X_2, X_3)$.
+% \end{itemize}
+% Jaki jest związek między tymi zmiennymi? Zinterpretuj wynik.
+
+\end{document}
+
+% \section*{Zadanie 3}
+% Rozważ następującą grę. Gracz rzuca kostką dokładnie jeden raz. Wygrana wynosi 1\$ za każdą \textit{kropkę} na wyrzuconej ściance kostki. Zakładając, że kostka jest uczciwa, na jakim poziomie należy ustalić cenę biletu za udział w tej grze?

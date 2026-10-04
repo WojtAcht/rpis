@@ -1,0 +1,129 @@
+% \documentclass[polish, 8pt]{article}
+\documentclass[polish, 10pt]{extarticle}
+% \usepackage[top=2cm, bottom=2cm, left=3cm, right=3cm]{geometry}
+\usepackage[a4paper,top=1.2cm,bottom=1.2cm,left=1.2cm,right=1.2cm]{geometry}
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage{placeins}
+\usepackage{dirtytalk}
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage{csquotes}
+% Useful packages
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{float}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+\hypersetup{
+    colorlinks=true,
+    linktoc=all     %set to all if you want both sections and subsections linked
+}
+\usepackage{mdframed}
+\usepackage{titling}
+\setlength{\droptitle}{-2cm} 
+
+\begin{document}
+
+\title{Kolokwium II -- Zestaw B}
+\author{}
+\date{}
+
+\maketitle
+\vspace{-2cm}
+
+\section*{Zadanie 1 (30 pkt)}
+Niech dwuwymiarowa zmienna losowa $(X, Y)$ ma rozkład ciągły o gęstości:
+\[
+f(x,y) = 
+\begin{cases} 
+cx & \text{dla } 0 \le x \le 1, \,\, x^2 \le y \le 1, \\
+0 & \text{w przeciwnym przypadku,}
+\end{cases}
+\]
+gdzie $c \in \mathbb{R_+}$ jest pewną stałą.
+
+\begin{enumerate}
+    \item[a)] \textbf{Wyznacz wartość stałej $c$} \hfill (5 pkt).
+    \item[b)] \textbf{Wyznacz gęstości brzegowe} \hfill (5 pkt).
+    \item[c)] \textbf{Wyznacz gęstości warunkowe} \hfill (5 pkt).
+    \item[d)] \textbf{Wyznacz $\mathbb P\!\left(Y>\tfrac12\mid X=\tfrac12\right)$} \hfill (5 pkt).
+    \item[e)] \textbf{Oblicz kowariancję $\text{Cov}(X, Y)$} \hfill (5 pkt).
+    \item[f)] \textbf{Opisz sposób wyznaczenia współczynnika korelacji $\rho_{X,Y}$},\\rozpisując wzory i całki niezbędne do jego obliczenia \hfill (5 pkt).
+\end{enumerate}
+
+
+
+\section*{Zadanie 2 (15 pkt)}
+Dla zmiennej losowej $X\sim \mathrm{Pois}(\lambda)$:
+\begin{enumerate}
+  \item[a)] Wyznacz funkcję tworzącą momenty (MGF) \hfill (10 pkt).
+  \item[b)] Korzystając z MGF oblicz wariancję $\mathrm{Var}(X)$ \hfill (5 pkt).
+\end{enumerate}
+
+\section*{Zadanie 3 (30 pkt)}
+System zasilania awaryjnego w serwerowni składa się z $n$ niezależnych modułów bateryjnych. Moduły te włączają się sekwencyjnie – gdy pierwszy się wyczerpie, natychmiast startuje drugi, itd. Czas pracy każdego $i$-tego modułu (w godzinach) jest zmienną losową $X_i$ o rozkładzie wykładniczym z parametrem $\lambda = 2$: $X_i \sim \text{Exp}(2)$. Niech $T$ oznacza całkowity czas pracy systemu do momentu wyczerpania wszystkich baterii:
+\[
+T = X_1 + X_2 + \dots + X_n
+\]
+
+\begin{enumerate}
+    \item[a)] Oblicz wartość oczekiwaną $\mathbb{E}[T]$ i wariancję $\text{Var}(T)$ \hfill (5 pkt).
+    \item[b)] Korzystając z własności sumy niezależnych zmiennych losowych, podaj dokładny rozkład zmiennej $T$ \hfill (5 pkt).
+    \item[c)] Załóżmy, że system składa się z $n=100$ modułów. Oszacuj prawdopodobieństwo, że system będzie działał dłużej niż 55 godzin. Powołaj się na odpowiednie twierdzenie \hfill (10 pkt).
+    \item[d)] Traktując parametr $\lambda$ jako nieznany, a czasy pracy modułów $x_1,\dots,x_n$ jako zaobserwowane realizacje niezależnych zmiennych $X_1,\dots,X_n \sim \mathrm{Exp}(\lambda)$, wyznacz estymator największej wiarygodności $\hat\lambda_{\text{MLE}}$. \hfill (10 pkt)
+\end{enumerate}
+
+\section*{Zadanie 4 (25 pkt)}
+W pewnym zakładzie produkcyjnym kontroluje się czas (w minutach) potrzebny na wykonanie standardowej operacji. Przyjmuje się, że czasy wykonywania tej operacji w populacji mają rozkład normalny. Wylosowano próbę \textbf{$n = 14$} pomiarów, dla których uzyskano $\bar{x} = 12{,}8$ min przy $s = 3{,}2$ min.
+
+\begin{enumerate}
+    \item \textbf{Opisz sposób konstrukcji $95\%$ przedziału ufności dla $\mu$}, tj.:
+    \begin{itemize}
+        \item jaka statystyka jest wykorzystywana do budowy przedziału i jaki jest jej rozkład, \hfill (5 pkt),
+        \item dlaczego wybieramy akurat tę statystykę w tej sytuacji, \hfill (5 pkt),
+        \item opisz sposób konstrukcji (jeśli wprowadzasz zmienne, wyjaśnij  co oznaczają) \hfill (10 pkt).
+    \end{itemize}
+
+    \item Ktoś interpretuje wynik następująco:
+    \begin{quote}
+    ``Z prawdopodobieństwem $95\%$ prawdziwa wartość średniej $\mu$ leży w wyznaczonym przedziale.''
+    \end{quote}
+    Czy ta interpretacja jest \textbf{prawdziwa}? Uzasadnij. \hfill (5 pkt).
+\end{enumerate}
+
+
+
+\end{document}
+

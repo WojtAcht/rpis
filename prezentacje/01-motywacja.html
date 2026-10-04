@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Po co nam RPiS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Work+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #6b6b6b;
+    --line: #111111;
+    --faint: #d9d9d9;
+    --mark: #f3ec5a;
+    --red: #f0503c;
+    --green: #139a90;
+    --purple: #8b3fc7;
+    --card: #faf9f5;
+    --sans: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: "IBM Plex Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-snap-type: y mandatory; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: clamp(15px, 1.25vw, 19px);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  .slide {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    padding: clamp(24px, 5vh, 56px) clamp(16px, 6vw, 96px) clamp(48px, 7vh, 72px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid var(--faint);
+    position: relative;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 0.9em;
+  }
+  h1, h2 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.04;
+    margin: 0 0 0.45em;
+    max-width: 26ch;
+  }
+  h1 { font-size: clamp(34px, 4.6vw, 68px); }
+  h2 { font-size: clamp(28px, 3.6vw, 54px); }
+  h3 { font-size: 1.12em; margin: 0 0 0.35em; font-weight: 700; }
+  p { margin: 0 0 0.7em; }
+  mark {
+    background: linear-gradient(transparent 55%, var(--mark) 55%);
+    color: inherit;
+    padding: 0 0.1em;
+  }
+  .mono { font-family: var(--mono); font-size: 0.86em; }
+  .muted { color: var(--muted); }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(16px, 3vw, 40px);
+    margin-top: 0.6em;
+  }
+  .card {
+    border: 1.5px solid var(--line);
+    background: var(--card);
+    padding: 1.1em 1.25em 0.9em;
+    border-radius: 2px;
+    box-shadow: 5px 5px 0 var(--line);
+  }
+  .card h3 { font-size: 1.6em; }
+  .card p { font-size: 1.2em; margin: 0; }
+  .card .who {
+    font-family: var(--mono);
+    font-size: 0.74em;
+    color: var(--muted);
+    margin-bottom: 0.6em;
+  }
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72em;
+    padding: 0.15em 0.55em;
+    border: 1.5px solid var(--line);
+    border-radius: 99px;
+    margin-bottom: 0.7em;
+    background: #fff;
+  }
+  .tag.red { background: var(--red); color: #fff; border-color: var(--red); }
+  .tag.green { background: var(--green); color: #fff; border-color: var(--green); }
+  ul { margin: 0; padding-left: 1.1em; }
+  li { margin: 0 0 0.35em; }
+  ul.big { font-size: 1.3em; margin-top: 0.4em; }
+  ul.big li { margin-bottom: 0.5em; }
+  .gap {
+    margin-top: 1.5em;
+    font-size: 1.3em;
+    font-weight: 500;
+    max-width: 44ch;
+  }
+  .gap strong { font-weight: 800; }
+  .lead { font-size: 1.15em; margin: -0.2em 0 0.8em; max-width: 62ch; }
+  .equation {
+    margin-top: 1.2em;
+    font-family: var(--mono);
+    font-size: clamp(15px, 1.5vw, 22px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    align-items: center;
+  }
+  .equation span.box { border: 1.5px solid var(--line); padding: 0.2em 0.6em; background: #fff; }
+  .equation span.box.hl { background: var(--mark); }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 0.6em;
+    border: 1.5px solid var(--line);
+  }
+  .step { padding: 0.9em 1em; border-right: 1.5px solid var(--line); background: #fff; }
+  .step:last-child { border-right: 0; background: var(--mark); }
+  .step .n { font-family: var(--mono); font-size: 0.74em; color: var(--muted); display: block; margin-bottom: 0.25em; }
+  .step:last-child .n { color: var(--fg); }
+  .step p { font-size: 0.92em; margin: 0; }
+  .step h3 { font-size: 1.05em; }
+  .aside {
+    margin-top: 1.2em;
+    padding-left: 0.9em;
+    border-left: 4px solid var(--green);
+    max-width: 70ch;
+  }
+  .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.5vw, 36px); margin-top: 0.4em; }
+  .cols3 h3 { border-bottom: 1.5px solid var(--line); padding-bottom: 0.3em; margin-bottom: 0.6em; }
+  .foot {
+    position: absolute;
+    left: clamp(16px, 6vw, 96px);
+    right: clamp(16px, 6vw, 96px);
+    bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    font-family: var(--mono);
+    font-size: 0.68em;
+    color: var(--muted);
+  }
+
+  /* --- chat bubbles --- */
+  .chat { display: flex; flex-direction: column; gap: 0.6em; }
+  .prompt {
+    align-self: flex-end;
+    background: var(--fg); color: #fff;
+    padding: 0.6em 0.9em; border-radius: 14px 14px 2px 14px;
+    font-size: 1.05em; max-width: 90%;
+  }
+  .answer { font-size: 1.15em; }
+  .answer b { background: var(--mark); }
+
+  /* --- big numbers --- */
+  .big-n { font-size: clamp(64px, 9vw, 140px); font-weight: 800; line-height: 1; letter-spacing: -0.04em; }
+  .big-n.red { color: var(--red); }
+
+  /* --- controls --- */
+  .demo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: clamp(16px, 3vw, 48px); align-items: start; }
+  .ctrl { margin-bottom: 1.1em; }
+  .ctrl label { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.85em; margin-bottom: 0.3em; }
+  .ctrl label b { font-size: 1.15em; }
+  input[type=range] { width: 100%; accent-color: var(--fg); }
+  .btns { display: flex; flex-wrap: wrap; gap: 0.5em; margin: 0.4em 0 0.9em; }
+  button {
+    font-family: var(--mono); font-size: 0.85em;
+    background: #fff; color: var(--fg);
+    border: 1.5px solid var(--line); border-radius: 2px;
+    padding: 0.45em 0.85em; cursor: pointer;
+    box-shadow: 3px 3px 0 var(--line);
+  }
+  button:hover { background: var(--mark); }
+  button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--line); }
+  button[aria-pressed="true"] { background: var(--mark); }
+  .readout {
+    font-family: var(--mono); font-size: 0.85em;
+    border: 1.5px solid var(--line); background: var(--card);
+    padding: 0.7em 0.9em; line-height: 1.6;
+  }
+  .sentence { font-size: 1.25em; margin: 0.2em 0 0.8em; min-height: 1.6em; }
+  .sentence b { background: var(--mark); padding: 0 0.15em; }
+
+  /* --- charts --- */
+  svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+  svg.chart text { font-family: var(--mono); font-size: 12px; fill: var(--fg); }
+  svg.chart text.mutedt { fill: var(--muted); }
+  svg.chart .axis { stroke: var(--fg); stroke-width: 1; }
+  svg.chart .grid { stroke: var(--faint); stroke-width: 1; }
+  svg.chart rect.hit { fill: transparent; }
+  svg.chart g.row:hover rect.bar { opacity: 0.75; }
+  figcaption { font-family: var(--mono); font-size: 0.74em; color: var(--muted); margin-top: 0.4em; }
+
+  table.map { border-collapse: collapse; width: 100%; font-size: 1.05em; margin-top: 0.4em; }
+  table.map th { font-family: var(--mono); font-size: 0.72em; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); text-align: left; padding: 0 0.8em 0.5em 0; border-bottom: 1.5px solid var(--line); }
+  table.map td { padding: 0.55em 0.8em 0.55em 0; border-bottom: 1px solid var(--faint); vertical-align: top; }
+  table.map td:last-child { font-family: var(--mono); white-space: nowrap; }
+  table.map td.f { font-family: var(--mono); font-size: 0.85em; }
+
+  .formula { font-family: var(--mono); font-size: 1.05em; background: #fff; border: 1.5px solid var(--line); padding: 0.5em 0.8em; display: inline-block; margin: 0.4em 0; }
+  .bigeq {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em;
+    font-family: var(--mono);
+    font-size: clamp(30px, 4.4vw, 68px);
+    margin-top: 0.3em;
+  }
+  .bigeq .cond { background: var(--mark); padding: 0 0.12em; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
+  .frac > span:first-child { border-bottom: 3px solid var(--fg); padding: 0 0.2em 0.08em; }
+  .frac > span:last-child { padding-top: 0.08em; }
+  .refs { font-family: var(--mono); font-size: 0.7em; color: var(--muted); margin-top: 1.2em; line-height: 1.5; }
+  .legend { display: inline-flex; align-items: center; gap: 0.35em; margin-right: 1.1em; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+  @media (max-width: 820px) {
+    .grid2, .cols3, .demo { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .step:nth-child(2) { border-right: 0; }
+    .step:nth-child(-n+2) { border-bottom: 1.5px solid var(--line); }
+    .foot { position: static; margin-top: 1.5em; }
+    table.map td:last-child { white-space: normal; }
+  }
+  @media print {
+    html { scroll-snap-type: none; }
+    .slide { min-height: auto; height: 100vh; page-break-after: always; border: 0; }
+    button { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ 1 · TYTUŁ ============ -->
+<section class="slide" id="s1">
+  <p class="kicker">RPiS 2026 · zajęcia 01</p>
+  <h1>Po co <mark>prawdopodobieństwo</mark> i statystyka na informatyce?</h1>
+
+  <div class="grid2">
+    <div class="card">
+      <span class="tag red">część I · AI</span>
+      <div class="who">rachunek prawdopodobieństwa</div>
+      <h3>Jak LLM wybiera następne słowo</h3>
+      <p>Każda odpowiedź czata to losowanie z rozkładu.</p>
+    </div>
+    <div class="card">
+      <span class="tag green">część II · nauka</span>
+      <div class="who">statystyka</div>
+      <h3>Skąd wiemy, że coś działa</h3>
+      <p>Szczepionka, nowy model, nowa wersja aplikacji: sygnał czy szum?</p>
+    </div>
+  </div>
+
+  <div class="foot"><span>W. Achtelik · AGH Kraków</span><span>1 / 9</span></div>
+</section>
+
+<!-- ============ 2 · HAK ============ -->
+<section class="slide" id="s2">
+  <p class="kicker">Część I · eksperyment</p>
+  <h2>Ten sam prompt. <mark>Dwie różne</mark> odpowiedzi.</h2>
+
+  <div class="grid2">
+    <div class="card chat">
+      <div class="who">próba 1</div>
+      <div class="prompt">Dokończ zdanie: „Studiuję informatykę, bo…”</div>
+      <div class="answer">…<b>lubię</b> rozwiązywać problemy, które mają jedno dobre rozwiązanie.</div>
+    </div>
+    <div class="card chat">
+      <div class="who">próba 2 · ten sam model, ten sam prompt</div>
+      <div class="prompt">Dokończ zdanie: „Studiuję informatykę, bo…”</div>
+      <div class="answer">…<b>chcę</b> kiedyś zbudować coś, z czego korzystają miliony ludzi.</div>
+    </div>
+  </div>
+
+  <div class="foot"><span>W. Achtelik · AGH Kraków</span><span>2 / 9</span></div>
+</section>
+
+<!-- ============ 3 · ROZKŁAD ============ -->
+<section class="slide" id="s3">
+  <p class="kicker">Część I · jak to działa</p>
+  <h2>Model nie zwraca słowa, tylko <mark>rozkład</mark></h2>
+
+  <div class="bigeq">
+    <span>P(token<sub>i</sub> <span class="cond">|</span> tekst)</span>
+    <span>=</span>
+    <span class="frac"><span>e<sup>z<sub>i</sub></sup></span><span>Σ<sub>j</sub> e<sup>z<sub>j</sub></sup></span></span>
+  </div>
+
+  <div class="grid2" style="margin-top:1.4em">
+    <p class="aside" style="margin:0; border-color:var(--red)"><b>To jest prawdopodobieństwo warunkowe.</b> Kreskę „|” czytamy „pod warunkiem”: rozkład następnego tokena pod warunkiem tekstu, który już mamy.</p>
+    <p class="aside" style="margin:0">z<sub>i</sub> to liczba (logit), którą sieć liczy dla każdego z ~100 tys. tokenów. Wzór zamienia te liczby na prawdopodobieństwa sumujące się do 1. Odpowiedź to <b>jedno losowanie</b> z tego rozkładu.</p>
+  </div>
+
+  <div class="foot"><span>W. Achtelik · AGH Kraków</span><span>3 / 9</span></div>
+</section>
+
+<!-- ============ 4 · DEMO LLM ============ -->
+<section class="slide" id="s4">
+  <p class="kicker">Część I · pokaz</p>
+  <h2>Temperatura i top-k: <mark>pokrętła</mark> rozkładu</h2>
+
+  <div class="demo">
+    <div>
+      <div class="ctrl">
+        <label for="temp"><span>temperatura T</span><b id="tempv">1,0</b></label>
+        <input id="temp" type="range" min="0.05" max="2.5" step="0.05" value="1">
+      </div>
+      <div class="ctrl">
+        <label for="topk"><span>top-k</span><b id="topkv">wszystkie</b></label>
+        <input id="topk" type="range" min="1" max="12" step="1" value="12">
+      </div>
+      <div class="formula">p<sub>i</sub>(T) ∝ p<sub>i</sub><sup>1/T</sup></div>
+      <div class="btns">
+        <button id="draw1">losuj 1×</button>
+        <button id="draw100">losuj 100×</button>
+        <button id="drawReset">wyczyść</button>
+      </div>
+      <p class="sentence" id="sentence">Studiuję informatykę, bo <b>…</b></p>
+      <div class="readout" id="llmRead"></div>
+    </div>
+    <figure style="margin:0">
+      <svg class="chart" id="llmChart" viewBox="0 0 560 330" role="img" aria-label="Rozkład prawdopodobieństwa następnego tokena po tekście: Studiuję informatykę, bo"></svg>
+      <figcaption>P(następny token | „Studiuję informatykę, bo”) · ×n = liczba wylosowań · rozkład ilustracyjny</figcaption>
+    </figure>
+  </div>
+
+  <div class="foot"><span>Najpierw zgadnij: co się stanie przy T → 0? A przy T = 2?</span><span>4 / 9</span></div>
+</section>
+
+<!-- ============ 5 · MAPA KURSU ============ -->
+<section class="slide" id="s5">
+  <p class="kicker">Część I · co tu właściwie było</p>
+  <h2><mark>Rachunek prawdopodobieństwa</mark></h2>
+
+  <table class="map">
+    <thead><tr><th>W modelu językowym</th><th>Pojęcie</th><th>Zajęcia</th></tr></thead>
+    <tbody>
+      <tr><td>rozkład nad tokenami</td><td>rozkład dyskretny, wartość oczekiwana</td><td>04–05</td></tr>
+      <tr><td>temperatura</td><td>przekształcenie rozkładu</td><td>06</td></tr>
+      <tr><td>top-k: obetnij i znormalizuj</td><td class="f">P(i | i ∈ top-k) = p<sub>i</sub> / Σ<sub>j∈top-k</sub> p<sub>j</sub></td><td>02</td></tr>
+      <tr><td>całe zdanie</td><td class="f">P(w<sub>1</sub>,…,w<sub>n</sub>) = ∏ P(w<sub>i</sub> | w<sub>1</sub>,…,w<sub>i−1</sub>)</td><td>02–03</td></tr>
+      <tr><td>trening na miliardach zdań</td><td>estymacja największej wiarygodności (MLE)</td><td>10</td></tr>
+    </tbody>
+  </table>
+
+  <div class="foot"><span>W. Achtelik · AGH Kraków</span><span>5 / 9</span></div>
+</section>
+
+<!-- ============ 7 · SZCZEPIONKA ============ -->
+<section class="slide" id="s7">
+  <p class="kicker">Część II · grudzień 2020</p>
+  <h2 style="max-width:none">Szczepionka BNT162b2: <mark>8 kontra 162</mark></h2>
+  <p class="lead">Ponad 36 tys. uczestników w analizie skuteczności, <b>losowo</b> przydzielonych do dwóch grup. Nikt nie wiedział, kto dostał co. Po kilku miesiącach obserwacji:</p>
+
+  <div class="grid2">
+    <div class="card">
+      <span class="tag green">szczepionka</span>
+      <div class="who">18 198 osób</div>
+      <div class="big-n">8</div>
+      <p>zachorowań na COVID-19</p>
+    </div>
+    <div class="card">
+      <span class="tag">placebo</span>
+      <div class="who">18 325 osób</div>
+      <div class="big-n">162</div>
+      <p>zachorowania na COVID-19</p>
+    </div>
+  </div>
+
+  <p class="gap">Zachorowało łącznie 170 osób. Czy taki podział mógł wyjść <mark>przypadkiem</mark>?</p>
+
+  <div class="foot"><span>Polack et al., „Safety and Efficacy of the BNT162b2 mRNA Covid-19 Vaccine”, NEJM 383 (2020)</span><span>6 / 9</span></div>
+</section>
+
+<!-- ============ 8 · SYMULACJA ============ -->
+<section class="slide" id="s8">
+  <p class="kicker">Część II · pokaz</p>
+  <h2>Zasymulujmy świat, w którym szczepionka <mark>nie działa</mark></h2>
+  <p class="lead">Wtedy każda ze 170 chorych osób trafia do grupy szczepionkowej z prawdopodobieństwem ≈ ½. To 170 rzutów monetą.</p>
+
+  <div class="btns">
+    <button id="sim1">1 badanie</button>
+    <button id="sim1000">+1 000 badań</button>
+    <button id="sim10000">+10 000 badań</button>
+    <button id="simReset">wyczyść</button>
+  </div>
+
+  <figure style="margin:0">
+    <svg class="chart" id="vaxChart" viewBox="0 0 900 240" style="max-height:34vh" role="img" aria-label="Histogram liczby zachorowań w grupie szczepionkowej w symulacjach, w których szczepionka nie działa, z zaznaczoną obserwacją 8"></svg>
+    <figcaption>Oś x: ile ze 170 zachorowań trafiło do grupy szczepionkowej · oś y: liczba symulowanych badań</figcaption>
+  </figure>
+  <div class="readout" id="vaxRead" style="margin-top:0.8em"></div>
+
+  <div class="foot"><span>Jak często przypadek daje wynik tak skrajny jak 8? To jest p-wartość (zajęcia 12)</span><span>7 / 9</span></div>
+</section>
+
+<!-- ============ 10 · BENCHMARK ============ -->
+<section class="slide" id="s10">
+  <p class="kicker">Część II · Twój świat</p>
+  <h2>Nowy model jest lepszy o 0,7 pp. <mark>Na pewno?</mark></h2>
+
+  <div class="btns">
+    <button id="seed1" aria-pressed="true">1 uruchomienie</button>
+    <button id="seed10" aria-pressed="false">10 ziaren losowych</button>
+  </div>
+
+  <div class="demo" style="grid-template-columns: minmax(0,1.6fr) minmax(0,1fr)">
+    <figure style="margin:0">
+      <svg class="chart" id="benchChart" viewBox="0 0 600 200" role="img" aria-label="Trafność modeli A i B na zbiorze testowym dla różnych ziaren losowych"></svg>
+      <figcaption>
+        <span class="legend"><span class="dot" style="background:var(--green)"></span>A · stary model</span>
+        <span class="legend"><span class="dot" style="background:var(--purple)"></span>B · nowy model</span>
+        · trafność na zbiorze testowym [%] · dane ilustracyjne
+      </figcaption>
+    </figure>
+    <div class="readout" id="benchRead"></div>
+  </div>
+
+  <p class="aside">To samo pytanie, co przy szczepionce: <b>sygnał czy szum?</b> W firmach zadaje się je codziennie przy testach A/B nowych wersji produktu.</p>
+
+  <div class="foot"><span>W. Achtelik · AGH Kraków</span><span>8 / 9</span></div>
+</section>
+
+<!-- ============ 11 · ZAMKNIĘCIE ============ -->
+<section class="slide" id="s11">
+  <p class="kicker">Po tym semestrze</p>
+  <h2>Co będziesz <mark>umieć</mark></h2>
+
+  <div class="cols3">
+    <div>
+      <h3>Przeczytasz</h3>
+      <p class="formula" style="font-size:0.9em">z = μ + σε,&nbsp; ε ~ N(0, 1)</p>
+      <p>Wzór z pracy o autoenkoderach wariacyjnych (VAE), cytowanej ponad 37 tys. razy. Dziś to szyfr, za kilka tygodni będzie to zadanie z zajęć 06.</p>
+    </div>
+    <div>
+      <h3>Zrozumiesz</h3>
+      <p class="formula" style="font-size:0.9em">95,0% (90,3–97,6)</p>
+      <p>Co znaczy przedział w artykule naukowym i dlaczego „p &lt; 0,05” to nie wszystko.</p>
+    </div>
+    <div>
+      <h3>Sprawdzisz</h3>
+      <p class="formula" style="font-size:0.9em">+0,7 pp, ale p = 0,35</p>
+      <p>Czy Twój model, algorytm albo wersja aplikacji jest naprawdę lepsza, czy tylko miała szczęście.</p>
+    </div>
+  </div>
+
+  <div class="equation">
+    <span class="box">01–07 prawdopodobieństwo</span> →
+    <span class="box">08 kolokwium</span> →
+    <span class="box hl">09–13 statystyka</span>
+  </div>
+
+  <p class="refs">Kingma &amp; Welling, Auto-Encoding Variational Bayes, arXiv:1312.6114 · Polack et al., NEJM 383 (2020) 2603–2615</p>
+
+  <div class="foot"><span>W. Achtelik · AGH Kraków</span><span>9 / 9</span></div>
+</section>
+
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(name, attrs, parent, text) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text !== undefined) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function fmt(x, d) { return x.toFixed(d).replace('.', ','); }
+  function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  /* ---------- LLM: temperatura i top-k ---------- */
+  var tokens = [
+    ['lubię', .30, 'rozwiązywać problemy'], ['chcę', .20, 'tworzyć gry'], ['to', .13, 'przyszłość'],
+    ['zawsze', .09, 'lubiłem komputery'], ['dobrze', .07, 'płacą'], ['rodzice', .05, 'tak chcieli'],
+    ['interesuje', .045, 'mnie AI'], ['AI', .04, 'zmienia świat'], ['mam', .03, 'do tego głowę'],
+    ['nie', .025, 'dostałem się na medycynę'], ['kocham', .015, 'matematykę'], ['kot', .005, 'chodził po klawiaturze']
+  ];
+  var temp = document.getElementById('temp'), topk = document.getElementById('topk');
+  var counts = tokens.map(function () { return 0; }), total = 0;
+
+  function dist() {
+    var T = +temp.value, k = +topk.value;
+    var w = tokens.map(function (t, i) { return i < k ? Math.pow(t[1], 1 / T) : 0; });
+    var s = w.reduce(function (a, b) { return a + b; }, 0);
+    return w.map(function (x) { return x / s; });
+  }
+  function sample(p) {
+    var u = Math.random(), c = 0;
+    for (var i = 0; i < p.length; i++) { c += p[i]; if (u < c) return i; }
+    return p.length - 1;
+  }
+  function drawLLM() {
+    var p = dist(), svg = document.getElementById('llmChart');
+    svg.innerHTML = '';
+    var x0 = 110, x1 = 470, rowH = 26, top = 6, maxP = Math.max.apply(null, p);
+    var scale = (x1 - x0) / Math.max(maxP, 0.05);
+    el('line', { x1: x0, y1: top - 4, x2: x0, y2: top + rowH * tokens.length, class: 'axis' }, svg);
+    tokens.forEach(function (t, i) {
+      var y = top + i * rowH, g = el('g', { class: 'row' }, svg), off = p[i] === 0;
+      el('title', {}, g, t[0] + ': P = ' + fmt(p[i], 3) + (counts[i] ? ' · wylosowano ' + counts[i] + '×' : ''));
+      el('rect', { x: 0, y: y, width: 560, height: rowH, class: 'hit' }, g);
+      el('text', { x: x0 - 10, y: y + rowH / 2 + 4, 'text-anchor': 'end', class: off ? 'mutedt' : '',
+        'text-decoration': off ? 'line-through' : 'none' }, g, t[0]);
+      var w = p[i] * scale;
+      if (w > 0) el('rect', { x: x0, y: y + 5, width: Math.max(w, 1.5), height: rowH - 10, rx: 2, class: 'bar', fill: css('--fg') }, g);
+      el('text', { x: x0 + w + 6, y: y + rowH / 2 + 4, class: 'mutedt' }, g, off ? '0' : fmt(p[i], 2));
+      if (counts[i]) el('text', { x: 556, y: y + rowH / 2 + 4, 'text-anchor': 'end' }, g, '×' + counts[i]);
+    });
+    document.getElementById('tempv').textContent = fmt(+temp.value, 2);
+    document.getElementById('topkv').textContent = +topk.value === 12 ? 'wszystkie' : topk.value;
+    var nBig = p.filter(function (x) { return x > 0.01; }).length;
+    document.getElementById('llmRead').innerHTML =
+      'P(najbardziej prawdopodobny) = <b>' + fmt(maxP, 2) + '</b><br>' +
+      'tokeny z P &gt; 1%: <b>' + nBig + '</b> z 12<br>' +
+      'losowań: <b>' + total + '</b>';
+  }
+  function drawN(n) {
+    var p = dist(), last = 0;
+    for (var j = 0; j < n; j++) { last = sample(p); counts[last]++; total++; }
+    var t = tokens[last];
+    document.getElementById('sentence').innerHTML = 'Studiuję informatykę, bo <b>' + t[0] + '</b> ' + t[2] + '…';
+    drawLLM();
+  }
+  temp.addEventListener('input', drawLLM);
+  topk.addEventListener('input', drawLLM);
+  document.getElementById('draw1').onclick = function () { drawN(1); };
+  document.getElementById('draw100').onclick = function () { drawN(100); };
+  document.getElementById('drawReset').onclick = function () {
+    counts = counts.map(function () { return 0; }); total = 0;
+    document.getElementById('sentence').innerHTML = 'Studiuję informatykę, bo <b>…</b>';
+    drawLLM();
+  };
+  drawLLM();
+
+  /* ---------- Szczepionka: symulacja H0 ---------- */
+  var N = 170, pv = 2.214 / (2.214 + 2.222), OBS = 8;
+  var hist = new Array(N + 1).fill(0), sims = 0, minSeen = Infinity, atMost = 0;
+  function simulate(n) {
+    for (var s = 0; s < n; s++) {
+      var k = 0;
+      for (var i = 0; i < N; i++) if (Math.random() < pv) k++;
+      hist[k]++; sims++;
+      if (k < minSeen) minSeen = k;
+      if (k <= OBS) atMost++;
+    }
+    drawVax();
+  }
+  function drawVax() {
+    var svg = document.getElementById('vaxChart');
+    svg.innerHTML = '';
+    var x0 = 50, x1 = 880, yb = 200, yt = 20, bw = (x1 - x0) / (N + 1);
+    var maxH = Math.max(1, Math.max.apply(null, hist));
+    [0.5, 1].forEach(function (f) {
+      var y = yb - (yb - yt) * f;
+      el('line', { x1: x0, y1: y, x2: x1, y2: y, class: 'grid' }, svg);
+      el('text', { x: x0 - 8, y: y + 4, 'text-anchor': 'end', class: 'mutedt' }, svg, sims ? Math.round(maxH * f) : '');
+    });
+    for (var k = 0; k <= N; k++) {
+      if (!hist[k]) continue;
+      var h = (yb - yt) * hist[k] / maxH, g = el('g', { class: 'row' }, svg);
+      el('title', {}, g, k + ' zachorowań w grupie szczepionkowej: ' + hist[k] + ' symulacji');
+      el('rect', { x: x0 + k * bw, y: yt, width: bw, height: yb - yt, class: 'hit' }, g);
+      el('rect', { x: x0 + k * bw + 0.5, y: yb - h, width: Math.max(bw - 1, 1), height: h, rx: 1, class: 'bar', fill: css('--fg') }, g);
+    }
+    el('line', { x1: x0, y1: yb, x2: x1, y2: yb, class: 'axis' }, svg);
+    [0, 25, 50, 85, 100, 125, 150, 170].forEach(function (t) {
+      var x = x0 + (t + 0.5) * bw;
+      el('line', { x1: x, y1: yb, x2: x, y2: yb + 5, class: 'axis' }, svg);
+      el('text', { x: x, y: yb + 20, 'text-anchor': 'middle', class: 'mutedt' }, svg, t);
+    });
+    var xo = x0 + (OBS + 0.5) * bw;
+    el('line', { x1: xo, y1: yt - 6, x2: xo, y2: yb, stroke: css('--red'), 'stroke-width': 2.5 }, svg);
+    el('circle', { cx: xo, cy: yb, r: 6, fill: css('--red'), stroke: css('--fg'), 'stroke-width': 1.5 }, svg);
+    el('text', { x: xo + 10, y: yt + 4, 'font-weight': 500 }, svg, 'badanie: 8');
+    if (!sims) el('text', { x: (x0 + x1) / 2 + 60, y: (yb + yt) / 2, 'text-anchor': 'middle', class: 'mutedt' }, svg, 'kliknij „1 badanie”');
+    document.getElementById('vaxRead').innerHTML = sims
+      ? 'symulowanych badań: <b>' + sims.toLocaleString('pl-PL') + '</b> · najmniej zachorowań w grupie szczepionkowej: <b>' + minSeen +
+        '</b> · wyników ≤ 8: <b>' + atMost + '</b>' +
+        (sims >= 1000 ? '<br>dokładnie: P(X ≤ 8) ≈ <b>1,4 · 10<sup>−38</sup></b>. Przypadek praktycznie nie mógł tego dać.' : '')
+      : 'Każde symulowane badanie to 170 rzutów monetą: szczepionka czy placebo.';
+  }
+  document.getElementById('sim1').onclick = function () { simulate(1); };
+  document.getElementById('sim1000').onclick = function () { simulate(1000); };
+  document.getElementById('sim10000').onclick = function () { simulate(10000); };
+  document.getElementById('simReset').onclick = function () {
+    hist = new Array(N + 1).fill(0); sims = 0; minSeen = Infinity; atMost = 0; drawVax();
+  };
+  drawVax();
+
+  /* ---------- Benchmark ---------- */
+  var A = [90.9, 91.4, 90.6, 91.9, 91.1, 90.8, 92.0, 91.3, 91.6, 91.2];
+  var B = [91.6, 91.0, 92.1, 91.5, 90.9, 92.3, 91.4, 91.2, 91.8, 91.0];
+  var nSeeds = 1;
+  function drawBench() {
+    var svg = document.getElementById('benchChart');
+    svg.innerHTML = '';
+    var x0 = 70, x1 = 580, lo = 90.4, hi = 92.6;
+    function X(v) { return x0 + (x1 - x0) * (v - lo) / (hi - lo); }
+    var rows = [['A', A, css('--green'), 55], ['B', B, css('--purple'), 120]];
+    for (var t = 90.5; t <= 92.55; t += 0.5) {
+      el('line', { x1: X(t), y1: 20, x2: X(t), y2: 160, class: 'grid' }, svg);
+      el('text', { x: X(t), y: 180, 'text-anchor': 'middle', class: 'mutedt' }, svg, fmt(t, 1));
+    }
+    rows.forEach(function (r) {
+      el('text', { x: x0 - 16, y: r[3] + 5, 'text-anchor': 'end', 'font-weight': 500 }, svg, r[0]);
+      var vals = r[1].slice(0, nSeeds);
+      vals.forEach(function (v, i) {
+        var g = el('g', { class: 'row' }, svg);
+        el('title', {}, g, 'model ' + r[0] + ', ziarno ' + (i + 1) + ': ' + fmt(v, 1) + '%');
+        el('circle', { cx: X(v), cy: r[3] + (nSeeds > 1 ? (i % 3 - 1) * 9 : 0), r: 7, fill: r[2], stroke: '#fff', 'stroke-width': 2 }, g);
+      });
+      if (nSeeds > 1) {
+        var m = vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+        el('line', { x1: X(m), y1: r[3] - 22, x2: X(m), y2: r[3] + 22, stroke: css('--fg'), 'stroke-width': 2 }, svg);
+      }
+    });
+    document.getElementById('seed1').setAttribute('aria-pressed', nSeeds === 1);
+    document.getElementById('seed10').setAttribute('aria-pressed', nSeeds === 10);
+    document.getElementById('benchRead').innerHTML = nSeeds === 1
+      ? 'A: <b>90,9%</b><br>B: <b>91,6%</b><br>różnica: <b>+0,7 pp</b><br><br>Wniosek z jednego uruchomienia: „B jest lepszy, piszemy artykuł”.'
+      : 'średnio A: <b>91,28%</b> · B: <b>91,48%</b><br>różnica średnich: <b>+0,2 pp</b><br>95% przedział: <b>(−0,24; 0,64) pp</b><br>test t Welcha: <b>p = 0,35</b><br><br>Rozrzut między ziarnami jest większy niż różnica między modelami.';
+  }
+  document.getElementById('seed1').onclick = function () { nSeeds = 1; drawBench(); };
+  document.getElementById('seed10').onclick = function () { nSeeds = 10; drawBench(); };
+  drawBench();
+
+  /* ---------- nawigacja klawiaturą ---------- */
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  function current() {
+    var y = window.scrollY + window.innerHeight / 3, idx = 0;
+    slides.forEach(function (s, i) { if (s.offsetTop <= y) idx = i; });
+    return idx;
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.target && e.target.tagName === 'INPUT') return;
+    var next = { ArrowDown: 1, ArrowRight: 1, PageDown: 1, ' ': 1, ArrowUp: -1, ArrowLeft: -1, PageUp: -1 }[e.key];
+    if (!next) return;
+    e.preventDefault();
+    var i = Math.max(0, Math.min(slides.length - 1, current() + next));
+    slides[i].scrollIntoView({ behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>

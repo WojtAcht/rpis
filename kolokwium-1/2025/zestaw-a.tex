@@ -1,0 +1,120 @@
+% \documentclass[polish, 8pt]{article}
+\documentclass[polish, 10pt]{extarticle}
+\usepackage[top=2cm, bottom=2cm, left=3cm, right=3cm]{geometry}
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage{placeins}
+\usepackage{dirtytalk}
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage{csquotes}
+% Useful packages
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{float}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+\hypersetup{
+    colorlinks=true,
+    linktoc=all     %set to all if you want both sections and subsections linked
+}
+\usepackage{mdframed}
+\usepackage{titling}
+\setlength{\droptitle}{-2cm} 
+
+\begin{document}
+
+\title{Kolokwium I -- Zestaw A}
+\author{}
+\date{}
+
+\maketitle
+\vspace{-2cm}
+
+\section*{Zadanie 1 (25 pkt)}
+% W kapeluszu znajdują się dwie monety. Monety wyglądają tak samo, ale jedna jest uczciwa (z prawdopodobieństwem wypadnięcia orła równym \(1/2\)), natomiast druga jest stronnicza, z prawdopodobieństwem orła równym \(1/4\). Jedną z monet losowo wyciąga się z kapelusza, nie wiedząc, która to. Wybraną monetę nazywamy \emph{monetą \(C\)}.
+
+% \begin{enumerate}
+%   \item Monetę \(C\) rzucono dwukrotnie i za każdym razem wypadł orzeł. Znając tę informację, jakie jest prawdopodobieństwo, że moneta \(C\) jest uczciwa?
+%   \item Czy zdarzenia „pierwszy rzut monety \(C\) daje orła” oraz „drugi rzut monety \(C\) daje orła” są niezależne? Uzasadnij.
+%   \item Wyznacz prawdopodobieństwo, że w \(10\) rzutach monety \(C\) pojawią się dokładnie \(3\) orły. (Moneta jest jednakowo prawdopodobnie jedną z dwóch monet; nie zakładaj, że wcześniej wypadły dwa orły jak w punkcie (a).)
+% \end{enumerate}
+W kapeluszu znajdują się dwie monety, których nie można odróżnić wzrokiem. Jedna z nich jest uczciwa (prawdopodobieństwo orła $1/2$), a druga obciążona (prawdopodobieństwo orła $1/4$). Losujemy z kapelusza jedną monetę – nazwijmy ją monetą $C$.
+\begin{enumerate}
+\item Rzucono dwukrotnie monetą $C$ i za każdym razem wypadł orzeł. Jakie jest prawdopodobieństwo, że wylosowana moneta jest uczciwa?
+\item Czy zdarzenia: „w pierwszym rzucie monetą $C$ wypadł orzeł” oraz „w drugim rzucie monetą $C$ wypadł orzeł” są niezależne? Uzasadnij odpowiedź.
+\item Wracamy do momentu wyboru monety (zapominając o wynikach z punktu a). Jakie jest prawdopodobieństwo uzyskania dokładnie $3$ orłów w $5$ rzutach wylosowaną monetą $C$?
+\end{enumerate}
+
+\section*{Zadanie 2 (15 pkt)}
+Niech \(A\) i \(B\) będą zdarzeniami losowymi.
+Różnicą symetryczną \(A \triangle B\) nazywamy zdarzenie zachodzące wtedy, gdy zachodzi \(A\) lub zachodzi \(B\), ale nie oba jednocześnie (w logice odpowiada to alternatywie wykluczającej \emph{XOR}). Korzystając z definicji i własności prawdopodobieństwa, wykaż, że:
+\begin{enumerate}
+\item $P(A \triangle B) \;=\; P(A) + P(B) - 2P(A \cap B)$
+\item $P(A) - P(B) \leq P(A \triangle B)$
+\end{enumerate}
+
+\section*{Zadanie 3 (10 pkt)}
+Podaj definicję rozkładu prawdopodobieństwa zmiennej losowej. Sformułuj i udowodnij twierdzenie mówiące, że ten rozkład jest miarą probabilistyczną.
+
+\section*{Zadanie 4 (30 pkt)}
+
+Niech $X$ będzie zmienną losową o nieznanym parametrze $\theta \in \mathbb{R}_+$, której funkcja
+gęstości prawdopodobieństwa ma postać
+\[
+f_\theta(x) =
+\begin{cases}
+\dfrac{2x}{\theta^2}, & \text{dla } 0 \leq x \leq \theta,\\[4pt]
+0, & \text{w przeciwnym przypadku.}
+\end{cases}
+\]
+
+\begin{enumerate}[label=\alph*)]
+    \item Dla jakich wartości parametru $\theta$ funkcja $f_\theta$ jest
+    funkcją gęstości prawdopodobieństwa zmiennej losowej $X$?
+
+    \item Wyznacz dystrybuantę $F_X(x)$ zmiennej losowej $X$.
+
+    \item Oblicz wartość oczekiwaną $E[2X+3]$, $Var(X)$ oraz medianę
+    zmiennej losowej $X$ w zależności od parametru $\theta$.
+
+    \item Oblicz prawdopodobieństwo $P\bigl(X^2 > 1\bigr)$ w zależności od parametru $\theta$.
+\end{enumerate}
+
+\section*{Zadanie 5 (20 pkt)}
+Zmienna losowa \(X\) ma rozkład jednostajny \(U(-2, 3)\).
+Wyznacz rozkład zmiennej losowej \(Y = (X-1)^2\).
+
+\end{document}
+

@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Organizacja RPiS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Work+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #6b6b6b;
+    --line: #111111;
+    --faint: #d9d9d9;
+    --mark: #f3ec5a;
+    --red: #f0503c;
+    --green: #139a90;
+    --purple: #8b3fc7;
+    --card: #faf9f5;
+    --sans: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: "IBM Plex Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-snap-type: y mandatory; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: clamp(15px, 1.25vw, 19px);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  .slide {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    padding: clamp(24px, 5vh, 56px) clamp(16px, 6vw, 96px) clamp(48px, 7vh, 72px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid var(--faint);
+    position: relative;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 0.9em;
+  }
+  h1, h2 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.04;
+    margin: 0 0 0.45em;
+    max-width: 26ch;
+  }
+  h1 { font-size: clamp(34px, 4.6vw, 68px); }
+  h2 { font-size: clamp(28px, 3.6vw, 54px); }
+  h3 { font-size: 1.12em; margin: 0 0 0.35em; font-weight: 700; }
+  p { margin: 0 0 0.7em; }
+  mark {
+    background: linear-gradient(transparent 55%, var(--mark) 55%);
+    color: inherit;
+    padding: 0 0.1em;
+  }
+  .mono { font-family: var(--mono); font-size: 0.86em; }
+  .muted { color: var(--muted); }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(16px, 3vw, 40px);
+    margin-top: 0.6em;
+  }
+  .card {
+    border: 1.5px solid var(--line);
+    background: var(--card);
+    padding: 1.1em 1.25em 0.9em;
+    border-radius: 2px;
+    box-shadow: 5px 5px 0 var(--line);
+  }
+  .card h3 { font-size: 1.6em; }
+  .card p { font-size: 1.2em; margin: 0; }
+  .card .who {
+    font-family: var(--mono);
+    font-size: 0.74em;
+    color: var(--muted);
+    margin-bottom: 0.6em;
+  }
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72em;
+    padding: 0.15em 0.55em;
+    border: 1.5px solid var(--line);
+    border-radius: 99px;
+    margin-bottom: 0.7em;
+    background: #fff;
+  }
+  .tag.red { background: var(--red); color: #fff; border-color: var(--red); }
+  .tag.green { background: var(--green); color: #fff; border-color: var(--green); }
+  ul { margin: 0; padding-left: 1.1em; }
+  li { margin: 0 0 0.35em; }
+  ul.big { font-size: 1.3em; margin-top: 0.4em; }
+  ul.big li { margin-bottom: 0.5em; }
+  .gap {
+    margin-top: 1.5em;
+    font-size: 1.3em;
+    font-weight: 500;
+    max-width: 44ch;
+  }
+  .gap strong { font-weight: 800; }
+  .lead { font-size: 1.15em; margin: -0.2em 0 0.8em; max-width: 62ch; }
+  .equation {
+    margin-top: 1.2em;
+    font-family: var(--mono);
+    font-size: clamp(15px, 1.5vw, 22px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    align-items: center;
+  }
+  .equation span.box { border: 1.5px solid var(--line); padding: 0.2em 0.6em; background: #fff; }
+  .equation span.box.hl { background: var(--mark); }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 0.6em;
+    border: 1.5px solid var(--line);
+  }
+  .step { padding: 0.9em 1em; border-right: 1.5px solid var(--line); background: #fff; }
+  .step:last-child { border-right: 0; background: var(--mark); }
+  .step .n { font-family: var(--mono); font-size: 0.74em; color: var(--muted); display: block; margin-bottom: 0.25em; }
+  .step:last-child .n { color: var(--fg); }
+  .step p { font-size: 0.92em; margin: 0; }
+  .step h3 { font-size: 1.05em; }
+  .aside {
+    margin-top: 1.2em;
+    padding-left: 0.9em;
+    border-left: 4px solid var(--green);
+    max-width: 70ch;
+  }
+  .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.5vw, 36px); margin-top: 0.4em; }
+  .cols3 h3 { border-bottom: 1.5px solid var(--line); padding-bottom: 0.3em; margin-bottom: 0.6em; }
+  .foot {
+    position: absolute;
+    left: clamp(16px, 6vw, 96px);
+    right: clamp(16px, 6vw, 96px);
+    bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    font-family: var(--mono);
+    font-size: 0.68em;
+    color: var(--muted);
+  }
+
+  /* --- chat bubbles --- */
+  .chat { display: flex; flex-direction: column; gap: 0.6em; }
+  .prompt {
+    align-self: flex-end;
+    background: var(--fg); color: #fff;
+    padding: 0.6em 0.9em; border-radius: 14px 14px 2px 14px;
+    font-size: 1.05em; max-width: 90%;
+  }
+  .answer { font-size: 1.15em; }
+  .answer b { background: var(--mark); }
+
+  /* --- big numbers --- */
+  .big-n { font-size: clamp(64px, 9vw, 140px); font-weight: 800; line-height: 1; letter-spacing: -0.04em; }
+  .big-n.red { color: var(--red); }
+
+  /* --- controls --- */
+  .demo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: clamp(16px, 3vw, 48px); align-items: start; }
+  .ctrl { margin-bottom: 1.1em; }
+  .ctrl label { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.85em; margin-bottom: 0.3em; }
+  .ctrl label b { font-size: 1.15em; }
+  input[type=range] { width: 100%; accent-color: var(--fg); }
+  .btns { display: flex; flex-wrap: wrap; gap: 0.5em; margin: 0.4em 0 0.9em; }
+  button {
+    font-family: var(--mono); font-size: 0.85em;
+    background: #fff; color: var(--fg);
+    border: 1.5px solid var(--line); border-radius: 2px;
+    padding: 0.45em 0.85em; cursor: pointer;
+    box-shadow: 3px 3px 0 var(--line);
+  }
+  button:hover { background: var(--mark); }
+  button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--line); }
+  button[aria-pressed="true"] { background: var(--mark); }
+  .readout {
+    font-family: var(--mono); font-size: 0.85em;
+    border: 1.5px solid var(--line); background: var(--card);
+    padding: 0.7em 0.9em; line-height: 1.6;
+  }
+  .sentence { font-size: 1.25em; margin: 0.2em 0 0.8em; min-height: 1.6em; }
+  .sentence b { background: var(--mark); padding: 0 0.15em; }
+
+  /* --- charts --- */
+  svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+  svg.chart text { font-family: var(--mono); font-size: 12px; fill: var(--fg); }
+  svg.chart text.mutedt { fill: var(--muted); }
+  svg.chart .axis { stroke: var(--fg); stroke-width: 1; }
+  svg.chart .grid { stroke: var(--faint); stroke-width: 1; }
+  svg.chart rect.hit { fill: transparent; }
+  svg.chart g.row:hover rect.bar { opacity: 0.75; }
+  figcaption { font-family: var(--mono); font-size: 0.74em; color: var(--muted); margin-top: 0.4em; }
+
+  table.map { border-collapse: collapse; width: 100%; font-size: 1.05em; margin-top: 0.4em; }
+  table.map th { font-family: var(--mono); font-size: 0.72em; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); text-align: left; padding: 0 0.8em 0.5em 0; border-bottom: 1.5px solid var(--line); }
+  table.map td { padding: 0.55em 0.8em 0.55em 0; border-bottom: 1px solid var(--faint); vertical-align: top; }
+  table.map td:last-child { font-family: var(--mono); white-space: nowrap; }
+  table.map td.f { font-family: var(--mono); font-size: 0.85em; }
+
+  .formula { font-family: var(--mono); font-size: 1.05em; background: #fff; border: 1.5px solid var(--line); padding: 0.5em 0.8em; display: inline-block; margin: 0.4em 0; }
+  .bigeq {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em;
+    font-family: var(--mono);
+    font-size: clamp(30px, 4.4vw, 68px);
+    margin-top: 0.3em;
+  }
+  .bigeq .cond { background: var(--mark); padding: 0 0.12em; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
+  .frac > span:first-child { border-bottom: 3px solid var(--fg); padding: 0 0.2em 0.08em; }
+  .frac > span:last-child { padding-top: 0.08em; }
+  .refs { font-family: var(--mono); font-size: 0.7em; color: var(--muted); margin-top: 1.2em; line-height: 1.5; }
+  .legend { display: inline-flex; align-items: center; gap: 0.35em; margin-right: 1.1em; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+  @media (max-width: 820px) {
+    .grid2, .cols3, .demo { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .step:nth-child(2) { border-right: 0; }
+    .step:nth-child(-n+2) { border-bottom: 1.5px solid var(--line); }
+    .foot { position: static; margin-top: 1.5em; }
+    table.map td:last-child { white-space: normal; }
+  }
+  @media print {
+    html { scroll-snap-type: none; }
+    .slide { min-height: auto; height: 100vh; page-break-after: always; border: 0; }
+    button { box-shadow: none; }
+  }
+  /* --- organizacja --- */
+  a { color: inherit; text-decoration-thickness: 1.5px; text-underline-offset: 0.15em; }
+  .qrcard { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.2em; align-items: start; }
+  .qr { width: clamp(120px, 13vw, 190px); background: #fff; padding: 10px; border: 1.5px solid var(--line); }
+  .qr svg { display: block; width: 100%; height: auto; }
+  .url { font-family: var(--mono); font-size: 0.82em; overflow-wrap: anywhere; margin: 0.3em 0 0.8em; }
+  table.keys { border-collapse: collapse; width: 100%; }
+  table.keys td { padding: 0.45em 0.6em 0.45em 0; border-top: 1px solid var(--faint); vertical-align: middle; }
+  table.keys td.k { font-family: var(--mono); font-size: 1.15em; font-weight: 500; }
+  table.keys td.k span { background: var(--mark); padding: 0.05em 0.3em; }
+  .two { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(16px, 3vw, 48px); align-items: start; margin-top: 0.4em; }
+  blockquote.syl {
+    margin: 0; padding: 0.9em 1.1em; background: var(--card);
+    border-left: 4px solid var(--fg); font-size: 0.92em; line-height: 1.5;
+  }
+  blockquote.syl p { margin: 0 0 0.6em; }
+  blockquote.syl p:last-child { margin: 0; }
+  blockquote.syl .src { font-family: var(--mono); font-size: 0.78em; color: var(--muted); }
+  .wbar { display: flex; height: 64px; border: 1.5px solid var(--line); margin: 0.4em 0 0.5em; font-family: var(--mono); }
+  .wbar div { display: flex; align-items: center; padding: 0 0.7em; font-size: 0.9em; }
+  .wbar .ex { flex: 75; background: var(--fg); color: #fff; }
+  .wbar .cw { flex: 25; background: #fff; border-left: 2px solid #fff; }
+  .card.hl { background: var(--mark); }
+  .route { font-family: var(--mono); font-size: 0.9em; margin: 0.6em 0 0.3em; }
+  .route span { border: 1.5px solid var(--line); padding: 0.15em 0.5em; background: #fff; display: inline-block; margin: 0.15em 0; }
+  .card ul { font-size: 1.1em; margin-top: 0.5em; }
+  .calc .ctrl label b { min-width: 3.5em; text-align: right; }
+  .score { font-size: clamp(48px, 6vw, 92px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .score small { font-size: 0.4em; font-weight: 500; letter-spacing: 0; }
+  .tl { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 6px; margin-top: 0.6em; }
+  .tl .cell, .tl .kspan { grid-row: 1; border: 1.5px solid var(--line); background: #fff; height: 96px; padding: 6px 0 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .tl .wspan { grid-row: 1; z-index: 1; border: 1.5px solid var(--line); background: #fff; height: 96px; padding: 6px 0 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .tl .cell.org { background: var(--card); }
+  .tl .kspan { z-index: 1; background: var(--mark); box-shadow: 4px 4px 0 var(--line); justify-content: center; gap: 4px; padding: 0; }
+  .tl .n { font-family: var(--mono); font-size: 0.78em; color: var(--muted); }
+  .ev { font-family: var(--mono); font-weight: 500; font-size: 0.95em; padding: 0.1em 0.5em; border-radius: 99px; color: #fff; display: inline-block; }
+  .ev.w { background: var(--purple); }
+  .ev.k { background: var(--fg); }
+  .evt { font-family: var(--mono); font-size: 0.72em; }
+  .tl .ph { grid-row: 2; font-family: var(--mono); font-size: 0.74em; border-top: 3px solid var(--fg); padding-top: 0.3em; }
+  .tl .ph.st { border-top-color: var(--green); }
+  .wlist { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 2vw, 28px); margin-top: 1.4em; }
+  .wlist h3 { margin: 0.5em 0 0.2em; }
+  .wlist p { margin: 0 0 0.3em; font-size: 0.95em; }
+  @media (max-width: 820px) { .wlist { grid-template-columns: 1fr 1fr; } .tl .n { font-size: 0.6em; } .ev { font-size: 0.7em; padding: 0.1em 0.3em; } }
+</style>
+</head>
+<body>
+
+<!-- ============ 1 · TYTUŁ ============ -->
+<section class="slide" id="s1">
+  <p class="kicker">RPiS 2026/2027 · zajęcia 01</p>
+  <h1>Organizacja <mark>kursu</mark></h1>
+
+  <div class="cols3">
+    <div class="card">
+      <span class="tag">01</span>
+      <h3>Materiały</h3>
+      <p>Skrypt do wykładu, kurs na UPeL-u i nowy kanał na YouTube</p>
+    </div>
+    <div class="card">
+      <span class="tag red">02</span>
+      <h3>Cel: egzamin</h3>
+      <p>Po co są ćwiczenia i jak dostać się na zerówkę</p>
+    </div>
+    <div class="card">
+      <span class="tag green">03</span>
+      <h3>Ocena z ćwiczeń</h3>
+      <p>2 kolokwia, 4 wejściówki, plusy i kalendarz</p>
+    </div>
+  </div>
+
+  <div class="foot"><span>W. Achtelik · AGH Kraków</span><span>1 / 8</span></div>
+</section>
+
+<!-- ============ 2 · MATERIAŁY ============ -->
+<section class="slide" id="s2">
+  <p class="kicker">01 · materiały</p>
+  <h2>Zeskanuj <mark>oba kody</mark></h2>
+
+  <div class="grid2">
+    <div class="card qrcard">
+      <div class="qr"><svg role="img" aria-label="Kod QR" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33"><path stroke="#111" d="M0 0.5h7m1 0h2m1 0h2m3 0h1m2 0h1m1 0h3m2 0h7m-33 1h1m5 0h1m1 0h3m2 0h3m1 0h1m1 0h1m1 0h3m2 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h3m1 0h2m4 0h2m3 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m3 0h2m1 0h3m4 0h1m3 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m2 0h3m1 0h1m1 0h1m1 0h1m2 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m3 0h1m2 0h1m1 0h3m1 0h3m1 0h2m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h3m4 0h1m1 0h1m2 0h3m-22 1h2m1 0h1m1 0h2m1 0h1m1 0h2m3 0h2m1 0h3m2 0h1m1 0h1m1 0h5m-33 1h1m2 0h1m1 0h1m3 0h2m3 0h3m4 0h1m3 0h3m4 0h1m-33 1h3m3 0h2m1 0h2m2 0h2m1 0h2m3 0h2m3 0h2m2 0h3m-33 1h2m1 0h1m4 0h3m2 0h2m1 0h1m2 0h6m3 0h1m2 0h2m-33 1h2m2 0h3m1 0h2m3 0h1m1 0h1m4 0h2m4 0h1m2 0h1m1 0h1m-32 1h2m10 0h1m1 0h1m1 0h1m4 0h1m2 0h3m2 0h1m2 0h1m-31 1h3m1 0h2m1 0h1m1 0h3m3 0h1m2 0h2m3 0h1m1 0h1m1 0h1m1 0h2m-32 1h2m1 0h1m2 0h1m2 0h2m1 0h11m2 0h3m2 0h1m-32 1h2m1 0h1m1 0h2m2 0h4m1 0h1m2 0h2m2 0h1m1 0h4m-27 1h1m2 0h1m3 0h5m1 0h4m3 0h1m3 0h4m4 0h1m-33 1h3m3 0h4m1 0h2m1 0h1m2 0h1m2 0h3m2 0h1m4 0h3m-33 1h1m3 0h2m1 0h1m2 0h1m1 0h1m2 0h10m1 0h3m3 0h1m-32 1h1m1 0h1m1 0h2m2 0h5m3 0h1m3 0h1m1 0h4m2 0h1m1 0h1m-31 1h1m1 0h1m5 0h6m2 0h2m1 0h1m1 0h1m1 0h1m1 0h1m3 0h3m-33 1h1m5 0h4m1 0h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h1m3 0h5m-32 1h1m2 0h2m2 0h1m3 0h1m1 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m2 0h1m2 0h1m-32 1h1m2 0h1m2 0h2m2 0h1m2 0h3m1 0h2m1 0h3m1 0h5m2 0h1m-24 1h5m1 0h1m1 0h3m1 0h2m1 0h2m3 0h2m1 0h2m-33 1h7m1 0h1m1 0h1m2 0h1m3 0h2m2 0h4m1 0h1m1 0h1m1 0h1m1 0h1m-33 1h1m5 0h1m5 0h1m1 0h1m1 0h1m1 0h4m2 0h1m3 0h1m2 0h1m-32 1h1m1 0h3m1 0h1m1 0h3m4 0h1m1 0h1m3 0h1m2 0h6m1 0h1m-32 1h1m1 0h3m1 0h1m2 0h2m1 0h1m1 0h1m1 0h1m3 0h1m1 0h1m1 0h1m3 0h1m1 0h3m-33 1h1m1 0h3m1 0h1m1 0h1m2 0h5m1 0h1m3 0h1m1 0h1m4 0h2m2 0h1m-33 1h1m5 0h1m1 0h3m1 0h1m3 0h4m1 0h1m2 0h2m2 0h1m2 0h1m-32 1h7m2 0h1m2 0h3m1 0h2m1 0h3m1 0h2m3 0h1m2 0h2"/></svg></div>
+      <div>
+        <span class="tag">wykład</span>
+        <h3>Skrypt do wykładu</h3>
+        <p class="url"><a href="https://home.agh.edu.pl/~smolka/rpis-skrypt/">home.agh.edu.pl/<wbr>~smolka/<wbr>rpis-skrypt/</a></p>
+        <p style="font-size:1em">Cała teoria, z której korzystamy na ćwiczeniach.</p>
+      </div>
+    </div>
+    <div class="card qrcard">
+      <div class="qr"><svg role="img" aria-label="Kod QR" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33"><path stroke="#111" d="M0 0.5h7m1 0h3m1 0h1m3 0h1m2 0h3m1 0h1m2 0h7m-33 1h1m5 0h1m1 0h2m2 0h1m1 0h1m1 0h2m2 0h2m1 0h1m2 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m4 0h6m1 0h1m1 0h1m1 0h3m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m5 0h1m2 0h2m3 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h2m5 0h3m3 0h1m3 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m2 0h1m2 0h5m5 0h1m1 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h1m1 0h2m3 0h3m1 0h1m2 0h2m-24 1h1m1 0h2m1 0h3m3 0h1m3 0h1m1 0h2m2 0h1m4 0h1m2 0h1m1 0h2m-33 1h2m1 0h1m1 0h1m2 0h1m2 0h3m2 0h4m3 0h2m1 0h2m1 0h2m1 0h1m-33 1h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h2m1 0h1m4 0h1m4 0h1m2 0h4m1 0h2m-30 1h2m3 0h5m2 0h3m1 0h2m1 0h1m1 0h2m1 0h1m1 0h1m-25 1h2m2 0h4m1 0h3m3 0h1m2 0h1m4 0h2m2 0h1m-33 1h1m3 0h1m2 0h1m1 0h2m3 0h1m5 0h1m1 0h1m2 0h1m1 0h1m3 0h1m-31 1h1m2 0h1m1 0h2m3 0h2m5 0h4m2 0h1m1 0h1m1 0h2m-30 1h2m2 0h1m3 0h3m2 0h1m1 0h1m2 0h1m2 0h2m2 0h6m-31 1h1m5 0h4m1 0h4m1 0h1m4 0h2m2 0h2m1 0h1m1 0h1m-29 1h2m1 0h1m2 0h1m1 0h2m2 0h2m4 0h1m1 0h3m1 0h1m1 0h2m1 0h2m-33 1h1m5 0h1m1 0h1m1 0h4m1 0h2m1 0h1m6 0h4m1 0h2m-31 1h2m5 0h2m1 0h2m1 0h1m1 0h3m4 0h3m2 0h1m-27 1h1m2 0h2m1 0h1m2 0h2m3 0h1m2 0h1m1 0h2m1 0h1m4 0h2m-31 1h6m2 0h4m2 0h4m2 0h1m1 0h3m1 0h1m2 0h2m1 0h1m-31 1h1m1 0h1m1 0h4m1 0h1m2 0h2m2 0h3m2 0h1m1 0h2m3 0h3m-32 1h3m1 0h1m2 0h1m2 0h1m2 0h2m2 0h1m1 0h1m1 0h1m1 0h1m3 0h1m2 0h1m-32 1h1m1 0h2m2 0h1m2 0h1m1 0h1m1 0h1m2 0h2m1 0h1m4 0h5m-21 1h4m3 0h2m2 0h1m3 0h2m3 0h2m1 0h1m-32 1h7m1 0h1m1 0h3m1 0h1m2 0h4m2 0h2m1 0h1m1 0h1m-29 1h1m5 0h1m1 0h4m1 0h2m1 0h3m1 0h2m1 0h2m3 0h5m-33 1h1m1 0h3m1 0h1m4 0h2m1 0h5m1 0h1m2 0h6m1 0h2m-32 1h1m1 0h3m1 0h1m1 0h1m7 0h1m2 0h1m1 0h2m4 0h1m1 0h2m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h3m1 0h2m1 0h4m3 0h1m1 0h4m-28 1h1m5 0h1m5 0h2m3 0h2m1 0h1m2 0h2m2 0h2m3 0h1m-33 1h7m1 0h2m2 0h1m1 0h1m1 0h4m1 0h1m1 0h1m4 0h3"/></svg></div>
+      <div>
+        <span class="tag green">UPeL</span>
+        <h3>RPiS 2026/2027</h3>
+        <p class="url"><a href="https://upel.agh.edu.pl/course/view.php?id=12824">upel.agh.edu.pl/<wbr>course/<wbr>view.php?id=12824</a></p>
+        <table class="keys">
+          <tr><td>gr. 4 · 8:00–9:30</td><td class="k"><span>podany na zajęciach</span></td></tr>
+          <tr><td>gr. 5 · 9:45–11:15</td><td class="k"><span>podany na zajęciach</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <p class="aside">Na UPeL-u będą zadania, wyniki kolokwiów i wejściówek oraz wszystkie ogłoszenia. Zapisz się do <b>swojej</b> grupy.</p>
+
+  <div class="foot"><span>Klucz zapisu wpisujesz przy pierwszym wejściu do kursu</span><span>2 / 8</span></div>
+</section>
+
+<!-- ============ 2b · KANAŁ YOUTUBE ============ -->
+<section class="slide" id="s2b">
+  <p class="kicker">01 · nowość w tym semestrze</p>
+  <h2>Kanał <mark>3Prompty1Film</mark></h2>
+
+  <div class="two" style="grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr)">
+    <div class="card qrcard">
+      <div class="qr"><svg role="img" aria-label="Kod QR" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29"><path stroke="#111" d="M0 0.5h7m1 0h3m1 0h1m1 0h5m3 0h7m-29 1h1m5 0h1m2 0h1m2 0h2m2 0h1m2 0h1m2 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m2 0h3m3 0h6m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m3 0h3m1 0h1m2 0h1m2 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m1 0h4m2 0h5m3 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m1 0h1m1 0h2m1 0h1m3 0h1m1 0h1m2 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-21 1h5m1 0h1m2 0h3m-20 1h1m3 0h1m1 0h6m1 0h2m4 0h7m2 0h1m-29 1h1m1 0h2m3 0h2m1 0h1m1 0h5m1 0h1m2 0h8m-26 1h2m1 0h1m1 0h2m2 0h1m2 0h1m1 0h1m3 0h1m1 0h2m3 0h1m-28 1h2m1 0h2m1 0h2m1 0h3m2 0h3m1 0h2m1 0h1m1 0h2m1 0h2m-27 1h2m1 0h2m1 0h1m1 0h2m1 0h2m1 0h3m1 0h2m5 0h1m-28 1h1m1 0h2m5 0h3m2 0h2m4 0h1m1 0h1m1 0h5m-29 1h1m2 0h1m1 0h11m4 0h1m3 0h3m1 0h1m-28 1h1m1 0h1m4 0h2m3 0h1m1 0h4m1 0h1m6 0h2m-28 1h1m1 0h2m1 0h2m2 0h4m1 0h3m1 0h3m1 0h1m3 0h1m-28 1h2m1 0h2m4 0h1m1 0h1m1 0h4m4 0h5m1 0h2m-27 1h2m1 0h2m8 0h3m4 0h1m1 0h1m1 0h1m1 0h1m-26 1h1m4 0h3m3 0h2m1 0h1m1 0h1m2 0h1m4 0h2m-29 1h2m1 0h4m1 0h1m4 0h2m1 0h2m1 0h7m2 0h1m-21 1h2m1 0h2m2 0h2m2 0h2m3 0h1m3 0h1m-29 1h7m1 0h3m2 0h4m2 0h2m1 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m3 0h4m1 0h3m1 0h2m3 0h1m2 0h1m-28 1h1m1 0h3m1 0h1m1 0h2m2 0h2m2 0h2m1 0h7m1 0h1m-28 1h1m1 0h3m1 0h1m4 0h8m1 0h2m1 0h1m4 0h1m-29 1h1m1 0h3m1 0h1m2 0h2m1 0h2m1 0h1m2 0h2m5 0h4m-29 1h1m5 0h1m7 0h2m1 0h4m1 0h1m1 0h2m1 0h2m-29 1h7m1 0h1m2 0h2m2 0h1m1 0h1m2 0h1m2 0h2m2 0h1"/></svg></div>
+      <div>
+        <span class="tag red">YouTube</span>
+        <h3>3Prompty1Film</h3>
+        <p class="url"><a href="https://www.youtube.com/@3prompty1film">youtube.com/<wbr>@3prompty1film</a></p>
+      </div>
+    </div>
+
+    <div class="cols3" style="grid-template-columns: 1fr; gap: 1.1em; margin-top: 0">
+      <div>
+        <h3>Co tam będzie</h3>
+        <p>Filmy z rozwiązaniami zadań z zajęć i omówieniem zagadnień teoretycznych. Tworzę je z pomocą Opusa 5.5, żeby łatwiej było Wam się uczyć.</p>
+      </div>
+      <div>
+        <h3>Drugi kanał kontaktu</h3>
+        <p>Znalazłeś(-aś) błąd? Chcesz film o konkretnym zagadnieniu? Napisz <b>komentarz pod filmem</b> albo wyślij mi maila.</p>
+      </div>
+      <div>
+        <h3>Eksperyment</h3>
+        <p>Sam lubię takie filmy. Jestem ciekawy, co myślicie o takiej formie.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Cel jest jeden: pomóc Wam w nauce</span><span>3 / 8</span></div>
+</section>
+
+<!-- ============ 3 · CEL: EGZAMIN ============ -->
+<section class="slide" id="s3">
+  <p class="kicker">02 · po co są ćwiczenia</p>
+  <h2>Cel: <mark>egzamin</mark></h2>
+
+  <div class="two">
+    <blockquote class="syl">
+      <p>Egzamin ma formę pisemną i obejmuje całość zagadnień prezentowanych w czasie zajęć. <mark>Warunkiem dopuszczenia do egzaminu jest uprzednie uzyskanie pozytywnej oceny z ćwiczeń.</mark> W szczególności brak zaliczenia w normalnym trybie skutkuje utratą możliwości zdawania egzaminu w I terminie.</p>
+      <p>[…] Dopuszczalne są <mark>2 nieobecności nieusprawiedliwione</mark> na ćwiczeniach. Większa liczba nieobecności nieusprawiedliwionych skutkuje brakiem zaliczenia bez możliwości poprawy.</p>
+      <p>Ocena końcowa jest średnią ważoną oceny z egzaminu (<mark>waga 75%</mark>) i oceny z ćwiczeń (<mark>waga 25%</mark>), w razie potrzeby zaokrągloną w górę, przy czym jeśli którakolwiek składowa jest niedostateczna, to ocena końcowa jest niedostateczna.</p>
+      <p class="src">— sylabus przedmiotu</p>
+    </blockquote>
+
+    <div>
+      <h3>Ocena końcowa</h3>
+      <div class="wbar" role="img" aria-label="Egzamin 75 procent, ćwiczenia 25 procent">
+        <div class="ex">egzamin · 75%</div>
+        <div class="cw">ćw. 25%</div>
+      </div>
+      <p>Ćwiczenia ważą niewiele. Są po to, żebyś <b>przygotował(a) się do egzaminu</b>: przerobił(a) zadania, zanim zobaczysz je w sesji.</p>
+      <p class="muted">Bez zaliczonych ćwiczeń nie ma I terminu egzaminu.</p>
+    </div>
+  </div>
+
+  <div class="foot"><span>Sylabus RPiS · AGH</span><span>4 / 8</span></div>
+</section>
+
+<!-- ============ 4 · ZERÓWKA ============ -->
+<section class="slide" id="s4">
+  <p class="kicker">02 · najprostsza droga</p>
+  <h2>Zdaj na <mark>zerówce</mark></h2>
+
+  <div class="grid2">
+    <div class="card">
+      <span class="tag">zwykła ścieżka</span>
+      <div class="route"><span>ćwiczenia ≥ 3,0</span> → <span>egzamin pisemny w sesji</span></div>
+      <ul>
+        <li>cały materiał, pisemnie</li>
+        <li>obowiązuje wszystkich, którzy zaliczą ćwiczenia</li>
+      </ul>
+    </div>
+    <div class="card hl">
+      <span class="tag red">zerówka</span>
+      <div class="route"><span>ćwiczenia ≥ 4,5</span> → <span>egzamin ustny</span></div>
+      <ul>
+        <li><b>dużo prostszy</b> niż egzamin pisemny</li>
+        <li>znacznie <b>większe szanse</b> na dobrą ocenę</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="gap">Co roku na zerówkę może pójść ok. <mark>20–30% grupy</mark>.</p>
+  <p class="aside">Zasady na ten rok jeszcze potwierdzam. Pod nie ustawię poziom trudności zajęć i kolokwiów, żeby próg 4,5 był osiągalny dla mniej więcej takiej części grupy.</p>
+
+  <div class="foot"><span>W. Achtelik · AGH Kraków</span><span>5 / 8</span></div>
+</section>
+
+<!-- ============ 5 · OCENA Z ĆWICZEŃ ============ -->
+<section class="slide" id="s5">
+  <p class="kicker">03 · ocena z ćwiczeń</p>
+  <h2>Liczy się <mark>suma punktów</mark></h2>
+
+  <div class="bigeq" style="font-size:clamp(20px,2.6vw,40px)">
+    <span>wynik =</span>
+    <span class="frac"><span>K<sub>1</sub> + K<sub>2</sub> + W<sub>1</sub> + W<sub>2</sub> + W<sub>3</sub> + W<sub>4</sub></span><span>240</span></span>
+    <span>+ <span class="cond">plusy</span></span>
+  </div>
+
+  <figure style="margin:1em 0 0">
+    <svg class="chart" id="ptsChart" viewBox="0 0 900 92" role="img" aria-label="Pula punktów: dwa kolokwia po 100 punktów i cztery wejściówki po 10 punktów"></svg>
+    <figcaption>
+      <span class="legend"><span class="dot" style="background:var(--green)"></span>kolokwium · 100 pkt</span>
+      <span class="legend"><span class="dot" style="background:var(--purple)"></span>wejściówka · 10 pkt</span>
+    </figcaption>
+  </figure>
+
+  <div class="cols3" style="margin-top:1em">
+    <div>
+      <h3>2 kolokwia</h3>
+      <p>Po 100 pkt. 200 z 240 punktów, czyli prawie cała pula.</p>
+    </div>
+    <div>
+      <h3>4 wejściówki</h3>
+      <p>Jedno krótkie zadanie, 10 pkt. Terminy na następnym slajdzie.</p>
+    </div>
+    <div>
+      <h3>Plusy za aktywność</h3>
+      <p>Bonus <b>ponad</b> pulę. Jeden plus to zwykle 0,5–1 pp. Najaktywniejsi mają tak +10–15 pp, czyli <b>pół oceny wyżej</b>.</p>
+    </div>
+  </div>
+
+  <div class="foot"><span>Wszystkie punkty ważą tyle samo: to zwykła średnia z punktów</span><span>6 / 8</span></div>
+</section>
+
+<!-- ============ 6 · KALENDARZ ============ -->
+<section class="slide" id="s6">
+  <p class="kicker">03 · kiedy</p>
+  <h2>Semestr w <mark>14 zajęciach</mark></h2>
+
+  <div class="tl" role="img" aria-label="Oś 14 zajęć: wejściówki około zajęć 3, 5, 9–10 i 12, kolokwium 1 na zajęciach 7 lub 8, kolokwium 2 na zajęciach 14">
+    <div class="cell org" style="grid-column:1"><span class="n">01</span><span class="evt">org.</span></div>
+    <div class="cell" style="grid-column:2"><span class="n">02</span></div>
+    <div class="cell" style="grid-column:3"><span class="n">03</span><span class="ev w">W1</span></div>
+    <div class="cell" style="grid-column:4"><span class="n">04</span></div>
+    <div class="cell" style="grid-column:5"><span class="n">05</span><span class="ev w">W2</span></div>
+    <div class="cell" style="grid-column:6"><span class="n">06</span></div>
+    <div class="cell" style="grid-column:7"><span class="n">07</span></div>
+    <div class="cell" style="grid-column:8"><span class="n">08</span></div>
+    <div class="cell" style="grid-column:9"><span class="n">09</span></div>
+    <div class="cell" style="grid-column:10"><span class="n">10</span></div>
+    <div class="cell" style="grid-column:11"><span class="n">11</span></div>
+    <div class="cell" style="grid-column:12"><span class="n">12</span><span class="ev w">W4</span></div>
+    <div class="cell" style="grid-column:13"><span class="n">13</span></div>
+    <div class="cell" style="grid-column:14"><span class="n">14</span><span class="ev k">K2</span></div>
+    <div class="wspan" style="grid-column:9 / 11"><span class="n">09–10</span><span class="ev w">W3</span><span class="evt">9 lub 10</span></div>
+    <div class="kspan" style="grid-column:7 / 9"><span class="ev k">K1</span><span class="evt">7 lub 8</span></div>
+    <div class="ph" style="grid-column:1 / 9">część I · rachunek prawdopodobieństwa</div>
+    <div class="ph st" style="grid-column:9 / 15">część II · statystyka</div>
+  </div>
+
+  <div class="wlist">
+    <div><span class="ev w">W1</span><h3>Podstawy teorii</h3><p>zdarzenia, prawdopodobieństwo warunkowe, Bayes</p><p class="mono muted">≈ zajęcia 3</p></div>
+    <div><span class="ev w">W2</span><h3>Zmienne losowe</h3><p>rozkład zmiennej, wartość oczekiwana, wariancja</p><p class="mono muted">≈ zajęcia 5</p></div>
+    <div><span class="ev w">W3</span><h3>Rozkłady</h3><p>rodziny rozkładów prawdopodobieństwa</p><p class="mono muted">≈ zajęcia 9–10</p></div>
+    <div><span class="ev w">W4</span><h3>Przedziały lub testy</h3><p>przedziały ufności albo testowanie hipotez</p><p class="mono muted">≈ zajęcia 12</p></div>
+  </div>
+
+  <div class="foot"><span>Terminy orientacyjne: dokładne daty zawsze na UPeL-u z wyprzedzeniem</span><span>7 / 8</span></div>
+</section>
+
+<!-- ============ 7 · KALKULATOR ============ -->
+<section class="slide" id="s7">
+  <p class="kicker">03 · policz sam</p>
+  <h2>Ile potrzebujesz na <mark>4,5</mark>?</h2>
+
+  <div class="demo calc">
+    <div>
+      <div class="ctrl"><label for="k1">kolokwium 1 <b id="k1v"></b></label><input type="range" id="k1" min="0" max="100" step="1" value="70"></div>
+      <div class="ctrl"><label for="k2">kolokwium 2 <b id="k2v"></b></label><input type="range" id="k2" min="0" max="100" step="1" value="75"></div>
+      <div class="ctrl"><label for="ws">4 wejściówki razem <b id="wsv"></b></label><input type="range" id="ws" min="0" max="40" step="1" value="28"></div>
+      <div class="ctrl"><label for="pl">plusy <b id="plv"></b></label><input type="range" id="pl" min="0" max="20" step="1" value="4"></div>
+    </div>
+    <div>
+      <div class="score" id="score"></div>
+      <p class="sentence" id="verdict"></p>
+      <svg class="chart" id="scaleChart" viewBox="0 0 600 96" role="img" aria-label="Skala ocen z zaznaczonym wynikiem"></svg>
+      <figcaption>Progi: 50 / 60 / 70 / 80 / 90% · 1 plus liczony orientacyjnie jako 0,75 pp</figcaption>
+    </div>
+  </div>
+
+  <div class="foot"><span>W. Achtelik · AGH Kraków</span><span>8 / 8</span></div>
+</section>
+
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text !== undefined) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function fmt(x, d) { return x.toFixed(d).replace('.', ','); }
+
+  /* ---------- pula punktów ---------- */
+  (function () {
+    var svg = document.getElementById('ptsChart');
+    var parts = [['kolokwium 1', 100, css('--green')], ['kolokwium 2', 100, css('--green')]];
+    for (var i = 1; i <= 4; i++) parts.push(['wejściówka ' + i, 10, css('--purple')]);
+    var total = 240, x = 0, w = 900, gap = 2;
+    parts.forEach(function (p) {
+      var pw = w * p[1] / total;
+      var g = el('g', { class: 'row' }, svg);
+      el('title', {}, g, p[0] + ': ' + p[1] + ' pkt (' + fmt(100 * p[1] / total, 1) + '% puli)');
+      el('rect', { class: 'bar', x: x, y: 28, width: Math.max(1, pw - gap), height: 40, rx: 4, fill: p[2] }, g);
+      if (p[1] === 100) el('text', { x: x + pw / 2, y: 53, 'text-anchor': 'middle', fill: '#fff', style: 'fill:#fff;font-size:14px' }, g, p[0] + ' · 100');
+      x += pw;
+    });
+    el('text', { x: 900, y: 18, 'text-anchor': 'end', class: 'mutedt' }, svg, 'wejściówki · 40 pkt (17%)');
+    el('text', { x: 0, y: 18, class: 'mutedt' }, svg, 'kolokwia · 200 pkt (83%)');
+    el('text', { x: 900, y: 88, 'text-anchor': 'end', class: 'mutedt' }, svg, 'pula = 240 pkt');
+  })();
+
+  /* ---------- kalkulator ---------- */
+  var ids = ['k1', 'k2', 'ws', 'pl'];
+  var PLUS = 0.75;
+  var grades = [[90, '5,0'], [80, '4,5'], [70, '4,0'], [60, '3,5'], [50, '3,0']];
+  function grade(p) {
+    for (var i = 0; i < grades.length; i++) if (p > grades[i][0] || (grades[i][0] === 50 && p >= 50)) return grades[i][1];
+    return '2,0';
+  }
+  function calc() {
+    var v = {};
+    ids.forEach(function (id) { v[id] = parseFloat(document.getElementById(id).value); });
+    document.getElementById('k1v').textContent = v.k1 + ' / 100';
+    document.getElementById('k2v').textContent = v.k2 + ' / 100';
+    document.getElementById('wsv').textContent = v.ws + ' / 40';
+    document.getElementById('plv').textContent = v.pl;
+    var base = 100 * (v.k1 + v.k2 + v.ws) / 240;
+    var bonus = v.pl * PLUS;
+    var tot = Math.min(100, base + bonus);
+    document.getElementById('score').innerHTML = fmt(tot, 1) + '% <small>→ ' + grade(tot) + '</small>';
+    var msg = 'bez plusów: ' + fmt(base, 1) + '% · plusy: +' + fmt(bonus, 1) + ' pp<br>';
+    msg += tot > 80 ? '<b>Zerówka w zasięgu.</b>'
+      : tot >= 50 ? 'Do 4,5 potrzeba ponad 80%: brakuje ' + fmt(Math.max(0, 80 - tot), 1) + ' pp.'
+      : 'Ćwiczenia niezaliczone: brak I terminu egzaminu.';
+    document.getElementById('verdict').innerHTML = msg;
+    drawScale(base, tot);
+  }
+  function drawScale(base, tot) {
+    var svg = document.getElementById('scaleChart');
+    svg.innerHTML = '';
+    var x0 = 10, x1 = 590, lo = 30, hi = 100;
+    function X(p) { return x0 + (x1 - x0) * (Math.max(lo, p) - lo) / (hi - lo); }
+    var bands = [[lo, 50, '2,0'], [50, 60, '3,0'], [60, 70, '3,5'], [70, 80, '4,0'], [80, 90, '4,5'], [90, 100, '5,0']];
+    bands.forEach(function (b) {
+      var g = el('g', {}, svg);
+      el('title', {}, g, 'ocena ' + b[2] + ': ' + b[0] + '–' + b[1] + '%');
+      el('rect', { x: X(b[0]) + 1, y: 34, width: X(b[1]) - X(b[0]) - 2, height: 28, rx: 3,
+        fill: b[0] >= 80 ? css('--mark') : (b[0] < 50 ? '#efefef' : css('--card')),
+        stroke: b[0] < 50 ? 'none' : css('--fg'), 'stroke-width': b[0] < 50 ? 0 : 1 }, g);
+      el('text', { x: (X(b[0]) + X(b[1])) / 2, y: 53, 'text-anchor': 'middle', class: b[0] < 50 ? 'mutedt' : '' }, g, b[2]);
+      el('text', { x: X(b[1]), y: 80, 'text-anchor': 'middle', class: 'mutedt' }, svg, b[1] + '%');
+    });
+    el('text', { x: (X(80) + X(100)) / 2, y: 94, 'text-anchor': 'middle', 'font-weight': 500 }, svg, 'zerówka');
+    if (tot - base > 0.05) {
+      var gb = el('g', {}, svg);
+      el('title', {}, gb, 'bez plusów: ' + fmt(base, 1) + '%');
+      el('line', { x1: X(base), y1: 22, x2: X(base), y2: 32, stroke: css('--muted'), 'stroke-width': 3 }, gb);
+      el('line', { x1: X(base), y1: 27, x2: X(tot), y2: 27, stroke: css('--purple'), 'stroke-width': 2, 'stroke-dasharray': '4 3' }, svg);
+    }
+    var gt = el('g', {}, svg);
+    el('title', {}, gt, 'Twój wynik: ' + fmt(tot, 1) + '%');
+    el('path', { d: 'M' + (X(tot) - 7) + ' 20 L' + (X(tot) + 7) + ' 20 L' + X(tot) + ' 32 Z', fill: css('--purple') }, gt);
+    el('text', { x: X(tot), y: 13, 'text-anchor': 'middle', 'font-weight': 500 }, gt, 'Ty');
+  }
+  ids.forEach(function (id) { document.getElementById(id).addEventListener('input', calc); });
+  calc();
+
+  /* ---------- nawigacja klawiaturą ---------- */
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  function current() {
+    var y = window.scrollY + window.innerHeight / 3, idx = 0;
+    slides.forEach(function (s, i) { if (s.offsetTop <= y) idx = i; });
+    return idx;
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.target && e.target.tagName === 'INPUT') return;
+    var next = { ArrowDown: 1, ArrowRight: 1, PageDown: 1, ' ': 1, ArrowUp: -1, ArrowLeft: -1, PageUp: -1 }[e.key];
+    if (!next) return;
+    e.preventDefault();
+    var i = Math.max(0, Math.min(slides.length - 1, current() + next));
+    slides[i].scrollIntoView({ behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>
