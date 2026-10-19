@@ -1,0 +1,39 @@
+\documentclass[polish,10pt]{extarticle}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2.5cm,right=2.5cm]{geometry}
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titling}
+
+\hypersetup{colorlinks=true, linkcolor=black, urlcolor=blue!60!black}
+\setlength{\droptitle}{-2cm}
+\setcounter{secnumdepth}{-\maxdimen}
+\floatplacement{figure}{H}
+\graphicspath{<<GRAPHICSPATH>>}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 2pt}
+
+% Makra, których używa wyjście pandoca
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\pandocbounded}[1]{\adjustbox{max width=0.7\linewidth}{#1}}
+\makeatletter
+\def\fps@figure{H}
+\makeatother
+
+\title{<<TITLE>>}
+\author{Rachunek Prawdopodobieństwa i Statystyka}
+\date{<<DATE>>}
+
+\begin{document}
+\maketitle
+\vspace{-1.2cm}
+
+<<BODY>>
+
+\end{document}

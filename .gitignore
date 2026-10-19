@@ -8,3 +8,4 @@ _site/
 *.synctex.gz
 .DS_Store
 .gstack/
+__pycache__/

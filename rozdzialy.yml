@@ -1,0 +1,42 @@
+# Rozdziały skryptu do wykładu, do których przypisujemy zadania.
+#
+# `id` to ścieżka strony rozdziału w skrypcie (bez .html). W pliku zadania
+# podajemy je w polu `rozdzialy`, np. `rozdzialy: [calculus/bayes]`.
+# Pierwszy rozdział na liście jest rozdziałem głównym zadania.
+
+skrypt: https://home.agh.edu.pl/~smolka/rpis-skrypt/
+
+czesci:
+  - tytul: Podstawy rachunku prawdopodobieństwa
+    rozdzialy:
+      - { id: descriptive, nr: 1, tytul: Elementy statystyki opisowej }
+      - { id: calculus/probability, nr: 2, tytul: Przestrzeń probabilistyczna i prawdopodobieństwo }
+      - { id: calculus/conditional-independence, nr: 3, tytul: Prawdopodobieństwo warunkowe i niezależność zdarzeń }
+      - { id: calculus/bayes, nr: 4, tytul: Prawdopodobieństwo całkowite i twierdzenie Bayesa }
+
+  - tytul: Zmienne losowe
+    rozdzialy:
+      - { id: rv/general, nr: 5, tytul: Zmienne losowe o dowolnych wartościach }
+      - { id: rv/real/distributions, nr: 6, tytul: Rozkłady zmiennych losowych jednowymiarowych }
+      - { id: rv/real/moments, nr: 7, tytul: Wskaźniki liczbowe rozkładów jednowymiarowych }
+      - { id: rv/real/well-known, nr: 8, tytul: Często spotykane rozkłady jednowymiarowe }
+      - { id: rv/real/functions, nr: 9, tytul: Funkcje zmiennych losowych jednowymiarowych }
+      - { id: rv/vector/distributions, nr: 10, tytul: Rozkłady zmiennych losowych wielowymiarowych }
+      - { id: rv/vector/independence-cond, nr: 11, tytul: Niezależność zmiennych losowych i rozkłady warunkowe }
+      - { id: rv/vector/moments, nr: 12, tytul: Wartość oczekiwana i momenty zmiennej wielowymiarowej }
+      - { id: rv/vector/well-known, nr: 13, tytul: Często spotykane rozkłady wielowymiarowe }
+      - { id: rv/vector/functions, nr: 14, tytul: Funkcje zmiennych losowych wielowymiarowych }
+      - { id: rv/convergence, nr: 15, tytul: Zbieżność zmiennych losowych }
+
+  - tytul: Wnioskowanie statystyczne
+    rozdzialy:
+      - { id: inference/intro, nr: 16, tytul: Podstawy wnioskowania statystycznego }
+      - { id: inference/estimators, nr: 17, tytul: Estymatory }
+      - { id: inference/confint, nr: 18, tytul: Przedziały ufności }
+      - { id: inference/tests, nr: 19, tytul: Testowanie hipotez statystycznych }
+      - { id: inference/regression, nr: 20, tytul: Analiza zależności zmiennych losowych }
+
+  - tytul: Łańcuchy Markowa
+    rozdzialy:
+      - { id: mc/chains, nr: 21, tytul: Łańcuchy Markowa }
+      - { id: mc/states, nr: 22, tytul: Dynamika łańcuchów Markowa }
