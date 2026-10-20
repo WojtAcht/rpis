@@ -364,3 +364,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   .topbar, footer, .pager, .task-meta, .toolbar, .chapters, .actions { display: none !important; }
   .reveal-body { border-left: 0; }
 }
+
+.topics-list > ol > li { margin: 0 0 1.1em; padding-left: 0.2em; }
+.topics-list .refs { display: block; margin-top: 0.35em; font-size: 0.86em; line-height: 1.6; color: var(--muted); }
+.topics-list .refs a { font-family: var(--mono); font-weight: 500; white-space: nowrap; }

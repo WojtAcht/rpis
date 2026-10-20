@@ -3,7 +3,7 @@
 
 Konwencja katalogów:
     rozdzialy.yml                                  rozdziały skryptu
-    kolokwium-N/zagadnienia.tex
+    kolokwium-N/zagadnienia.md                     zagadnienia z odnośnikami do skryptu
     kolokwium-N/RRRR/<wariant>/zadanie-K.md        treść + rozwiązanie (Markdown)
     kolokwium-N/RRRR/<wariant>/*.png               obrazki używane w zadaniach
     prezentacje/NN-nazwa.html                      samodzielne slajdy
@@ -82,9 +82,12 @@ def main() -> int:
 
     tasks = all_tasks(exams)
     convert.convert_all(tasks)
+    for x in exams:
+        if x.topics:
+            x.topics_html = convert.to_html(x.topics, x.id)
 
-    # PDF-y: zagadnienia (LaTeX) i zestawy składane z plików zadań.
-    jobs = [(x.topics, f"pdf/{x.id}/zagadnienia.pdf") for x in exams if x.topics]
+    # PDF-y zestawów składane z plików zadań.
+    jobs = []
     for v in all_variants(exams):
         jobs += pdf.write_variant_sources(v, BUILD / "tex")
     failed = []
@@ -102,6 +105,8 @@ def main() -> int:
     write_page("", pages.index_page(exams, decks))
     write_page("zadania", pages.browse_page(exams, script_url, chapters))
     for x in exams:
+        if x.topics:
+            write_page(f"{x.id}/zagadnienia", pages.topics_page(x, script_url))
         for _, variants in x.years:
             for v in variants:
                 write_page(v.path, pages.variant_page(v, variants))
