@@ -31,6 +31,15 @@ jobs:
           sudo dpkg -i pandoc-3.2.1-1-amd64.deb
       - name: Build PDFs and site
         run: python3 scripts/build.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Regression tests
+        run: |
+          python3 -m unittest discover -s tests
+          npm ci
+          npm test
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

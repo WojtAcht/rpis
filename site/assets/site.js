@@ -124,6 +124,7 @@
         return s;
       });
       groupsBox.replaceChildren.apply(groupsBox, sections);
+      renderMath(groupsBox);
 
       // Liczniki rozdziałów przy bieżących pozostałych filtrach
       var counts = {};

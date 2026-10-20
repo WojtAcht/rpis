@@ -9,3 +9,4 @@ _site/
 .DS_Store
 .gstack/
 __pycache__/
+node_modules/

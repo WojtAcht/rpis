@@ -205,6 +205,8 @@ def parse_task(path: Path, chapters: dict[str, Chapter], root: Path) -> Task:
             if m.group(1) not in SECTIONS:
                 raise ContentError(f"{rel}: nieznana sekcja „## {m.group(1)}” (dozwolone: {', '.join(SECTIONS)})")
             current = SECTIONS[m.group(1)]
+            if current in sections:
+                raise ContentError(f"{rel}: powtórzona sekcja „## {m.group(1)}”")
             sections[current] = []
         else:
             sections[current].append(line)

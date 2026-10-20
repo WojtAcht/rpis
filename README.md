@@ -77,6 +77,20 @@ make serve    # to samo, plus podgląd na http://localhost:8000
 
 Po pushu na `main` GitHub Actions buduje i publikuje stronę na GitHub Pages.
 
+## Testy
+
+Testy filtrów korzystają z wygenerowanej strony i wymagają Node.js 24:
+
+```sh
+make
+python3 -m unittest discover -s tests
+npm ci
+npm test
+```
+
+CI uruchamia te testy przed publikacją. Parser odrzuca powtórzone sekcje
+`## Wskazówka` i `## Rozwiązanie`, aby nie nadpisywać ich treści.
+
 ## Błędy
 
 Jeśli znajdziesz błąd w zadaniu lub rozwiązaniu, zgłoś go w Issues (link jest na stronie każdego zadania)
