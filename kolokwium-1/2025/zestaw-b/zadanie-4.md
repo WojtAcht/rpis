@@ -36,7 +36,7 @@ Aby funkcja $f_\theta(x)$ była funkcją gęstości, musi spełniać dwa warunki
 **Warunek 2:** Obliczamy całkę:
 $$\int_{-\infty}^{\infty} f_\theta(x) \, dx = \int_0^\theta \frac{2x}{\theta^2} \, dx = \frac{2}{\theta^2} \int_0^\theta x \, dx$$
 $$= \frac{2}{\theta^2} \cdot \left[ \frac{x^2}{2} \right]_0^\theta = \frac{2}{\theta^2} \cdot \left( \frac{\theta^2}{2} - 0 \right) = 1$$
-Całka wynosi 1 dla każdego $\theta \neq 0$. Z treści zadania wiemy, że $\theta \in \mathbb{R}_+$.
+Całka wynosi 1 dla każdego $\theta > 0$, zgodnie z założeniem w treści zadania.
 
 **Odpowiedź:** Funkcja jest gęstością dla każdego $\theta > 0$.
 

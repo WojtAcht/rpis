@@ -5,22 +5,24 @@ rozdzialy: [calculus/probability, calculus/conditional-independence]
 ---
 
 Na dwóch lotniskach w ciągu 30 minut mają wylądować niezależnie
-dwie pary samolotów. W każdej parze jest maszyna typu A i maszyna typu B.
+dwie pary samolotów, po jednej parze na każdym lotnisku. W każdej parze jest maszyna typu A i maszyna typu B.
+Zakładamy, że czasy przybycia wszystkich czterech samolotów są wzajemnie niezależne
+i mają rozkład jednostajny na przedziale $[0,30]$ minut.
 Samolot typu A zajmuje w czasie lądowania pas na 7 minut, a samolot typu B
 na 9 minut. Jakie jest prawdopodobieństwo tego, że na przynajmniej jednym
 z lotnisk samoloty nie będą na siebie czekać?
 
 ## Rozwiązanie
 
-Oba lotniska są takie same, lądowanie samolotów jest niezależne w związku z tym skupiamy się na jednym lotnisku. Niech $t_A$ i $t_B$ będą czasami rozpoczęcia lądowania odpowiednio dla samolotów A i B, równomiernie rozłożonymi na $[0, 30]$. W związku z tym:
+Oba lotniska są takie same, lądowanie samolotów jest niezależne w związku z tym skupiamy się na jednym lotnisku. Niech $t_A$ i $t_B$ będą czasami przybycia odpowiednio dla samolotów A i B, równomiernie rozłożonymi na $[0, 30]$. W związku z tym:
 $$\Omega = \{(t_A, t_B): (t_A, t_B) \in [0, 30]^2 \}$$
 Od razu zauważamy, że:
 $$|\Omega| = 30 \cdot 30 = 900.$$
 Brak czekania samolotów występuje, gdy:
 $$t_A \leq t_B \land t_A + 7 \leq t_B \quad \text{lub} \quad t_B \leq t_A \land t_B + 9 \leq t_A.$$
 Przy pomocy $A$ oznaczamy zdarzenie lądowania pary samolotów bez czekania.
-$$A = \{(t_A, t_B) \in \Omega, t_A + 7 \leq t_B \land t_B + 9 \leq t_A \}$$
-$\Omega$ to kwadrat $[0,30]^2$, $A$ to część kwadratu wyznaczana przez proste $t_A + 7 \leq t_B$ i $t_B + 9 \leq t_A$.
+$$A = \{(t_A, t_B) \in \Omega: t_A + 7 \leq t_B \lor t_B + 9 \leq t_A \}$$
+$\Omega$ to kwadrat $[0,30]^2$, $A$ to suma dwóch części kwadratu opisanych odpowiednio nierównościami $t_A + 7 \leq t_B$ oraz $t_B + 9 \leq t_A$.
 
 ![Wizualizacja zdarzenia $A$](flight.png)
 

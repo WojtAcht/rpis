@@ -136,7 +136,7 @@ $$f_{X\mid Y}(x\mid y)
 = \frac{15\,x^2\,y}{5\,y^4}
 = 3 \,\frac{x^2}{y^3},
 \quad \text{dla } -y < x < 0.$$
-Poza tym przedziałem (w $x$ lub $y$) mamy $f_{X\mid Y}(x\mid y)=0$.
+Dla ustalonego $y\in(0,1)$ poza przedziałem $-y<x<0$ mamy $f_{X\mid Y}(x\mid y)=0$. Gdy $f_Y(y)=0$, iloraz gęstości nie określa rozkładu warunkowego; nie definiujemy go tam tym wzorem.
 Kontrola, czy się dobrze normalizuje (skrótowo):
 $$\int_{x=-y}^0 3\,\frac{x^2}{y^3}\,dx 
 = \frac{3}{y^3} \int_{-y}^0 x^2\,dx 
@@ -157,7 +157,7 @@ $$f_{Y\mid X}(y\mid x)
 = 2\,y \,\frac{x^2}{x^2 (1 - x^2)}
 = \frac{2\,y}{1 - x^2},
 \quad \text{dla } -x<y<1.$$
-Poza tym zakresem jest 0.
+Dla ustalonego $x\in(-1,0)$ poza przedziałem $-x<y<1$ mamy $f_{Y\mid X}(y\mid x)=0$. Gdy $f_X(x)=0$, iloraz gęstości nie określa rozkładu warunkowego; nie definiujemy go tam tym wzorem.
 Można sprawdzić normalizację:
 $$\int_{y=-x}^{1} \frac{2\,y}{1 - x^2}\,dy = \frac{2}{1 - x^2}\int_{-x}^{1} y\,dy = \ldots = 1.$$
 
@@ -197,20 +197,12 @@ P\!\Bigl(X > -\tfrac14 \;\Big\vert\; Y=\tfrac13\Bigr)
 
 ### 5. Niezależność zmiennych $X$ i $Y$
 
-Zmienna losowa $X$ i $Y$ byłyby niezależne, gdyby zachodziło:
-$$f(x,y) \;=\; f_X(x)\,f_Y(y) 
-\quad \text{dla każdej pary }(x,y).$$
-Tymczasem:
-$$f(x,y) = 15\,x^2\,y 
-\quad\text{(w obszarze)},$$
-natomiast
-$$f_X(x)\,f_Y(y) 
-= \Bigl[\tfrac{15}{2}\,(x^2 - x^4)\Bigr]
-  \,\bigl[5\,y^4\bigr]
-= \tfrac{75}{2}\,(x^2 - x^4)\,y^4.$$
-Te wyrażenia (w obszarze gdzie gęstość jest dodatnia) nie są sobie równe,
-co widać już po samym kształcie: jedno zależy od $y$ w sposób liniowy ($y$) a drugie od $y$ w sposób $\,y^4$.
-Również sama dziedzina $\{\,x+y>0,\dots\}$ to nie jest prostokąt (czyli nie dzieli się na niezależne przedziały $\{x\in A\}$ i $\{y\in B\}$).
+Zmienne losowe $X$ i $Y$ są niezależne wtedy i tylko wtedy, gdy
+$$f(x,y) = f_X(x)f_Y(y)
+\quad \text{dla prawie wszystkich }(x,y)\text{ względem miary Lebesgue'a}. $$
+Na prostokącie $(-1,-\tfrac34)\times(0,\tfrac12)$ mamy $x+y<0$, więc $f(x,y)=0$.
+Jednocześnie $f_X(x)>0$ i $f_Y(y)>0$ na całym tym prostokącie.
+Równość nie zachodzi zatem na zbiorze o dodatnim polu, co wyklucza niezależność.
 $$\boxed{
 \text{Zmienne }X\text{ i }Y\text{ nie są niezależne.}
 }$$
@@ -234,16 +226,16 @@ $$\boxed{
     0, & \text{inaczej}.
     \end{cases}$$
 
--   Gęstości warunkowe:
+-   Gęstości warunkowe (pierwszy wzór dla ustalonego $y\in(0,1)$, drugi dla ustalonego $x\in(-1,0)$):
     $$f_{X \mid Y}(x\mid y) = 
     \begin{cases}
-    3\,\frac{x^2}{y^3}, & -y<x<0,\ 0<y<1,\\
+    3\,\frac{x^2}{y^3}, & -y<x<0,\\
     0, & \text{inaczej},
     \end{cases}
     \quad
     f_{Y \mid X}(y\mid x) = 
     \begin{cases}
-    \dfrac{2\,y}{1 - x^2}, & -x<y<1,\ -1<x<0,\\
+    \dfrac{2\,y}{1 - x^2}, & -x<y<1,\\
     0, & \text{inaczej}.
     \end{cases}$$
 

@@ -4,7 +4,7 @@ punkty: 15
 rozdzialy: [rv/real/functions, rv/real/distributions]
 ---
 
-Niech $X \sim U(a, b)$ dla $0 < a < b$. Wyznacz rozkład zmiennej losowej $Y = \ln X$. Dla jakich wartości $c, d \in \mathbb{R}$ spełniona jest poniższa równość?
+Niech $X \sim U(a, b)$ dla $0 < a < b$. Wyznacz rozkład zmiennej losowej $Y = \ln X$. Dla jakich wartości $c, d \in \mathbb{R}$, przy $c \leq d$, spełniona jest poniższa równość?
 $$P(c < Y \leq d) = f_Y(d) - f_Y(c)$$
 
 ## Rozwiązanie
@@ -28,16 +28,16 @@ $$F_X(x) =
 ### Krok 2: Wyznaczenie rozkładu zmiennej $Y = \ln(X)$
 
 Zmienna $Y$ jest zdefiniowana jako $Y = \ln(X)$, więc $X = e^Y$. Korzystamy z metody dystrybuanty:
-$$F_Y(y) = P(Y \leq y) = P(lnX \leq y) = P(X \leq e^y) = F_X(e^y)$$
+$$F_Y(y) = P(Y \leq y) = P(\ln X \leq y) = P(X \leq e^y) = F_X(e^y)$$
 Różniczkujemy obustronnie i otrzymujemy:
 $$f_Y(y) = F_Y'(y) = f_X(e^y) \cdot (e^y)' = f_X(e^y) \cdot e^y.$$
-Ostatecznie, funkcja gęstości $f_Y(y)$ wynosi:
+Równość z pochodną obowiązuje prawie wszędzie; na końcach przedziału przyjmujemy wartości określone poniżej. Wybieramy następującą wersję gęstości $f_Y(y)$ i dla niej sprawdzamy równość z treści zadania:
 $$f_Y(y) =
 \begin{cases}
 \frac{e^y}{b-a}, & \text{dla } y \in [\ln(a), \ln(b)], \\
 0, & \text{w przeciwnym razie}.
 \end{cases}$$
-Warto zwrócić uwagę na przedział $[\ln(a), \ln(b)]$. W przypadku $X$: $f_X(x) \neq 0$ dla $x \in [a, b]$. Wiemy, że $f_Y(y) = f_X(e^y) \neq 0$ dla $e^y \in [a, b]$, co daje $y \in [ln(a), ln(b)]$.\
+Warto zwrócić uwagę na przedział $[\ln(a), \ln(b)]$. W przypadku $X$: $f_X(x) \neq 0$ dla $x \in [a, b]$. Wiemy, że $f_Y(y) = f_X(e^y)e^y \neq 0$ dla $e^y \in [a, b]$, co daje $y \in [\ln(a), \ln(b)]$.\
 Wyznaczamy dystrybuantę $F_Y(y)$:
 $$F_Y(y) =
 \begin{cases}
@@ -48,7 +48,7 @@ $$F_Y(y) =
 
 ### Krok 3: Wyrażenie $P(c < Y \leq d)$
 
-Prawdopodobieństwo $P(c < Y \leq d)$ obliczamy przy pomocy dystrybuanty:
+Dla $c \leq d$ prawdopodobieństwo $P(c < Y \leq d)$ obliczamy przy pomocy dystrybuanty:
 $$P(c < Y \leq d) = F_Y(d) - F_Y(c).$$
 Szukamy $c, d$ takich że:
 $$P(c < Y \leq d) = F_Y(d) - F_Y(c) = f_Y(d) - f_Y(c)$$
