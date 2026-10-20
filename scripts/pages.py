@@ -138,11 +138,6 @@ def index_page(exams: list[Exam], decks: list[dict]) -> str:
   <p class="kicker">RPiS · AGH Kraków</p>
   <h1>Rachunek Prawdo&shy;podobieństwa i&nbsp;<mark>Statystyka</mark></h1>
   <p class="lead">Prezentacje z zajęć, zadania z kolokwiów z poprzednich lat z rozwiązaniami, przypisane do rozdziałów skryptu.</p>
-  <div class="steps">
-    <div class="step"><span class="n">krok 1</span><p>Przejrzyj zagadnienia do kolokwium.</p></div>
-    <div class="step"><span class="n">krok 2</span><p>Rozwiąż zadania samodzielnie, najlepiej z limitem czasu.</p></div>
-    <div class="step"><span class="n">krok 3</span><p>Dopiero potem odsłoń rozwiązanie i porównaj ze swoim.</p></div>
-  </div>
 </header>
 <div class="wrap">
 {"".join(sections)}
