@@ -111,10 +111,10 @@ def index_page(exams: list[Exam], decks: list[dict]) -> str:
         parts = [f'<section id="{x.id}"><p class="kicker">Ćwiczenia</p><h2>{e(x.title)}</h2>']
         if x.topics:
             parts.append(
-                f'<a class="topics" href="{R}pdf/{x.id}/zagadnienia.pdf" target="_blank" rel="noopener">'
+                f'<a class="topics" href="{R}{x.id}/zagadnienia/">'
                 '<span class="topics-kicker">Zacznij tutaj</span>'
                 '<span class="topics-title">Zagadnienia do kolokwium</span>'
-                '<span class="topics-arrow" aria-hidden="true">PDF ↗</span></a>')
+                '<span class="topics-arrow" aria-hidden="true">→</span></a>')
         for year, variants in x.years:
             parts.append(f'<h3><span class="year">{year}</span></h3><ul class="variants">')
             for v in variants:
@@ -173,6 +173,21 @@ def slides_section(decks: list[dict]) -> str:
         '<p class="hint">Strzałki ← → przełączają slajdy.</p>'
         f'<ul class="decks">{items}</ul></section>'
     )
+
+
+# --- zagadnienia -----------------------------------------------------------
+
+def topics_page(x: Exam, script_url: str) -> str:
+    body = f"""<div class="wrap reader">
+{crumbs(("RPiS", ""), (x.title, f"#{x.id}"), ("Zagadnienia", None))}
+<p class="kicker">{e(x.title)}</p>
+<h1 class="task-title">Zagadnienia do kolokwium</h1>
+<p class="callout">Przy każdym zagadnieniu są numery definicji, twierdzeń i podrozdziałów
+<a href="{script_url}" target="_blank" rel="noopener">skryptu do wykładu ↗</a>, w których je omówiono.</p>
+<article class="prose topics-list">{x.topics_html}</article>
+</div>"""
+    return layout(f"Zagadnienia · {x.title} · RPiS", body,
+                  description=f"Zagadnienia do kolokwium z RPiS ({x.title}) z odnośnikami do skryptu.")
 
 
 # --- strona zadania --------------------------------------------------------

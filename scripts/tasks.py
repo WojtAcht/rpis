@@ -24,6 +24,7 @@ import yaml
 ROMAN = {1: "I", 2: "II", 3: "III"}
 SECTIONS = {"Wskazówka": "hint", "Rozwiązanie": "solution"}
 TASK_FILE = re.compile(r"zadanie-(\d+)\.md")
+SCRIPT_LINK = re.compile(r"\]\(skrypt:([^)#\s]+)(#[^)\s]*)?\)")
 
 
 class ContentError(Exception):
@@ -123,8 +124,9 @@ class Variant:
 @dataclass
 class Exam:
     num: int
-    topics: Path | None
+    topics: str
     years: list[tuple[str, list[Variant]]]
+    topics_html: str = ""
 
     @property
     def id(self) -> str:
@@ -228,6 +230,17 @@ def parse_task(path: Path, chapters: dict[str, Chapter], root: Path) -> Task:
     )
 
 
+def load_topics(path: Path, chapters: dict[str, Chapter], root: Path) -> str:
+    """Zagadnienia (Markdown). Odnośniki `[Def. 2.3](skrypt:<rozdział>#<kotwica>)`
+    zamieniamy na adresy stron skryptu."""
+    rel = path.relative_to(root)
+    text = path.read_text(encoding="utf-8")
+    unknown = sorted({m.group(1) for m in SCRIPT_LINK.finditer(text) if m.group(1) not in chapters})
+    if unknown:
+        raise ContentError(f"{rel}: nieznane rozdziały {unknown} — dostępne są w rozdzialy.yml")
+    return SCRIPT_LINK.sub(lambda m: f"]({chapters[m.group(1)].url}{m.group(2) or ''})", text)
+
+
 def collect(root: Path, chapters: dict[str, Chapter]) -> list[Exam]:
     """kolokwium-N/RRRR/<wariant>/zadanie-K.md -> lista kolokwiów."""
     exams, errors = [], []
@@ -256,8 +269,13 @@ def collect(root: Path, chapters: dict[str, Chapter]) -> list[Exam]:
                     variants.append(Variant(int(kdir.name.split("-")[1]), ydir.name, vdir.name, vdir, tasks))
             if variants:
                 years.append((ydir.name, variants))
-        topics = kdir / "zagadnienia.tex"
-        exams.append(Exam(int(kdir.name.split("-")[1]), topics if topics.exists() else None, years))
+        topics = ""
+        if (kdir / "zagadnienia.md").exists():
+            try:
+                topics = load_topics(kdir / "zagadnienia.md", chapters, root)
+            except ContentError as e:
+                errors.append(str(e))
+        exams.append(Exam(int(kdir.name.split("-")[1]), topics, years))
     if errors:
         raise ContentError("\n".join(errors))
 

@@ -14,7 +14,7 @@ rozdzialy.yml                       # rozdziały skryptu, do których przypisuje
 prezentacje/
 └── NN-nazwa.html                   # samodzielne slajdy HTML
 kolokwium-N/
-├── zagadnienia.tex
+├── zagadnienia.md                  # lista zagadnień z odnośnikami do skryptu
 └── RRRR/
     └── <wariant>/                  # np. kolokwium, zestaw-a, termin-2
         ├── zadanie-1.md            # treść + rozwiązanie jednego zadania
@@ -65,6 +65,20 @@ $$P(M_U \mid 2O) = \frac{P(2O \mid M_U)\,P(M_U)}{P(2O)} = \frac{4}{5}$$
 - Obrazek wstawiasz jako `![Podpis](rysunek.png)`, plik kładziesz obok zadania.
 
 Build sprawdza nagłówki, sekcje, numerację i identyfikatory rozdziałów, a błędy wypisuje z nazwą pliku.
+
+## Zagadnienia do kolokwium
+
+`kolokwium-N/zagadnienia.md` to numerowana lista w Markdownie, z której powstaje strona
+`kolokwium-N/zagadnienia/`. Pod każdym zagadnieniem podajemy definicje, twierdzenia i podrozdziały skryptu:
+
+```markdown
+1.  Twierdzenie Bayesa (z dowodem).\
+    [[Tw. 4.2](skrypt:calculus/bayes#thm-bayes-simple) wersja prostsza ·
+    [Tw. 4.3](skrypt:calculus/bayes#thm-bayes-full) wersja rozwinięta]{.refs}
+```
+
+Odnośnik `skrypt:<rozdział>#<kotwica>` zamienia się na adres strony skryptu; `<rozdział>` to identyfikator
+z `rozdzialy.yml`, a kotwica to `id` definicji/twierdzenia (np. `def-cdf`) lub podrozdziału na stronie skryptu.
 
 ## Budowanie lokalnie
 
