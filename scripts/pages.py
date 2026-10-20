@@ -38,6 +38,7 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Work+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{KATEX}/katex.min.css" crossorigin="anonymous">
 <script defer src="{KATEX}/katex.min.js" crossorigin="anonymous"></script>
+<script>try{{var t=localStorage.getItem("motyw");if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 <link rel="stylesheet" href="{R}assets/style.css">
 <script defer src="{R}assets/site.js"></script>
 </head>
@@ -46,6 +47,7 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
 <header class="topbar"><div class="wrap">
   <a class="brand" href="{R}">RPiS</a>
   <nav aria-label="Główna">{nav}</nav>
+  <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Przełącz tryb jasny i ciemny"><span aria-hidden="true"></span></button>
 </div></header>
 <main id="tresc">
 {body}
@@ -102,9 +104,9 @@ def crumbs(*items: tuple[str, str | None]) -> str:
 
 # --- strona główna ---------------------------------------------------------
 
-def index_page(exams: list[Exam], decks: list[dict], chapters: dict[str, Chapter]) -> str:
+def index_page(exams: list[Exam], decks: list[dict]) -> str:
     tasks = unique_tasks(exams)
-    sections = [zadania_teaser(tasks, chapters), slides_section(decks)]
+    sections = [zadania_teaser(tasks), slides_section(decks)]
     for x in exams:
         parts = [f'<section id="{x.id}"><p class="kicker">Ćwiczenia</p><h2>{e(x.title)}</h2>']
         if x.topics:
@@ -150,16 +152,8 @@ def index_page(exams: list[Exam], decks: list[dict], chapters: dict[str, Chapter
                               "i Statystyki z poprzednich lat, z rozwiązaniami, przypisane do rozdziałów skryptu.")
 
 
-def zadania_teaser(tasks: list[Task], chapters: dict[str, Chapter]) -> str:
-    counts = {cid: sum(any(c.id == cid for c in t.chapters) for t in tasks) for cid in chapters}
-    links = "".join(
-        f'<li><a href="{R}zadania/?rozdzial={quote(c.id)}"><span class="chip-nr">{c.num}</span>'
-        f'{e(c.title)}<span class="count">{counts[c.id]}</span></a></li>'
-        for c in chapters.values() if counts[c.id])
-    return f"""<section id="zadania"><p class="kicker">Bank zadań</p><h2>Zadania według rozdziałów</h2>
-<p class="section-lead">Każde zadanie z kolokwiów ma własną stronę z rozwiązaniem i jest przypisane do rozdziałów skryptu.
-Wybierz rozdział, który właśnie przerabiasz.</p>
-<ul class="chapter-links">{links}</ul>
+def zadania_teaser(tasks: list[Task]) -> str:
+    return f"""<section id="zadania"><p class="kicker">Bank zadań</p><h2>Zadania</h2>
 <a class="btn btn-big" href="{R}zadania/">Wszystkie zadania ({len(tasks)}) →</a>
 </section>"""
 
@@ -328,7 +322,7 @@ def browse_page(exams: list[Exam], script_url: str, chapters: dict[str, Chapter]
     body = f"""<div class="wrap browse">
 <header class="page-head">
   {crumbs(("RPiS", ""), ("Zadania", None))}
-  <h1>Zadania z kolokwiów <mark>według rozdziałów</mark></h1>
+  <h1><mark>Zadania</mark> z kolokwiów</h1>
   <p class="lead">{n_tasks} z lat {years[0]}–{years[-1]}, każde przypisane do rozdziałów
   <a href="{script_url}" target="_blank" rel="noopener">skryptu do wykładu ↗</a>.
   Wybierz rozdział, który właśnie przerabiasz, albo przejrzyj wszystkie naraz.</p>
@@ -360,5 +354,5 @@ def browse_page(exams: list[Exam], script_url: str, chapters: dict[str, Chapter]
 </div>
 <script type="application/json" id="browse-data">{json.dumps(data, ensure_ascii=False)}</script>
 </div>"""
-    return layout("Zadania według rozdziałów · RPiS", body, current="zadania",
+    return layout("Zadania · RPiS", body, current="zadania",
                   description="Wszystkie zadania z kolokwiów z RPiS z rozwiązaniami, przypisane do rozdziałów skryptu.")

@@ -99,7 +99,7 @@ def main() -> int:
 
     # Strony.
     decks = collect_slides()
-    write_page("", pages.index_page(exams, decks, chapters))
+    write_page("", pages.index_page(exams, decks))
     write_page("zadania", pages.browse_page(exams, script_url, chapters))
     for x in exams:
         for _, variants in x.years:

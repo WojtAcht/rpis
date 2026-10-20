@@ -3,7 +3,7 @@
 Prezentacje z zajęć, zadania z kolokwiów z poprzednich lat z rozwiązaniami i listy zagadnień.
 Każde zadanie jest przypisane do rozdziałów [skryptu do wykładu](https://home.agh.edu.pl/~smolka/rpis-skrypt/).
 
-**👉 Strona: https://wojtacht.github.io/rpis/** · [wszystkie zadania według rozdziałów](https://wojtacht.github.io/rpis/zadania/)
+**👉 Strona: https://wojtacht.github.io/rpis/** · [wszystkie zadania](https://wojtacht.github.io/rpis/zadania/)
 
 Najpierw spróbuj rozwiązać zadania samodzielnie, a dopiero potem zajrzyj do rozwiązań.
 

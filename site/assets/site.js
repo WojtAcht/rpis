@@ -1,4 +1,4 @@
-// RPiS: renderowanie wzorów (KaTeX) i filtrowanie banku zadań.
+// RPiS: renderowanie wzorów (KaTeX), filtrowanie banku zadań i przełącznik motywu.
 (function () {
   "use strict";
 
@@ -217,7 +217,37 @@
     render();
   }
 
+  // --- Motyw -------------------------------------------------------------
+  // Bez zapisanego wyboru strona idzie za ustawieniem systemu. Wybór równy
+  // systemowemu kasujemy, żeby znów podążać za systemem.
+  function initTheme() {
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+    var root = document.documentElement;
+    var system = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    function systemTheme() { return system && system.matches ? "dark" : "light"; }
+    function current() { return root.dataset.theme || systemTheme(); }
+    function sync() {
+      var dark = current() === "dark";
+      btn.firstChild.textContent = dark ? "☀" : "☾";
+      btn.title = dark ? "Tryb jasny" : "Tryb ciemny";
+    }
+    btn.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      try {
+        if (next === systemTheme()) localStorage.removeItem("motyw");
+        else localStorage.setItem("motyw", next);
+      } catch (err) {}
+      if (next === systemTheme()) delete root.dataset.theme;
+      else root.dataset.theme = next;
+      sync();
+    });
+    if (system && system.addEventListener) system.addEventListener("change", sync);
+    sync();
+  }
+
   function init() {
+    initTheme();
     initBrowse();
     renderMath(document);
   }

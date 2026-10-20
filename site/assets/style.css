@@ -1,4 +1,4 @@
-/* RPiS — styl strony. Kolory jako tokeny; tryb ciemny według ustawień systemu. */
+/* RPiS — styl strony. Kolory jako tokeny; tryb ciemny według ustawień systemu albo przełącznika (data-theme). */
 :root {
   --bg: #ffffff;
   --fg: #111111;
@@ -7,6 +7,7 @@
   --faint: #e2e0da;
   --mark: #f3ec5a;
   --on-mark: #111111;
+  --highlight: var(--mark);
   --red: #e2452f;
   --green: #0f8a81;
   --card: #faf9f5;
@@ -18,14 +19,15 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #131312;
     --fg: #efede6;
     --muted: #a19f98;
     --line: #d9d6cc;
     --faint: #33322f;
-    --mark: #e8df3f;
+    --mark: #a9b6ff;
     --on-mark: #131312;
+    --highlight: rgba(169, 182, 255, 0.38);
     --red: #ff7a63;
     --green: #4cc4b9;
     --card: #1c1c1a;
@@ -34,6 +36,23 @@
     --topbar: rgba(19, 19, 18, 0.9);
     color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #131312;
+  --fg: #efede6;
+  --muted: #a19f98;
+  --line: #d9d6cc;
+  --faint: #33322f;
+  --mark: #a9b6ff;
+  --on-mark: #131312;
+  --highlight: rgba(169, 182, 255, 0.38);
+  --red: #ff7a63;
+  --green: #4cc4b9;
+  --card: #1c1c1a;
+  --surface: #232321;
+  --code: #262624;
+  --topbar: rgba(19, 19, 18, 0.9);
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -65,7 +84,7 @@ a:hover { text-decoration-color: var(--red); }
 h1, h2 { font-weight: 800; letter-spacing: -0.02em; line-height: 1.06; margin: 0 0 0.45em; }
 h1 { font-size: clamp(34px, 5.5vw, 76px); max-width: 22ch; }
 h2 { font-size: clamp(28px, 4.5vw, 44px); }
-mark { background: linear-gradient(transparent 55%, var(--mark) 55%); color: inherit; padding: 0 0.1em; }
+mark { background: linear-gradient(transparent 55%, var(--highlight) 55%); color: inherit; padding: 0 0.1em; }
 .meta { font-family: var(--mono); font-size: 0.78em; color: var(--muted); }
 .hint { font-family: var(--mono); font-size: 0.8em; color: var(--muted); margin: -0.4em 0 1.2em; }
 
@@ -87,6 +106,12 @@ mark { background: linear-gradient(transparent 55%, var(--mark) 55%); color: inh
   border: 1.5px solid var(--line); border-radius: 99px; padding: 0.18em 0.75em; background: var(--surface);
 }
 .topbar nav a:hover, .topbar nav a[aria-current] { background: var(--mark); color: var(--on-mark); }
+.theme-toggle {
+  margin-left: auto; flex-shrink: 0; cursor: pointer; width: 2em; height: 2em; padding: 0;
+  font: inherit; font-size: 0.95em; line-height: 1; color: var(--fg);
+  border: 1.5px solid var(--line); border-radius: 99px; background: var(--surface);
+}
+.theme-toggle:hover { background: var(--mark); color: var(--on-mark); }
 
 /* --- strona główna --- */
 .hero { padding: clamp(36px, 8vh, 80px) clamp(16px, 5vw, 72px) 1rem; }
@@ -105,7 +130,6 @@ h3 { margin: 2rem 0 0.8rem; }
   font-family: var(--mono); font-weight: 500; font-size: 0.8em;
   background: var(--fg); color: var(--bg); padding: 0.15em 0.6em; border-radius: 99px;
 }
-.section-lead { max-width: 60ch; margin: 0 0 1.4em; }
 .tag {
   display: inline-block; font-family: var(--mono); font-size: 0.72em;
   padding: 0.15em 0.55em; border: 1.5px solid var(--line); border-radius: 99px; background: var(--surface);
@@ -144,15 +168,6 @@ h3 { margin: 2rem 0 0.8rem; }
 .variant-tasks li::marker { font-family: var(--mono); color: var(--muted); }
 .variant-tasks a { text-decoration-color: var(--faint); }
 .variant .actions { border-top: 1px solid var(--faint); padding-top: 0.8em; }
-
-.chapter-links { list-style: none; padding: 0; margin: 0 0 1.6em; display: flex; flex-wrap: wrap; gap: 0.5em; }
-.chapter-links a {
-  display: inline-flex; align-items: center; gap: 0.5em; text-decoration: none; font-size: 0.92em;
-  border: 1.5px solid var(--line); border-radius: 99px; padding: 0.25em 0.35em 0.25em 0.35em; background: var(--surface);
-}
-.chapter-links a:hover { background: var(--mark); color: var(--on-mark); }
-.chapter-links .count { font-family: var(--mono); font-size: 0.8em; color: var(--muted); padding-right: 0.4em; }
-.chapter-links a:hover .count { color: inherit; }
 
 .btn {
   display: inline-block; text-decoration: none; white-space: nowrap; cursor: pointer;
@@ -202,7 +217,7 @@ h3 { margin: 2rem 0 0.8rem; }
 .katex { font-size: 1.08em; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.4em; margin: 0 0 1.3em; }
-.chip, .chapter-links a .chip-nr { font-family: var(--sans); }
+.chip { font-family: var(--sans); }
 .chip {
   display: inline-flex; align-items: center; gap: 0.45em; text-decoration: none;
   font-size: 0.8em; line-height: 1.25; padding: 0.2em 0.7em 0.2em 0.25em;
@@ -298,7 +313,7 @@ h3 { margin: 2rem 0 0.8rem; }
 
 .chapter-banner { margin: 1.2em 0 0; padding: 1em 1.2em; border: 1.5px solid var(--line); background: var(--mark); color: var(--on-mark); display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4em 1.2em; }
 .chapter-banner strong { font-size: 1.15em; }
-.chapter-banner .group-nr { font-family: var(--mono); font-size: 0.8em; display: block; }
+.chapter-banner .group-nr { font-family: var(--mono); font-size: 0.8em; display: block; color: inherit; opacity: 0.7; }
 .chapter-banner a, .chapter-banner button { font-family: var(--mono); font-size: 0.82em; color: inherit; }
 .chapter-banner button { background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
 .chapter-banner .grow { flex: 1; }
