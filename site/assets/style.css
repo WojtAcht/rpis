@@ -116,12 +116,6 @@ mark { background: linear-gradient(transparent 55%, var(--highlight) 55%); color
 /* --- strona główna --- */
 .hero { padding: clamp(36px, 8vh, 80px) clamp(16px, 5vw, 72px) 1rem; }
 .lead { font-size: 1.15em; margin: 0 0 1.6em; max-width: 56ch; }
-.steps { display: grid; grid-template-columns: repeat(3, 1fr); border: 1.5px solid var(--line); max-width: 1000px; }
-.step { padding: 0.85em 1em; border-right: 1.5px solid var(--line); background: var(--surface); }
-.step:last-child { border-right: 0; background: var(--mark); color: var(--on-mark); }
-.step .n { font-family: var(--mono); font-size: 0.74em; color: var(--muted); display: block; margin-bottom: 0.2em; }
-.step:last-child .n { color: inherit; }
-.step p { margin: 0; font-size: 0.95em; }
 
 section { padding: 3rem 0 1rem; }
 .wrap > section + section { border-top: 1px solid var(--faint); margin-top: 2rem; }
@@ -347,9 +341,6 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 }
 @media (max-width: 600px) {
   body { font-size: 16px; }
-  .steps { grid-template-columns: 1fr; }
-  .step { border-right: 0; border-bottom: 1.5px solid var(--line); }
-  .step:last-child { border-bottom: 0; }
   .brand { font-size: 1em; }
   .pager { grid-template-columns: 1fr 1fr; }
   .pager .up { grid-column: 1 / -1; grid-row: 2; justify-self: center; }
