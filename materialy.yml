@@ -30,8 +30,9 @@ zrodla:
     link: https://www.statlearning.com/
   kolmogorov:
     skrot: Kołmogorow
-    tytul: Foundations of the Theory of Probability
+    tytul: Foundations of the Theory of Probability (wyd. ang. 1950)
     autor: A. N. Kołmogorow
+    link: https://archive.org/details/foundationsofthe00kolm
 
 rozdzialy:
   descriptive:
@@ -51,8 +52,6 @@ rozdzialy:
   calculus/probability:
     - { zrodlo: tsun, gdzie: "1.1–1.3, 2.1" }
     - { zrodlo: ross, gdzie: "2.2–2.5" }
-    - { zrodlo: ross, gdzie: "5.3 (paradoks Bertranda), 6.2 (igła Buffona)", podrozdzial: "2.4",
-        opis: Prawdopodobieństwo geometryczne. }
     - { zrodlo: kolmogorov, opis: "Najciekawsze są pierwsze strony, na których Kołmogorow wprowadza aksjomatykę." }
     - typ: wideo
       tytul: "Lecture 1: Probability Models and Axioms"
