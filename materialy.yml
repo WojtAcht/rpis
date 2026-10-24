@@ -84,7 +84,9 @@ rozdzialy:
   calculus/bayes:
     - { zrodlo: tsun, gdzie: "2.2.2–2.2.4" }
     - { zrodlo: ross, gdzie: "3.3" }
-    - { zrodlo: think-bayes }
+    - { zrodlo: think-bayes, gdzie: "rozdz. 2 Bayes's Theorem", podrozdzial: "4.1–4.2",
+        link: "https://allendowney.github.io/ThinkBayes2/chap02.html",
+        opis: "Problem ciasteczek, tabele bayesowskie, Monty Hall i zadania." }
     - typ: wideo
       tytul: "Bayes' theorem, the geometry of changing beliefs"
       autor: 3Blue1Brown
