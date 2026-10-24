@@ -10,6 +10,8 @@ Konwencja katalogów:
     quizy/<nazwa>.yml                              quizy (pytania zamknięte i prawda/fałsz)
     prezentacje/NN-nazwa.html                      samodzielne slajdy
 
+Oprócz HTML-a i PDF-ów build zapisuje treści w Markdownie dla LLM-ów (llms.txt, rpis.md; zob. llms.py).
+
 Wariant to np. `kolokwium`, `zestaw-a`, `termin-2`. Format pliku zadania opisuje tasks.py, a quizu quizzes.py.
 """
 
@@ -22,6 +24,7 @@ from datetime import date
 from pathlib import Path
 
 import convert
+import llms
 import pages
 import pdf
 from materials import load_materials
@@ -138,6 +141,7 @@ def main() -> int:
                     (SITE / v.path).mkdir(parents=True, exist_ok=True)
                     shutil.copy2(asset, SITE / v.path / asset.name)
 
+    llms.write_all(SITE, exams, quizzes, chapters, script_url)
     shutil.copytree(ROOT / "site" / "assets", SITE / "assets")
     if decks:
         (SITE / "prezentacje").mkdir()
