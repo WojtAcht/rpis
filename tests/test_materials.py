@@ -25,7 +25,7 @@ class MaterialsTest(unittest.TestCase):
 
     def test_book_references_and_chapter_order(self):
         mats = self.load(
-            "zrodla:\n  ross: { tytul: A First Course, autor: Ross }\n"
+            "zrodla:\n  ross: { skrot: Ross, tytul: A First Course, autor: Ross }\n"
             "rozdzialy:\n"
             "  calculus/bayes:\n    - { zrodlo: ross, gdzie: '3.3' }\n"
             "  calculus/probability:\n"

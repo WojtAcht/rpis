@@ -9,7 +9,7 @@ import json
 import os
 from urllib.parse import quote, urlencode
 
-from materials import Material, Materials, anchor
+from materials import TYPES, Material, Materials, anchor
 from pdf import pdf_href
 from tasks import Chapter, Exam, Task, Variant, all_variants, fold, plural, unique_tasks
 
@@ -196,24 +196,22 @@ def topics_page(x: Exam, script_url: str) -> str:
 
 # --- materiały dodatkowe ---------------------------------------------------
 
-def link_or_text(href: str, text: str) -> str:
+def ext_link(href: str, inner: str, title: str = "") -> str:
+    tip = f' title="{e(title)}"' if title else ""
     if not href:
-        return e(text)
-    return f'<a href="{e(href)}" target="_blank" rel="noopener">{e(text)} ↗</a>'
+        return f"<span{tip}>{inner}</span>"
+    return f'<a href="{e(href)}" target="_blank" rel="noopener"{tip}>{inner}</a>'
 
 
 def material_item(m: Material) -> str:
+    section = f'<span class="mat-sec">skrypt {e(m.section)}</span>' if m.section else ""
+    note = f'<span class="mat-note">{e(m.note)}</span>' if m.note else ""
     if m.source:
-        title = link_or_text(m.link or m.source.link, m.title)
-        where = f'<span class="mat-where">{e(m.where)}</span>' if m.where else ""
-        meta = f"{e(m.author)}{' · ' + where if where else ''}"
-    else:
-        title, meta = link_or_text(m.link, m.title), e(m.author)
-    section = f'<span class="tag">skrypt {e(m.section)}</span>' if m.section else ""
-    note = f'<p class="mat-note">{e(m.note)}</p>' if m.note else ""
-    return (f'<li class="mat-item"><span class="mat-kind" data-kind="{m.kind}">{m.label}</span>'
-            f'<div class="mat-body"><p class="mat-title">{title}</p>'
-            f'<p class="meta">{meta}</p>{note}</div>{section}</li>')
+        src = m.source
+        label = f"<strong>{e(src.short)}</strong>" + (f" {e(m.where)}" if m.where else "")
+        return (f'<li class="mat-book">{ext_link(m.link or src.link, label, f"{src.author}, {src.title}")}'
+                f'{section}{note}</li>')
+    return (f'<li>{ext_link(m.link, e(m.title))}<span class="mat-by">{e(m.author)} {section}</span>{note}</li>')
 
 
 def materials_page(mats: Materials, chapters: dict[str, Chapter]) -> str:
@@ -222,14 +220,20 @@ def materials_page(mats: Materials, chapters: dict[str, Chapter]) -> str:
         parts.setdefault(chapters[cid].part, []).append(chapters[cid])
     sections = []
     for part, chs in parts.items():
-        cards = "".join(
-            f'<section class="mat-chapter" id="{anchor(c.id)}"><header class="group-head">'
-            f'<h3><span class="group-nr">Rozdział {c.num}</span> {e(c.title)}</h3>'
-            f'<span class="mat-links"><a href="{c.url}" target="_blank" rel="noopener">skrypt ↗</a>'
-            f'<a href="{R}zadania/?rozdzial={quote(c.id)}">zadania →</a></span></header>'
-            f'<ul class="mat-list">{"".join(material_item(m) for m in mats.by_chapter[c.id])}</ul></section>'
-            for c in chs)
-        sections.append(f'<h2 class="mat-part">{e(part)}</h2><div class="mat-grid">{cards}</div>')
+        cards = []
+        for c in chs:
+            rows = "".join(
+                f'<div class="mat-row"><p class="mat-kind" data-kind="{kind}">{TYPES[kind]}</p>'
+                f'<ul class="mat-items{" mat-books" if kind == "ksiazka" else ""}">'
+                f'{"".join(material_item(m) for m in items)}</ul></div>'
+                for kind, items in Material.by_kind(mats.by_chapter[c.id]))
+            cards.append(
+                f'<section class="mat-card" id="{anchor(c.id)}"><header class="mat-head">'
+                f'<p class="kicker">Rozdział {c.num}</p><h3>{e(c.title)}</h3>'
+                f'<p class="mat-links"><a href="{c.url}" target="_blank" rel="noopener">Skrypt ↗</a>'
+                f'<a href="{R}zadania/?rozdzial={quote(c.id)}">Zadania →</a></p></header>'
+                f'<div class="mat-content">{rows}</div></section>')
+        sections.append(f'<section class="mat-part"><h2>{e(part)}</h2>{"".join(cards)}</section>')
 
     body = f"""<div class="wrap materials">
 {crumbs(("RPiS", ""), ("Materiały", None))}

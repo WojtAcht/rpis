@@ -1,7 +1,7 @@
 """Materiały dodatkowe (materialy.yml): książki opisane raz i pozycje przypisane do rozdziałów skryptu.
 
     zrodla:
-      tsun: { tytul, autor, link? }
+      tsun: { skrot, tytul, autor, link? }
     rozdzialy:
       calculus/bayes:
         - { zrodlo: tsun, gdzie: "2.2.2–2.2.4", link?, podrozdzial?, opis? }
@@ -15,14 +15,16 @@ import yaml
 
 from tasks import Chapter, ContentError
 
-TYPES = {"ksiazka": "Książka", "wideo": "Wideo", "artykul": "Artykuł", "notatki": "Notatki"}
-SOURCE_KEYS = {"tytul", "autor", "link"}
+# Kolejność = kolejność wierszy przy rozdziale.
+TYPES = {"ksiazka": "Książki", "wideo": "Wideo", "artykul": "Artykuły", "notatki": "Notatki"}
+SOURCE_KEYS = {"skrot", "tytul", "autor", "link"}
 ITEM_KEYS = {"zrodlo", "gdzie", "typ", "tytul", "autor", "link", "podrozdzial", "opis"}
 
 
 @dataclass
 class Source:
     id: str
+    short: str
     title: str
     author: str
     link: str = ""
@@ -42,6 +44,11 @@ class Material:
     @property
     def label(self) -> str:
         return TYPES[self.kind]
+
+    @staticmethod
+    def by_kind(items: list["Material"]) -> list[tuple[str, list["Material"]]]:
+        """Pozycje rozdziału pogrupowane po typie, w kolejności TYPES."""
+        return [(k, [m for m in items if m.kind == k]) for k in TYPES if any(m.kind == k for m in items)]
 
 
 @dataclass
@@ -65,10 +72,11 @@ def load_materials(path: Path, chapters: dict[str, Chapter]) -> Materials:
         where = f"{name}: źródło `{sid}`"
         if extra := set(s) - SOURCE_KEYS:
             errors.append(f"{where}: nieznane pola {sorted(extra)}")
-        if not s.get("tytul") or not s.get("autor"):
-            errors.append(f"{where}: brak pola `tytul` lub `autor`")
+        missing = [k for k in ("skrot", "tytul", "autor") if not s.get(k)]
+        if missing:
+            errors.append(f"{where}: brak pól {', '.join(missing)}")
             continue
-        sources[sid] = Source(sid, s["tytul"], s["autor"], s.get("link", ""))
+        sources[sid] = Source(sid, str(s["skrot"]), s["tytul"], s["autor"], s.get("link", ""))
 
     by_chapter = {}
     for cid, items in (data.get("rozdzialy") or {}).items():

@@ -88,7 +88,7 @@ Książki opisujemy raz w `zrodla`, a w rozdziale podajemy konkretne podrozdzia�
 
 ```yaml
 zrodla:
-  ross: { tytul: A First Course in Probability, autor: Sheldon M. Ross, opis: "..." }
+  ross: { skrot: Ross, tytul: A First Course in Probability (wyd. 10), autor: Sheldon M. Ross }
 
 rozdzialy:
   calculus/bayes:
@@ -101,7 +101,8 @@ rozdzialy:
       opis: Jedno zdanie, dlaczego warto.  # opcjonalnie
 ```
 
-Linkujemy tylko do legalnie udostępnionych wersji; książka bez `link` dostaje dopisek o bibliotece.
+Przy rozdziale książka wyświetla się jako `skrot` z podrozdziałami, pełny tytuł jest w podpowiedzi.
+Linkujemy tylko do legalnie udostępnionych wersji.
 Build sprawdza identyfikatory rozdziałów i źródeł, typy i wymagane pola. W banku zadań baner
 wybranego rozdziału prowadzi do jego materiałów.
 

@@ -1,6 +1,7 @@
 # Materiały dodatkowe przypisane do rozdziałów skryptu (identyfikatory z rozdzialy.yml).
 #
-# `zrodla` to książki opisane raz; w rozdziale odwołujemy się do nich przez
+# `zrodla` to książki opisane raz (`skrot` to nazwa wyświetlana przy rozdziale, pełny tytuł
+# pokazuje się w podpowiedzi); w rozdziale odwołujemy się do nich przez
 # `{ zrodlo: <id>, gdzie: "<podrozdziały książki>" }`, opcjonalnie z `link` do konkretnej części.
 # Pozostałe pozycje to `{ typ, tytul, autor, link }`. `podrozdzial` wskazuje miejsce w skrypcie,
 # `opis` to jedno zdanie, dlaczego warto. Linkujemy tylko do legalnie udostępnionych wersji.
@@ -9,21 +10,26 @@
 
 zrodla:
   tsun:
+    skrot: Tsun
     tytul: Probability & Statistics with Applications to Computing
     autor: Alex Tsun
     link: https://www.alextsun.com/files/Prob_Stat_for_CS_Book.pdf
   ross:
+    skrot: Ross
     tytul: A First Course in Probability (wyd. 10)
     autor: Sheldon M. Ross
   think-bayes:
+    skrot: Think Bayes
     tytul: Think Bayes
     autor: Allen B. Downey
     link: https://allendowney.github.io/ThinkBayes2/
   islp:
+    skrot: ISLP
     tytul: An Introduction to Statistical Learning (with Applications in Python)
     autor: G. James, D. Witten, T. Hastie, R. Tibshirani, J. Taylor
     link: https://www.statlearning.com/
   kolmogorov:
+    skrot: Kołmogorow
     tytul: Foundations of the Theory of Probability
     autor: A. N. Kołmogorow
 
