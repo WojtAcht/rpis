@@ -11,6 +11,7 @@ Najpierw spróbuj rozwiązać zadania samodzielnie, a dopiero potem zajrzyj do r
 
 ```
 rozdzialy.yml                       # rozdziały skryptu, do których przypisujemy zadania
+materialy.yml                       # materiały dodatkowe (książki, filmy, artykuły) do rozdziałów
 prezentacje/
 └── NN-nazwa.html                   # samodzielne slajdy HTML
 kolokwium-N/
@@ -79,6 +80,31 @@ Build sprawdza nagłówki, sekcje, numerację i identyfikatory rozdziałów, a b
 
 Odnośnik `skrypt:<rozdział>#<kotwica>` zamienia się na adres strony skryptu; `<rozdział>` to identyfikator
 z `rozdzialy.yml`, a kotwica to `id` definicji/twierdzenia (np. `def-cdf`) lub podrozdziału na stronie skryptu.
+
+## Materiały dodatkowe
+
+`materialy.yml` opisuje stronę [materiałów dodatkowych](https://wojtacht.github.io/rpis/materialy/).
+Książki opisujemy raz w `zrodla`, a w rozdziale podajemy konkretne podrozdziały książki:
+
+```yaml
+zrodla:
+  ross: { skrot: Ross, tytul: A First Course in Probability (wyd. 10), autor: Sheldon M. Ross }
+
+rozdzialy:
+  calculus/bayes:
+    - { zrodlo: ross, gdzie: "3.3" }
+    - typ: wideo                       # ksiazka, wideo, artykul, notatki
+      tytul: The Bayesian Trap
+      autor: Veritasium
+      link: https://www.youtube.com/watch?v=R13BD8qKeTg
+      podrozdzial: "4.2"               # opcjonalnie: miejsce w skrypcie
+      opis: Jedno zdanie, dlaczego warto.  # opcjonalnie
+```
+
+Przy rozdziale książka wyświetla się jako `skrot` z podrozdziałami, pełny tytuł jest w podpowiedzi.
+Linkujemy tylko do legalnie udostępnionych wersji.
+Build sprawdza identyfikatory rozdziałów i źródeł, typy i wymagane pola. W banku zadań baner
+wybranego rozdziału prowadzi do jego materiałów.
 
 ## Budowanie lokalnie
 

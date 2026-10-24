@@ -3,6 +3,7 @@
 
 Konwencja katalogów:
     rozdzialy.yml                                  rozdziały skryptu
+    materialy.yml                                  materiały dodatkowe do rozdziałów
     kolokwium-N/zagadnienia.md                     zagadnienia z odnośnikami do skryptu
     kolokwium-N/RRRR/<wariant>/zadanie-K.md        treść + rozwiązanie (Markdown)
     kolokwium-N/RRRR/<wariant>/*.png               obrazki używane w zadaniach
@@ -21,6 +22,7 @@ from pathlib import Path
 import convert
 import pages
 import pdf
+from materials import load_materials
 from tasks import ContentError, all_tasks, all_variants, collect, load_chapters, plural
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -71,8 +73,9 @@ def main() -> int:
     try:
         script_url, chapters = load_chapters(ROOT / "rozdzialy.yml")
         exams = collect(ROOT, chapters)
+        mats = load_materials(ROOT / "materialy.yml", chapters)
     except ContentError as err:
-        print(f"Błędy w plikach zadań:\n{err}", file=sys.stderr)
+        print(f"Błędy w plikach zadań i materiałów:\n{err}", file=sys.stderr)
         return 1
 
     if SITE.exists():
@@ -103,7 +106,8 @@ def main() -> int:
     # Strony.
     decks = collect_slides()
     write_page("", pages.index_page(exams, decks))
-    write_page("zadania", pages.browse_page(exams, script_url, chapters))
+    write_page("zadania", pages.browse_page(exams, script_url, chapters, mats))
+    write_page("materialy", pages.materials_page(mats, chapters))
     for x in exams:
         if x.topics:
             write_page(f"{x.id}/zagadnienia", pages.topics_page(x, script_url))
