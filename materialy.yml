@@ -54,6 +54,12 @@ rozdzialy:
     - { zrodlo: ross, gdzie: "2.2–2.5" }
     - { zrodlo: kolmogorov, opis: "Najciekawsze są pierwsze strony, na których Kołmogorow wprowadza aksjomatykę." }
     - typ: wideo
+      tytul: "Dwa sygnały i jeden odbiornik (Zad. 2.13)"
+      autor: 3Prompty1Film
+      link: https://www.youtube.com/watch?v=KpGple9L1uw
+      podrozdzial: "zad. 2.13"
+      opis: "Prawdopodobieństwo geometryczne krok po kroku: kiedy dwa losowe sygnały psują odbiornik?"
+    - typ: wideo
       tytul: "Lecture 1: Probability Models and Axioms"
       autor: MIT OpenCourseWare (6.041)
       link: https://www.youtube.com/watch?v=j9WZyLZCBzs
@@ -67,6 +73,18 @@ rozdzialy:
   calculus/conditional-independence:
     - { zrodlo: tsun, gdzie: "2.2.1, 2.3" }
     - { zrodlo: ross, gdzie: "3.2, 3.4–3.5" }
+    - typ: wideo
+      tytul: "Prawdopodobieństwo warunkowe (Def. 3.1)"
+      autor: 3Prompty1Film
+      link: https://www.youtube.com/watch?v=ddeJJGCsHI8
+      podrozdzial: "3.1"
+      opis: "Poker, all-in i czwarta karta: jak nowa informacja zmienia szanse."
+    - typ: wideo
+      tytul: "Niezależność zdarzeń (Def. 3.2)"
+      autor: 3Prompty1Film
+      link: https://www.youtube.com/watch?v=sRAIC-UVkbE
+      podrozdzial: "3.2"
+      opis: "Karty i kostki: kiedy prawdopodobieństwa się mnożą i czemu zdarzenia rozłączne są zależne."
     - typ: wideo
       tytul: "Lecture 2: Conditioning and Bayes' Rule"
       autor: MIT OpenCourseWare (6.041)
