@@ -148,6 +148,8 @@ def variant_label(name: str) -> str:
         return f"Grupa {m.group(1).upper()}"
     if m := re.fullmatch(r"zestaw-(\w+)", name):
         return f"Zestaw {m.group(1).upper()}"
+    if m := re.fullmatch(r"wejsciowka-rozdzial-(\d+)-grupa-(\w+)", name):
+        return f"Wejściówka (rozdz. {m.group(1)}) – grupa {m.group(2).upper()}"
     if m := re.fullmatch(r"termin-(\d+)", name):
         return f"{m.group(1)}. termin"
     return name.replace("-", " ").capitalize()
