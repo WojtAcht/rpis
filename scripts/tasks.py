@@ -22,6 +22,8 @@ from pathlib import Path
 import yaml
 
 ROMAN = {1: "I", 2: "II", 3: "III"}
+ENTRY = re.compile(r"wejsciowka-rozdzial-(\d+)-grupa-(\w+)")
+ENTRY_CATEGORY = "wejsciowki"
 SECTIONS = {"Wskazówka": "hint", "Rozwiązanie": "solution"}
 TASK_FILE = re.compile(r"zadanie-(\d+)\.md")
 SCRIPT_LINK = re.compile(r"\]\(skrypt:([^)#\s]+)(#[^)\s]*)?\)")
@@ -75,8 +77,15 @@ class Task:
         return " ".join(self.statement.split())
 
     @property
+    def category(self) -> str:
+        """Filtr w banku zadań: kolokwium-N albo wejściówki."""
+        return ENTRY_CATEGORY if ENTRY.fullmatch(self.variant) else self.exam_id
+
+    @property
     def where(self) -> str:
-        """Np. „Kolokwium I · 2025 · Zestaw A”."""
+        """Np. „Kolokwium I · 2025 · Zestaw A” albo „Wejściówka (rozdz. 2) · 2026 · grupa A”."""
+        if m := ENTRY.fullmatch(self.variant):
+            return f"{entry_title(m)} · {self.year} · grupa {m.group(2).upper()}"
         parts = [exam_title(self.exam_num), self.year]
         if self.variant != "kolokwium":
             parts.append(variant_label(self.variant))
@@ -100,13 +109,25 @@ class Variant:
         return f"{self.exam_id}/{self.year}/{self.slug}"
 
     @property
+    def is_entry(self) -> bool:
+        return bool(ENTRY.fullmatch(self.slug))
+
+    @property
+    def kind(self) -> str:
+        """Np. „Kolokwium I” albo „Wejściówka (rozdz. 2)”."""
+        if m := ENTRY.fullmatch(self.slug):
+            return entry_title(m)
+        return exam_title(self.exam_num)
+
+    @property
     def label(self) -> str:
         return variant_label(self.slug)
 
     @property
     def title(self) -> str:
-        exam = exam_title(self.exam_num)
-        return exam if self.slug == "kolokwium" else f"{exam} – {self.label}"
+        if m := ENTRY.fullmatch(self.slug):
+            return f"{self.kind} – grupa {m.group(2).upper()}"
+        return self.kind if self.slug == "kolokwium" else f"{self.kind} – {self.label}"
 
     @property
     def points(self) -> int:
@@ -141,6 +162,10 @@ def exam_title(num: int) -> str:
     return f"Kolokwium {ROMAN.get(num, num)}"
 
 
+def entry_title(m: re.Match) -> str:
+    return f"Wejściówka (rozdz. {m.group(1)})"
+
+
 def variant_label(name: str) -> str:
     if name == "kolokwium":
         return "Kolokwium"
@@ -148,8 +173,8 @@ def variant_label(name: str) -> str:
         return f"Grupa {m.group(1).upper()}"
     if m := re.fullmatch(r"zestaw-(\w+)", name):
         return f"Zestaw {m.group(1).upper()}"
-    if m := re.fullmatch(r"wejsciowka-rozdzial-(\d+)-grupa-(\w+)", name):
-        return f"Wejściówka (rozdz. {m.group(1)}) – grupa {m.group(2).upper()}"
+    if m := ENTRY.fullmatch(name):
+        return f"Grupa {m.group(2).upper()}"
     if m := re.fullmatch(r"termin-(\d+)", name):
         return f"{m.group(1)}. termin"
     return name.replace("-", " ").capitalize()

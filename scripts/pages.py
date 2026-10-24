@@ -12,7 +12,7 @@ from urllib.parse import quote, urlencode
 from materials import TYPES, Material, Materials, anchor
 from pdf import pdf_href
 from quizzes import LETTERS, Question, Quiz
-from tasks import Chapter, Exam, Task, Variant, all_variants, fold, plural, unique_tasks
+from tasks import ENTRY_CATEGORY, Chapter, Exam, Task, Variant, all_variants, fold, plural, unique_tasks
 
 e = html.escape
 REPO = os.environ.get("GITHUB_REPOSITORY", "WojtAcht/rpis")
@@ -31,7 +31,7 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
         f'<p class="nav-group">{title}</p>' + link(f"kolokwium-{n}/zagadnienia/", "Zagadnienia")
         + link(f"#kolokwium-{n}", "Zestawy z poprzednich lat")
         for n, title in ((1, "Kolokwium I"), (2, "Kolokwium II")))
-    more += '<p class="nav-group">Zajęcia</p>' + link("#prezentacje", "Prezentacje")
+    more += '<p class="nav-group">Zajęcia</p>' + link("#wejsciowki", "Wejściówki") + link("#prezentacje", "Prezentacje")
     # Na telefonie przełącznik motywu jest w menu, żeby pasek zmieścił się w jednym rzędzie.
     more += ('<button class="theme-toggle theme-item" type="button"><span aria-hidden="true"></span>'
              '<span class="theme-label">Tryb ciemny</span></button>')
@@ -123,6 +123,7 @@ def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz], next_e
     nearest = next((x for x in exams if x.num == next_exam), exams[0])
     sections = [exam_section(nearest, quizzes, nearest=True)]
     sections += [exam_section(x, quizzes) for x in exams if x is not nearest]
+    sections.append(entries_section(exams))
     sections += [materials_teaser(), quizzes_section(quizzes), slides_section(decks)]
 
     body = f"""<header class="hero wrap">
@@ -157,7 +158,7 @@ def quick_tiles(nearest: Exam, tasks: list[Task], quizzes: list[Quiz]) -> str:
         f'<li><a href="{R}zadania/?rozdzial={quote(cid)}" title="Rozdział {chapters[cid].num}: {e(chapters[cid].title)}">'
         f'<span class="chip-nr">{chapters[cid].num}</span><span class="top-title">{e(chapters[cid].title)}</span>'
         f'<span class="meta">{counts[cid]}</span></a></li>' for cid in top)
-    year, variants = nearest.years[0]  # lata są od najnowszego
+    year, variants = exam_years(nearest)[0]  # lata są od najnowszego
 
     tiles = []
     if nearest.topics:
@@ -189,22 +190,50 @@ def exam_section(x: Exam, quizzes: list[Quiz], nearest: bool = False) -> str:
             f'<span class="topics-title">{e(z.title)}</span>'
             f'<span class="meta">{plural(len(z.questions), "pytanie", "pytania", "pytań")}</span>'
             '<span class="topics-arrow" aria-hidden="true">→</span></a></li>' for z in own) + "</ul>")
-    for year, variants in x.years:
-        parts.append(f'<h3 id="{x.id}-{year}"><span class="year">{year}</span></h3><ul class="variants">')
-        for v in variants:
-            titles = "".join(f'<li><a href="{R}{t.path}/">{e(t.title)}</a></li>' for t in v.tasks)
-            if v.has_solutions:
-                sol = (f'<a class="btn btn-secondary" href="{R}{pdf_href(v, True)}" target="_blank" '
-                       'rel="noopener">PDF z rozwiązaniami</a>')
-            else:
-                sol = '<span class="no-solution">Bez rozwiązań</span>'
-            parts.append(
-                f'<li class="variant"><div class="variant-head"><a class="name" href="{R}{v.path}/">{e(v.label)}</a>'
-                f'<span class="meta">{plural(len(v.tasks), "zadanie", "zadania", "zadań")} · {v.points} pkt</span></div>'
-                f'<ol class="variant-tasks">{titles}</ol>'
-                f'<div class="actions"><a class="btn" href="{R}{v.path}/">Otwórz zestaw</a>'
-                f'<a class="btn btn-secondary" href="{R}{pdf_href(v)}" target="_blank" rel="noopener">PDF</a>{sol}</div></li>')
-        parts.append("</ul>")
+    for year, variants in exam_years(x):
+        parts.append(f'<h3 id="{x.id}-{year}"><span class="year">{year}</span></h3>')
+        parts.append(variant_list(variants, lambda v: v.label))
+    parts.append("</section>")
+    return "".join(parts)
+
+
+def exam_years(x: Exam) -> list[tuple[str, list[Variant]]]:
+    """Lata z zestawami kolokwium — bez wejściówek, które mają własną sekcję."""
+    years = [(y, [v for v in vs if not v.is_entry]) for y, vs in x.years]
+    return [(y, vs) for y, vs in years if vs]
+
+
+def variant_list(variants: list[Variant], name) -> str:
+    """Lista zestawów; `name(v)` to nazwa zestawu na liście."""
+    parts = ['<ul class="variants">']
+    for v in variants:
+        titles = "".join(f'<li><a href="{R}{t.path}/">{e(t.title)}</a></li>' for t in v.tasks)
+        if v.has_solutions:
+            sol = (f'<a class="btn btn-secondary" href="{R}{pdf_href(v, True)}" target="_blank" '
+                   'rel="noopener">PDF z rozwiązaniami</a>')
+        else:
+            sol = '<span class="no-solution">Bez rozwiązań</span>'
+        parts.append(
+            f'<li class="variant"><div class="variant-head"><a class="name" href="{R}{v.path}/">{e(name(v))}</a>'
+            f'<span class="meta">{plural(len(v.tasks), "zadanie", "zadania", "zadań")} · {v.points} pkt</span></div>'
+            f'<ol class="variant-tasks">{titles}</ol>'
+            f'<div class="actions"><a class="btn" href="{R}{v.path}/">Otwórz zestaw</a>'
+            f'<a class="btn btn-secondary" href="{R}{pdf_href(v)}" target="_blank" rel="noopener">PDF</a>{sol}</div></li>')
+    parts.append("</ul>")
+    return "".join(parts)
+
+
+def entries_section(exams: list[Exam]) -> str:
+    years: dict[str, list[Variant]] = {}
+    for v in all_variants(exams):
+        if v.is_entry:
+            years.setdefault(v.year, []).append(v)
+    if not years:
+        return ""
+    parts = ['<section id="wejsciowki"><p class="kicker">Ćwiczenia</p><h2>Wejściówki</h2>']
+    for year, variants in sorted(years.items(), reverse=True):
+        parts.append(f'<h3 id="wejsciowki-{year}"><span class="year">{year}</span></h3>')
+        parts.append(variant_list(variants, lambda v: v.title))
     parts.append("</section>")
     return "".join(parts)
 
@@ -440,7 +469,7 @@ def variant_page(v: Variant, siblings: list[Variant]) -> str:
     if v.has_solutions:
         pdfs += (f'<a class="btn btn-secondary" href="{R}{pdf_href(v, True)}" target="_blank" '
                  'rel="noopener">Z rozwiązaniami (PDF)</a>')
-    others = [s for s in siblings if s is not v]
+    others = [s for s in siblings if s is not v and s.kind == v.kind]
     other_links = ""
     if others:
         other_links = ('<p class="siblings">Inne zestawy z tego roku: ' + ", ".join(
@@ -450,7 +479,7 @@ def variant_page(v: Variant, siblings: list[Variant]) -> str:
 
     body = f"""<div class="wrap reader">
 {crumbs(("RPiS", ""), (f"{v.title} · {v.year}", None))}
-<p class="kicker">{e(v.title.split(" – ")[0])} · {v.year}</p>
+<p class="kicker">{e(v.kind)} · {v.year}</p>
 <h1 class="task-title">{e(v.label)}</h1>
 <p class="meta">{plural(len(v.tasks), "zadanie", "zadania", "zadań")} · {v.points} pkt</p>
 <div class="actions">{pdfs}</div>
@@ -473,7 +502,7 @@ def browse_card(t: Task) -> str:
         sol = reveal("solution", "Pokaż rozwiązanie", t.html["solution"])
     else:
         sol = '<p class="no-solution">Bez opublikowanego rozwiązania</p>'
-    return f"""<article class="task-card" data-chapters="{e(" ".join(c.id for c in t.chapters))}" data-exam="{t.exam_id}" data-variant="{t.variant_path}" data-search="{e(fold(t.title + " " + t.statement))}">
+    return f"""<article class="task-card" data-chapters="{e(" ".join(c.id for c in t.chapters))}" data-exam="{t.category}" data-variant="{t.variant_path}" data-search="{e(fold(t.title + " " + t.statement))}">
   <header>
     <p class="kicker"><a href="{R}{t.variant_path}/">{e(t.where)}</a> · zad. {t.num} · {t.points} pkt{also}</p>
     <h3><a href="{R}{t.path}/">{e(t.title)}</a></h3>
@@ -527,8 +556,11 @@ def browse_page(exams: list[Exam], script_url: str, chapters: dict[str, Chapter]
                      for c in chapters.values()},
         "variants": {v.path: {"title": v.title, "year": v.year} for v in all_variants(exams)},
     }
-    exam_buttons = "".join(f'<button type="button" data-exam="{x.id}" aria-pressed="false">{e(x.title)}</button>'
-                           for x in exams)
+    filters = [(x.id, x.title) for x in exams]
+    if any(t.category == ENTRY_CATEGORY for t in tasks):
+        filters.append((ENTRY_CATEGORY, "Wejściówki"))
+    exam_buttons = "".join(f'<button type="button" data-exam="{k}" aria-pressed="false">{e(label)}</button>'
+                           for k, label in filters)
 
     body = f"""<div class="wrap browse">
 <header class="page-head">
@@ -551,7 +583,7 @@ def browse_page(exams: list[Exam], script_url: str, chapters: dict[str, Chapter]
         <select id="chapter-select">{"".join(options)}</select></label>
       <button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="filters-extra" hidden>Filtry<span class="filters-badge" id="filters-badge" hidden></span></button>
       <div class="filters-extra" id="filters-extra">
-        <div class="seg" role="group" aria-label="Kolokwium">
+        <div class="seg" role="group" aria-label="Źródło zadań">
           <button type="button" data-exam="" aria-pressed="true">Wszystkie</button>{exam_buttons}
         </div>
         <div class="seg" role="group" aria-label="Grupowanie">

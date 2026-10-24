@@ -48,6 +48,12 @@
     return node;
   }
 
+  // ?kolokwium=1 -> "kolokwium-1", ?kolokwium=wejsciowki -> "wejsciowki"
+  function examFromParam(value) {
+    if (!value) return "";
+    return /^\d+$/.test(value) ? "kolokwium-" + value : value;
+  }
+
   function initBrowse() {
     var dataNode = document.getElementById("browse-data");
     if (!dataNode) return;
@@ -68,7 +74,7 @@
     var params = new URLSearchParams(location.search);
     var state = {
       chapter: data.chapters[params.get("rozdzial")] ? params.get("rozdzial") : "",
-      exam: params.get("kolokwium") ? "kolokwium-" + params.get("kolokwium") : "",
+      exam: examFromParam(params.get("kolokwium")),
       group: params.get("grupuj") === "kolokwium" ? "kolokwium" : "rozdzial",
       q: params.get("q") || "",
       // Na telefonie domyślnie lista: tytuł, rozdziały i punkty, treść po rozwinięciu.
@@ -195,7 +201,7 @@
 
       var p = new URLSearchParams();
       if (state.chapter) p.set("rozdzial", state.chapter);
-      if (state.exam) p.set("kolokwium", state.exam.replace("kolokwium-", ""));
+      if (state.exam) p.set("kolokwium", state.exam.replace("kolokwium-", ""));  // 1, 2 albo wejsciowki
       if (state.group !== "rozdzial") p.set("grupuj", state.group);
       if (state.q) p.set("q", state.q);
       var qs = p.toString();
