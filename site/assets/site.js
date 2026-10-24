@@ -1,4 +1,4 @@
-// RPiS: renderowanie wzorów (KaTeX), filtrowanie banku zadań i przełącznik motywu.
+// RPiS: renderowanie wzorów (KaTeX), filtrowanie banku zadań, quizy i przełącznik motywu.
 (function () {
   "use strict";
 
@@ -218,6 +218,128 @@
     render();
   }
 
+  // --- Quiz --------------------------------------------------------------
+  // Bez JS quiz to lista pytań z „Pokaż odpowiedź”. Tutaj zamieniamy ją na
+  // jedno pytanie naraz: odpowiedź blokuje pytanie i pokazuje wyjaśnienie,
+  // „Dalej” przechodzi do następnego, a na końcu jest podsumowanie.
+  function initQuiz() {
+    var quiz = document.querySelector(".quiz");
+    if (!quiz) return;
+    var questions = Array.prototype.slice.call(quiz.querySelectorAll(".question"));
+    var summary = document.getElementById("quiz-summary");
+    var current = 0;
+
+    var segs = questions.map(function () { return el("span", { class: "seg-bar" }); });
+    var progress = el("div", { class: "quiz-progress", "aria-hidden": "true" }, segs);
+    summary.parentNode.insertBefore(progress, summary);
+
+    questions.forEach(function (q, i) {
+      var last = i === questions.length - 1;
+      var next = el("button", { type: "button", class: "btn quiz-next", text: last ? "Zobacz wynik →" : "Dalej →" });
+      q.querySelector(".feedback .reveal-body").appendChild(next);
+    });
+
+    function show(i) {
+      current = i;
+      questions.forEach(function (q, j) { q.hidden = j !== i; });
+      segs.forEach(function (s, j) { s.classList.toggle("is-current", j === i); });
+      summary.hidden = true;
+      progress.hidden = false;
+      var top = progress.getBoundingClientRect().top + window.scrollY - 80;
+      if (window.scrollY > top) window.scrollTo({ top: top });
+    }
+
+    function answer(option) {
+      var q = option.closest(".question");
+      if (q.classList.contains("is-answered")) return;
+      var good = option.hasAttribute("data-correct");
+      q.classList.add("is-answered", good ? "is-good" : "is-bad");
+      option.classList.add("is-chosen");
+      q.querySelectorAll(".option").forEach(function (b) {
+        b.disabled = true;
+        if (b.hasAttribute("data-correct")) b.classList.add("is-correct");
+      });
+      var verdict = q.querySelector(".verdict");
+      verdict.textContent = good ? "Dobrze!" : "Niestety nie.";
+      verdict.hidden = false;
+      var details = q.querySelector(".feedback");
+      details.open = true;
+      renderMath(details);
+      segs[questions.indexOf(q)].classList.add(good ? "is-good" : "is-bad");
+      if (quiz.classList.contains("is-stepper")) q.querySelector(".quiz-next").focus({ preventScroll: true });
+    }
+
+    function finish() {
+      var good = quiz.querySelectorAll(".question.is-good").length;
+      var ratio = good / questions.length;
+      questions.forEach(function (q) { q.hidden = true; });
+      segs.forEach(function (s) { s.classList.remove("is-current"); });
+      document.getElementById("summary-good").textContent = good;
+      document.getElementById("summary-text").textContent = ratio === 1
+        ? "Wszystko dobrze. Tak trzymaj!"
+        : ratio >= 0.7 ? "Dobry wynik. Przejrzyj pytania, w których był błąd."
+        : "Warto wrócić do rozdziałów skryptu przy pytaniach z błędem.";
+      document.getElementById("quiz-review").hidden = false;
+      summary.hidden = false;
+      summary.focus();
+    }
+
+    function review() {
+      quiz.classList.remove("is-stepper");
+      questions.forEach(function (q) { q.hidden = false; });
+      document.getElementById("quiz-review").hidden = true;
+      progress.hidden = true;
+    }
+
+    function restart() {
+      questions.forEach(function (q) {
+        q.classList.remove("is-answered", "is-good", "is-bad");
+        q.querySelectorAll(".option").forEach(function (b) {
+          b.disabled = false;
+          b.classList.remove("is-chosen", "is-correct");
+        });
+        q.querySelector(".verdict").hidden = true;
+        q.querySelector(".feedback").open = false;
+      });
+      segs.forEach(function (s) { s.classList.remove("is-good", "is-bad"); });
+      quiz.classList.add("is-stepper");
+      show(0);
+    }
+
+    function next() {
+      if (current + 1 < questions.length) show(current + 1);
+      else finish();
+    }
+
+    quiz.addEventListener("click", function (ev) {
+      var option = ev.target.closest(".option");
+      if (option) answer(option);
+      else if (ev.target.closest(".quiz-next")) next();
+    });
+    document.getElementById("quiz-restart").addEventListener("click", restart);
+    document.getElementById("quiz-review").addEventListener("click", review);
+
+    // Klawisze: 1–4 albo a–d wybiera odpowiedź, Enter/→ przechodzi dalej.
+    document.addEventListener("keydown", function (ev) {
+      if (!quiz.classList.contains("is-stepper") || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+      var q = questions[current];
+      if (!q || q.hidden) return;
+      if (q.classList.contains("is-answered")) {
+        if (ev.key === "ArrowRight" || (ev.key === "Enter" && !(ev.target.closest && ev.target.closest("button")))) {
+          ev.preventDefault();
+          next();
+        }
+        return;
+      }
+      var i = "1234".indexOf(ev.key) >= 0 ? "1234".indexOf(ev.key) : "abcd".indexOf(ev.key.toLowerCase());
+      var options = q.querySelectorAll(".option");
+      if (ev.key.length === 1 && i >= 0 && i < options.length) answer(options[i]);
+    });
+
+    quiz.classList.add("is-stepper");
+    show(0);
+  }
+
   // --- Motyw -------------------------------------------------------------
   // Bez zapisanego wyboru strona idzie za ustawieniem systemu. Wybór równy
   // systemowemu kasujemy, żeby znów podążać za systemem.
@@ -250,6 +372,7 @@
   function init() {
     initTheme();
     initBrowse();
+    initQuiz();
     renderMath(document);
   }
 

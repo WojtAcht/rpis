@@ -1,4 +1,4 @@
-"""Strony HTML: główna, bank zadań (filtrowanie po rozdziałach), zestaw, pojedyncze zadanie i materiały.
+"""Strony HTML: główna, bank zadań (filtrowanie po rozdziałach), zestaw, pojedyncze zadanie, materiały i quizy.
 
 Linki wewnętrzne zaczynają się od {{ROOT}}; przy zapisie strony build.py podmienia
 to na względną ścieżkę do katalogu głównego, więc strona działa i lokalnie, i pod /rpis/.
@@ -11,6 +11,7 @@ from urllib.parse import quote, urlencode
 
 from materials import TYPES, Material, Materials, anchor
 from pdf import pdf_href
+from quizzes import LETTERS, Question, Quiz
 from tasks import Chapter, Exam, Task, Variant, all_variants, fold, plural, unique_tasks
 
 e = html.escape
@@ -26,7 +27,8 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
 
     nav = (link("zadania/", "Zadania", "zadania") + link("materialy/", "Materiały", "materialy")
            + link("#kolokwium-1", "Kolokwium I")
-           + link("#kolokwium-2", "Kolokwium II") + link("#prezentacje", "Prezentacje"))
+           + link("#kolokwium-2", "Kolokwium II") + link("#quizy", "Quizy", "quizy")
+           + link("#prezentacje", "Prezentacje"))
     return f"""<!doctype html>
 <html lang="pl">
 <head>
@@ -106,9 +108,9 @@ def crumbs(*items: tuple[str, str | None]) -> str:
 
 # --- strona główna ---------------------------------------------------------
 
-def index_page(exams: list[Exam], decks: list[dict]) -> str:
+def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz]) -> str:
     tasks = unique_tasks(exams)
-    sections = [zadania_teaser(tasks), materials_teaser(), slides_section(decks)]
+    sections = [zadania_teaser(tasks), materials_teaser(), quizzes_section(quizzes), slides_section(decks)]
     for x in exams:
         parts = [f'<section id="{x.id}"><p class="kicker">Ćwiczenia</p><h2>{e(x.title)}</h2>']
         if x.topics:
@@ -160,6 +162,23 @@ def materials_teaser() -> str:
 <p class="lead">Podręczniki, filmy i artykuły przypisane do rozdziałów skryptu.</p>
 <a class="btn btn-big" href="{R}materialy/">Materiały do rozdziałów →</a>
 </section>"""
+
+
+def quizzes_section(quizzes: list[Quiz]) -> str:
+    if not quizzes:
+        return ""
+    items = "".join(
+        f'<li><a class="deck" href="{R}{z.path}/">'
+        f'<span class="tag">Quiz</span>'
+        f'<span class="deck-title">{e(z.title)}</span>'
+        f'<span class="meta">{plural(len(z.questions), "pytanie", "pytania", "pytań")} →</span></a></li>'
+        for z in quizzes
+    )
+    return (
+        '<section id="quizy"><p class="kicker">Sprawdź się</p><h2>Quizy</h2>'
+        '<p class="hint">Krótkie pytania zamknięte z wyjaśnieniami.</p>'
+        f'<ul class="decks">{items}</ul></section>'
+    )
 
 
 def slides_section(decks: list[dict]) -> str:
@@ -284,6 +303,55 @@ def task_page(t: Task, v: Variant, source: str) -> str:
 </div>"""
     return layout(f"{t.title} · {v.title} {v.year} · RPiS", body,
                   description=f"{v.title} ({v.year}), zadanie {t.num}: {t.title}. Treść i rozwiązanie.")
+
+
+# --- quiz ------------------------------------------------------------------
+# Bez JS quiz to lista pytań z „Pokaż odpowiedź”. site.js zamienia ją w tryb
+# „jedno pytanie naraz” z paskiem postępu i podsumowaniem.
+
+def quiz_option(q: Question, i: int) -> str:
+    correct = " data-correct" if i == q.correct else ""
+    label = e(q.options[i]) if q.true_false else q.html[i]
+    key = "" if q.true_false else f'<span class="opt-key">{LETTERS[i]}</span>'
+    return f'<button type="button" class="option"{correct}>{key}<span class="opt-text">{label}</span></button>'
+
+
+def quiz_question(q: Question, total: int) -> str:
+    buttons = "".join(quiz_option(q, i) for i in range(len(q.options)))
+    answer = q.options[q.correct] if q.true_false else f"{LETTERS[q.correct]})"
+    inner = (f'<p class="verdict" hidden></p><p class="answer">Poprawna odpowiedź: <strong>{e(answer)}</strong></p>'
+             + q.html.get("explanation", ""))
+    refs = "".join(
+        f'<a class="q-ref" href="{R}zadania/?rozdzial={quote(c.id)}" title="Rozdział {c.num}: {e(c.title)}">'
+        f'rozdz. {c.num}</a>' for c in q.chapters)
+    return f"""<li class="question" id="pytanie-{q.num}">
+  <p class="q-meta"><span>Pytanie {q.num} / {total}</span>{refs}</p>
+  <div class="prose q-text">{q.html["text"]}</div>
+  <div class="options{" options-tf" if q.true_false else ""}" role="group" aria-label="Odpowiedzi">{buttons}</div>
+  {reveal("solution feedback", "Pokaż odpowiedź", inner)}
+</li>"""
+
+
+def quiz_page(z: Quiz) -> str:
+    n = plural(len(z.questions), "pytanie", "pytania", "pytań")
+    total = len(z.questions)
+    body = f"""<div class="wrap reader quiz-page">
+{crumbs(("RPiS", ""), ("Quizy", "#quizy"), (z.title, None))}
+<p class="kicker">Quiz · {n}</p>
+<h1 class="task-title">{e(z.title)}</h1>
+<section class="quiz-summary" id="quiz-summary" hidden tabindex="-1">
+  <p class="kicker">Koniec quizu</p>
+  <p class="summary-score"><span id="summary-good">0</span><span class="summary-total">/ {total}</span></p>
+  <p class="summary-text" id="summary-text"></p>
+  <div class="actions">
+    <button type="button" class="btn" id="quiz-restart">Jeszcze raz</button>
+    <button type="button" class="btn btn-secondary" id="quiz-review">Przejrzyj odpowiedzi</button>
+  </div>
+</section>
+<ol class="quiz">{"".join(quiz_question(q, total) for q in z.questions)}</ol>
+</div>"""
+    return layout(f"{z.title} · Quiz · RPiS", body, current="quizy",
+                  description=f"Quiz z RPiS: {z.title} ({n}) z odpowiedziami i wyjaśnieniami.")
 
 
 # --- strona zestawu --------------------------------------------------------

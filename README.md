@@ -12,6 +12,8 @@ Najpierw spróbuj rozwiązać zadania samodzielnie, a dopiero potem zajrzyj do r
 ```
 rozdzialy.yml                       # rozdziały skryptu, do których przypisujemy zadania
 materialy.yml                       # materiały dodatkowe (książki, filmy, artykuły) do rozdziałów
+quizy/
+└── <nazwa>.yml                     # quiz: pytania zamknięte i prawda/fałsz
 prezentacje/
 └── NN-nazwa.html                   # samodzielne slajdy HTML
 kolokwium-N/
@@ -105,6 +107,26 @@ Przy rozdziale książka wyświetla się jako `skrot` z podrozdziałami, pełny 
 Linkujemy tylko do legalnie udostępnionych wersji.
 Build sprawdza identyfikatory rozdziałów i źródeł, typy i wymagane pola. W banku zadań baner
 wybranego rozdziału prowadzi do jego materiałów.
+
+## Quizy
+
+Każdy plik `quizy/<nazwa>.yml` to osobna strona `quizy/<nazwa>/` z pytaniami zamkniętymi.
+Pytania pokazują się po jednym; po odpowiedzi widać wyjaśnienie, a na końcu wynik:
+
+```yaml
+tytul: Kahoot 1
+pytania:
+  - tresc: Które stwierdzenie jest **fałszywe**?
+    rozdzialy: [calculus/probability]
+    odpowiedzi: [$P(\Omega) = 1$, "$P(A \cap B) \le P(A)$"]
+    poprawna: b                          # litera poprawnej odpowiedzi
+    wyjasnienie: Dlaczego.               # opcjonalnie
+  - tresc: Gęstość rozkładu ciągłego zawsze jest funkcją ciągłą.
+    rozdzialy: [rv/real/distributions]
+    poprawna: fałsz                      # bez `odpowiedzi`: pytanie prawda/fałsz
+```
+
+Teksty to Markdown ze wzorami, jak w zadaniach. Build sprawdza pola, litery odpowiedzi i identyfikatory rozdziałów.
 
 ## Budowanie lokalnie
 
