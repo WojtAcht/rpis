@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from tasks import Chapter, ContentError, load_topics, parse_task
+from tasks import ENTRY_CATEGORY, Chapter, ContentError, Variant, load_topics, parse_task
 
 
 class TaskSectionsTest(unittest.TestCase):
@@ -44,6 +44,24 @@ class TaskSectionsTest(unittest.TestCase):
             task.solution,
             "Pierwsza część\n```text\n## Rozwiązanie\n```\n### Podpunkt b)\nDruga część",
         )
+
+
+class EntryLabelsTest(unittest.TestCase):
+    def test_entry_is_labelled_without_exam_and_filtered_separately(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            vdir = root / "kolokwium-1/2026/wejsciowka-rozdzial-2-grupa-a"
+            vdir.mkdir(parents=True)
+            (vdir / "zadanie-1.md").write_text(
+                "---\ntytul: Test\npunkty: 10\nrozdzialy: [calculus/bayes]\n---\nTreść", encoding="utf-8")
+            chapters = {"calculus/bayes": Chapter("calculus/bayes", 4, "Bayes", "RP", "")}
+            task = parse_task(vdir / "zadanie-1.md", chapters, root)
+            variant = Variant(1, "2026", vdir.name, vdir, [task])
+        self.assertEqual(task.where, "Wejściówka (rozdz. 2) · 2026 · grupa A")
+        self.assertEqual(task.category, ENTRY_CATEGORY)
+        self.assertEqual((variant.kind, variant.label, variant.title),
+                         ("Wejściówka (rozdz. 2)", "Grupa A", "Wejściówka (rozdz. 2) – grupa A"))
+        self.assertTrue(variant.is_entry)
 
 
 class TopicsTest(unittest.TestCase):

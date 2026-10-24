@@ -51,6 +51,32 @@ for (const query of ["rozdzial=calculus/bayes", "kolokwium=1", "q=monety"]) {
   });
 }
 
+test("filtr wejściówek pokazuje tylko zadania z wejściówek", () => {
+  const dom = new JSDOM(html, {
+    url: "https://wojtacht.github.io/rpis/zadania/?kolokwium=wejsciowki",
+    runScripts: "outside-only",
+  });
+  const { window } = dom;
+  const { document } = window;
+  window.katex = { render() {} };
+  window.scrollTo = () => {};
+  try {
+    window.eval(script);
+    document.dispatchEvent(new window.Event("DOMContentLoaded"));
+    const shown = () => [...document.querySelectorAll("#groups .task-card")];
+    assert.ok(shown().length > 0);
+    assert.ok(shown().every(c => c.dataset.exam === "wejsciowki"));
+    assert.equal(document.querySelector('button[data-exam="wejsciowki"]').getAttribute("aria-pressed"), "true");
+
+    document.querySelector('button[data-exam="kolokwium-1"]').click();
+    assert.ok(shown().length > 0);
+    assert.ok(shown().every(c => c.dataset.exam === "kolokwium-1"));
+    assert.equal(new window.URL(window.location.href).searchParams.get("kolokwium"), "1");
+  } finally {
+    window.close();
+  }
+});
+
 test("quiz: jedno pytanie naraz, wyjaśnienie po odpowiedzi, podsumowanie i reset", () => {
   const quizHtml = fs.readFileSync(path.join(root, "_site/quizy/kahoot-1/index.html"), "utf8");
   const dom = new JSDOM(quizHtml, { url: "https://wojtacht.github.io/rpis/quizy/kahoot-1/", runScripts: "outside-only" });

@@ -66,6 +66,10 @@ $$P(M_U \mid 2O) = \frac{P(2O \mid M_U)\,P(M_U)}{P(2O)} = \frac{4}{5}$$
 - Zadania w zestawie numerujemy kolejno od 1. Identyczne zadania w różnych zestawach
   (np. A i B) są wykrywane automatycznie i w banku zadań pokazywane raz.
 - Obrazek wstawiasz jako `![Podpis](rysunek.png)`, plik kładziesz obok zadania.
+- Wejściówki trzymamy w katalogu kolokwium z tym samym materiałem, w wariancie
+  `wejsciowka-rozdzial-N-grupa-X` (np. `kolokwium-1/2026/wejsciowka-rozdzial-2-grupa-a/`).
+  Wyświetlają się jako „Wejściówka (rozdz. N) · RRRR · grupa X”, mają własną sekcję na stronie głównej
+  i osobny filtr „Wejściówki” w banku zadań.
 
 Build sprawdza nagłówki, sekcje, numerację i identyfikatory rozdziałów, a błędy wypisuje z nazwą pliku.
 
