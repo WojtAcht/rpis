@@ -10,7 +10,6 @@ Najpierw spróbuj rozwiązać zadania samodzielnie, a dopiero potem zajrzyj do r
 ## Struktura
 
 ```
-strona.yml                          # ustawienia strony głównej (najbliższe kolokwium)
 rozdzialy.yml                       # rozdziały skryptu, do których przypisujemy zadania
 materialy.yml                       # materiały dodatkowe (książki, filmy, artykuły) do rozdziałów
 quizy/
@@ -134,13 +133,8 @@ Wszystkie quizy są na stronie `quizy/`, a quizy z polem `kolokwium` także w se
 ## Strona główna
 
 Pod tytułem są kafle z głównymi wejściami (zagadnienia, bank zadań, quizy, PDF-y), a pod nimi
-sekcja najbliższego kolokwium. Które kolokwium jest najbliższe, ustawiamy w `strona.yml`:
-
-```yaml
-najblizsze_kolokwium: 1
-```
-
-Po kolokwium przestawiamy je ręcznie na następne.
+sekcja najbliższego kolokwium: od września do 19 grudnia Kolokwium I, od 20 grudnia Kolokwium II.
+Strona przebudowuje się sama w te dni (harmonogram w GitHub Actions).
 
 ## Budowanie lokalnie
 
@@ -155,19 +149,14 @@ Po pushu na `main` GitHub Actions buduje i publikuje stronę na GitHub Pages.
 
 ## Testy
 
-Testy filtrów i widoku na telefonie korzystają z wygenerowanej strony i wymagają Node.js 24
-oraz Chromium dla Playwrighta:
+Testy filtrów korzystają z wygenerowanej strony i wymagają Node.js 24:
 
 ```sh
 make
 python3 -m unittest discover -s tests
 npm ci
-npx playwright install chromium
 npm test
 ```
-
-Testy w przeglądarce sprawdzają na ekranie 375×812, że żadna strona nie przewija się w poziomie,
-nawigacja jest osiągalna, a strona główna, bank zadań i quiz mieszczą najważniejsze rzeczy na ekranie.
 
 CI uruchamia te testy przed publikacją. Parser odrzuca powtórzone sekcje
 `## Wskazówka` i `## Rozwiązanie`, aby nie nadpisywać ich treści.

@@ -120,7 +120,7 @@ def crumbs(*items: tuple[str, str | None]) -> str:
 
 def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz], next_exam: int) -> str:
     tasks = unique_tasks(exams)
-    nearest = next(x for x in exams if x.num == next_exam)
+    nearest = next((x for x in exams if x.num == next_exam), exams[0])
     sections = [exam_section(nearest, quizzes, nearest=True)]
     sections += [exam_section(x, quizzes) for x in exams if x is not nearest]
     sections += [materials_teaser(), quizzes_section(quizzes), slides_section(decks)]

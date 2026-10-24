@@ -2,7 +2,6 @@
 """Buduje stronę (GitHub Pages) i PDF-y w katalogu _site/.
 
 Konwencja katalogów:
-    strona.yml                                     ustawienia strony głównej (najbliższe kolokwium)
     rozdzialy.yml                                  rozdziały skryptu
     materialy.yml                                  materiały dodatkowe do rozdziałów
     kolokwium-N/zagadnienia.md                     zagadnienia z odnośnikami do skryptu
@@ -19,12 +18,12 @@ import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from datetime import date
 from pathlib import Path
 
 import convert
 import pages
 import pdf
-import yaml
 from materials import load_materials
 from quizzes import collect_quizzes
 from tasks import ContentError, all_tasks, all_variants, collect, load_chapters, plural
@@ -65,14 +64,12 @@ def collect_slides():
     return decks
 
 
-def load_settings(path: Path, exams) -> dict:
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    nums = [x.num for x in exams]
-    if extra := set(data) - {"najblizsze_kolokwium"}:
-        raise ContentError(f"{path.name}: nieznane pola {sorted(extra)}")
-    if data.get("najblizsze_kolokwium") not in nums:
-        raise ContentError(f"{path.name}: najblizsze_kolokwium musi być jednym z {nums}")
-    return data
+def nearest_exam(today: date) -> int:
+    """Kolokwium pokazywane na górze strony głównej: I od września do 19 grudnia, potem II.
+
+    Strona jest statyczna, więc przełącza się przy buildzie; pages.yml przebudowuje ją 20.12 i 1.09.
+    """
+    return 2 if (today.month, today.day) >= (12, 20) or today.month < 9 else 1
 
 
 def write_page(rel: str, content: str) -> None:
@@ -89,7 +86,6 @@ def main() -> int:
         exams = collect(ROOT, chapters)
         mats = load_materials(ROOT / "materialy.yml", chapters)
         quizzes = collect_quizzes(ROOT, chapters)
-        settings = load_settings(ROOT / "strona.yml", exams)
         if bad := [z.slug for z in quizzes if z.exam and z.exam not in {x.num for x in exams}]:
             raise ContentError(f"quizy: nieznany numer kolokwium w {bad}")
     except ContentError as err:
@@ -124,7 +120,7 @@ def main() -> int:
 
     # Strony.
     decks = collect_slides()
-    write_page("", pages.index_page(exams, decks, quizzes, settings["najblizsze_kolokwium"]))
+    write_page("", pages.index_page(exams, decks, quizzes, nearest_exam(date.today())))
     write_page("zadania", pages.browse_page(exams, script_url, chapters, mats))
     write_page("materialy", pages.materials_page(mats, chapters))
     write_page("quizy", pages.quizzes_page(quizzes, exams))
