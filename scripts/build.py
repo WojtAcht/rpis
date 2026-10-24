@@ -121,7 +121,7 @@ def main() -> int:
     # Strony.
     decks = collect_slides()
     write_page("", pages.index_page(exams, decks, quizzes, nearest_exam(date.today())))
-    write_page("zadania", pages.browse_page(exams, script_url, chapters, mats))
+    write_page("zadania", pages.browse_page(exams, chapters, mats))
     write_page("materialy", pages.materials_page(mats, chapters))
     write_page("quizy", pages.quizzes_page(quizzes, exams))
     for z in quizzes:

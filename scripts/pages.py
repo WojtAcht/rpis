@@ -139,25 +139,14 @@ def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz], next_e
                               "i Statystyki z poprzednich lat, z rozwiązaniami, przypisane do rozdziałów skryptu.")
 
 
-def tile(href: str, kicker: str, title: str, meta: str, extra: str = "") -> str:
+def tile(href: str, kicker: str, title: str, meta: str) -> str:
     return (f'<li class="tile"><a class="tile-link" href="{href}"><span class="tile-kicker">{kicker}</span>'
             f'<span class="tile-title">{title}</span><span class="meta">{meta}</span>'
-            f'<span class="tile-arrow" aria-hidden="true">→</span></a>{extra}</li>')
+            f'<span class="tile-arrow" aria-hidden="true">→</span></a></li>')
 
 
 def quick_tiles(nearest: Exam, tasks: list[Task], quizzes: list[Quiz]) -> str:
     """Główne wejścia zaraz pod tytułem: zagadnienia, bank zadań, quizy, PDF-y najbliższego kolokwium."""
-    counts: dict[str, int] = {}
-    chapters: dict[str, Chapter] = {}
-    for t in tasks:
-        for c in t.chapters:
-            counts[c.id] = counts.get(c.id, 0) + 1
-            chapters[c.id] = c
-    top = sorted(counts, key=lambda cid: -counts[cid])[:3]  # sorted jest stabilne: remisy w kolejności zadań
-    top_links = "".join(
-        f'<li><a href="{R}zadania/?rozdzial={quote(cid)}" title="Rozdział {chapters[cid].num}: {e(chapters[cid].title)}">'
-        f'<span class="chip-nr">{chapters[cid].num}</span><span class="top-title">{e(chapters[cid].title)}</span>'
-        f'<span class="meta">{counts[cid]}</span></a></li>' for cid in top)
     year, variants = exam_years(nearest)[0]  # lata są od najnowszego
 
     tiles = []
@@ -165,8 +154,7 @@ def quick_tiles(nearest: Exam, tasks: list[Task], quizzes: list[Quiz]) -> str:
         tiles.append(tile(f"{R}{nearest.id}/zagadnienia/", e(nearest.title), "Zagadnienia",
                           "z odnośnikami do skryptu"))
     tiles.append(tile(f"{R}zadania/", "Bank zadań", "Zadania",
-                      plural(len(tasks), "zadanie", "zadania", "zadań") + " z rozwiązaniami",
-                      f'<ul class="tile-extra" aria-label="Rozdziały z największą liczbą zadań">{top_links}</ul>'))
+                      plural(len(tasks), "zadanie", "zadania", "zadań") + " z rozwiązaniami"))
     if quizzes:
         tiles.append(tile(f"{R}quizy/", "Sprawdź się", "Quizy",
                           plural(len(quizzes), "quiz", "quizy", "quizów") + " z wyjaśnieniami"))
@@ -519,10 +507,9 @@ def group_html(c: Chapter, inner: str) -> str:
             f'<a href="{c.url}" target="_blank" rel="noopener">skrypt ↗</a></header>{inner}</section>')
 
 
-def browse_page(exams: list[Exam], script_url: str, chapters: dict[str, Chapter], mats: Materials) -> str:
+def browse_page(exams: list[Exam], chapters: dict[str, Chapter], mats: Materials) -> str:
     tasks = unique_tasks(exams)
     counts = {cid: sum(any(c.id == cid for c in t.chapters) for t in tasks) for cid in chapters}
-    years = sorted({t.year for t in tasks})
     n_tasks = plural(len(tasks), "zadanie", "zadania", "zadań")
 
     parts: dict[str, list[Chapter]] = {}
@@ -565,10 +552,7 @@ def browse_page(exams: list[Exam], script_url: str, chapters: dict[str, Chapter]
     body = f"""<div class="wrap browse">
 <header class="page-head">
   {crumbs(("RPiS", ""), ("Zadania", None))}
-  <h1><mark>Zadania</mark> z kolokwiów</h1>
-  <p class="lead">{n_tasks} z lat {years[0]}–{years[-1]}, każde przypisane do rozdziałów
-  <a href="{script_url}" target="_blank" rel="noopener">skryptu do wykładu ↗</a>.
-  Wybierz rozdział, który właśnie przerabiasz, albo przejrzyj wszystkie naraz.</p>
+  <h1><mark>Zadania</mark></h1>
 </header>
 <div class="browse-grid">
   <aside class="chapters" aria-label="Rozdziały skryptu">
