@@ -111,11 +111,10 @@ wybranego rozdziału prowadzi do jego materiałów.
 ## Quizy
 
 Każdy plik `quizy/<nazwa>.yml` to osobna strona `quizy/<nazwa>/` z pytaniami zamkniętymi.
-Po kliknięciu odpowiedzi widać, czy jest poprawna, wyjaśnienie i bieżący wynik:
+Pytania pokazują się po jednym; po odpowiedzi widać wyjaśnienie, a na końcu wynik:
 
 ```yaml
 tytul: Kahoot 1
-opis: Jedno zdanie o quizie.             # opcjonalnie
 pytania:
   - tresc: Które stwierdzenie jest **fałszywe**?
     rozdzialy: [calculus/probability]

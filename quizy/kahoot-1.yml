@@ -2,8 +2,6 @@
 # Format opisuje scripts/quizzes.py.
 
 tytul: Kahoot 1
-opis: Szybki sprawdzian z podstaw przed kolokwium I — aksjomaty, niezależność, układ zupełny i pierwsze zmienne losowe.
-
 pytania:
   - tresc: Które stwierdzenie jest **fałszywe**? ($A$, $B$ — dowolne zdarzenia)
     rozdzialy: [calculus/probability]

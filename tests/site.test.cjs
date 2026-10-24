@@ -51,35 +51,49 @@ for (const query of ["rozdzial=calculus/bayes", "kolokwium=1", "q=monety"]) {
   });
 }
 
-test("quiz: odpowiedź blokuje pytanie, rozwija wyjaśnienie i liczy wynik", () => {
+test("quiz: jedno pytanie naraz, wyjaśnienie po odpowiedzi, podsumowanie i reset", () => {
   const quizHtml = fs.readFileSync(path.join(root, "_site/quizy/kahoot-1/index.html"), "utf8");
   const dom = new JSDOM(quizHtml, { url: "https://wojtacht.github.io/rpis/quizy/kahoot-1/", runScripts: "outside-only" });
   const { window } = dom;
   const { document } = window;
   window.katex = { render() {} };
-  window.HTMLElement.prototype.scrollIntoView = () => {};
+  window.scrollTo = () => {};
   try {
     window.eval(script);
     document.dispatchEvent(new window.Event("DOMContentLoaded"));
-    const [first, second] = document.querySelectorAll(".question");
-    const score = document.getElementById("quiz-score");
-    assert.equal(score.hidden, true);
+    const questions = [...document.querySelectorAll(".question")];
+    const visible = () => questions.filter(q => !q.hidden);
+    assert.deepEqual(visible(), [questions[0]]);
 
-    first.querySelector(".option[data-correct]").click();
-    assert.ok(first.classList.contains("is-good"));
-    assert.ok(first.querySelector("details").open);
-    assert.equal(first.querySelectorAll("details .math:not([data-done])").length, 0);
-    assert.ok([...first.querySelectorAll(".option")].every(b => b.disabled));
+    questions[0].querySelector(".option[data-correct]").click();
+    assert.ok(questions[0].classList.contains("is-good"));
+    assert.ok(questions[0].querySelector(".feedback").open);
+    assert.equal(questions[0].querySelectorAll(".feedback .math:not([data-done])").length, 0);
+    assert.ok([...questions[0].querySelectorAll(".option")].every(b => b.disabled));
 
-    second.querySelector(".option:not([data-correct])").click();
-    assert.ok(second.classList.contains("is-bad"));
-    assert.ok(second.querySelector(".option[data-correct]").classList.contains("is-correct"));
-    assert.match(score.textContent, /1 \/ 2/);
+    // Klawiatura: Enter przechodzi dalej, „1” wybiera pierwszą odpowiedź.
+    document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Enter" }));
+    assert.deepEqual(visible(), [questions[1]]);
+    document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "1" }));
+    assert.ok(questions[1].classList.contains("is-answered"));
 
-    document.getElementById("quiz-reset").click();
+    for (const q of questions.slice(1)) {
+      if (!q.classList.contains("is-answered")) q.querySelector(".option:not([data-correct])").click();
+      q.querySelector(".quiz-next").click();
+    }
+    const summary = document.getElementById("quiz-summary");
+    assert.equal(summary.hidden, false);
+    assert.equal(visible().length, 0);
+    const good = document.querySelectorAll(".question.is-good").length;
+    assert.equal(document.getElementById("summary-good").textContent, String(good));
+
+    document.getElementById("quiz-review").click();
+    assert.equal(visible().length, questions.length);
+
+    document.getElementById("quiz-restart").click();
+    assert.deepEqual(visible(), [questions[0]]);
     assert.equal(document.querySelectorAll(".question.is-answered").length, 0);
-    assert.equal(score.hidden, true);
-    assert.ok(!first.querySelector("details").open);
+    assert.equal(summary.hidden, true);
   } finally {
     window.close();
   }

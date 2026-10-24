@@ -1,7 +1,6 @@
 """Quizy (quizy/<nazwa>.yml): pytania zamknięte i prawda/fałsz z wyjaśnieniami.
 
     tytul: Kahoot 1
-    opis: Jedno zdanie o quizie.                 (opcjonalnie)
     pytania:
       - tresc: Które stwierdzenie jest fałszywe?
         rozdzialy: [calculus/probability]
@@ -22,7 +21,7 @@ import yaml
 
 from tasks import Chapter, ContentError
 
-QUIZ_KEYS = {"tytul", "opis", "pytania"}
+QUIZ_KEYS = {"tytul", "pytania"}
 QUESTION_KEYS = {"tresc", "rozdzialy", "odpowiedzi", "poprawna", "wyjasnienie"}
 TRUE_FALSE = ["Prawda", "Fałsz"]
 LETTERS = "abcdefgh"
@@ -44,7 +43,6 @@ class Question:
 class Quiz:
     slug: str
     title: str
-    description: str
     questions: list[Question]
 
     @property
@@ -98,7 +96,7 @@ def parse_quiz(path: Path, chapters: dict[str, Chapter], root: Path) -> Quiz:
 
     if errors:
         raise ContentError("\n".join(errors))
-    return Quiz(path.stem, str(data["tytul"]), str(data.get("opis", "")), questions)
+    return Quiz(path.stem, str(data["tytul"]), questions)
 
 
 def collect_quizzes(root: Path, chapters: dict[str, Chapter]) -> list[Quiz]:
