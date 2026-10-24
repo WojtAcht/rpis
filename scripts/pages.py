@@ -25,10 +25,19 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
         cur = ' aria-current="page"' if key and key == current else ""
         return f'<a href="{R}{href}"{cur}>{label}</a>'
 
-    nav = (link("zadania/", "Zadania", "zadania") + link("materialy/", "Materiały", "materialy")
-           + link("#kolokwium-1", "Kolokwium I")
-           + link("#kolokwium-2", "Kolokwium II") + link("#quizy", "Quizy", "quizy")
-           + link("#prezentacje", "Prezentacje"))
+    # Główne pozycje są zawsze widoczne, reszta w menu „Więcej” (<details>, działa bez JS).
+    # Kotwice strony głównej są opisane wprost, żeby nie przenosiły tam niespodziewanie.
+    more = "".join(
+        f'<p class="nav-group">{title}</p>' + link(f"kolokwium-{n}/zagadnienia/", "Zagadnienia")
+        + link(f"#kolokwium-{n}", "Zestawy z poprzednich lat")
+        for n, title in ((1, "Kolokwium I"), (2, "Kolokwium II")))
+    more += '<p class="nav-group">Zajęcia</p>' + link("#prezentacje", "Prezentacje")
+    # Na telefonie przełącznik motywu jest w menu, żeby pasek zmieścił się w jednym rzędzie.
+    more += ('<button class="theme-toggle theme-item" type="button"><span aria-hidden="true"></span>'
+             '<span class="theme-label">Tryb ciemny</span></button>')
+    nav = (link("zadania/", "Zadania", "zadania") + link("quizy/", "Quizy", "quizy")
+           + link("materialy/", "Materiały", "materialy")
+           + f'<details class="nav-more"><summary><span class="more-label">Więcej</span></summary><div class="nav-menu">{more}</div></details>')
     return f"""<!doctype html>
 <html lang="pl">
 <head>
@@ -51,7 +60,7 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
 <header class="topbar"><div class="wrap">
   <a class="brand" href="{R}">RPiS</a>
   <nav aria-label="Główna">{nav}</nav>
-  <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Przełącz tryb jasny i ciemny"><span aria-hidden="true"></span></button>
+  <button class="theme-toggle theme-icon" type="button" aria-label="Przełącz tryb jasny i ciemny"><span aria-hidden="true"></span></button>
 </div></header>
 <main id="tresc">
 {body}
@@ -70,9 +79,10 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
 # --- kawałki wspólne -------------------------------------------------------
 
 def chapter_chip(c: Chapter) -> str:
+    # Na telefonie widać sam numer; pełna nazwa jest w podpowiedzi i dla czytników ekranu.
     return (f'<a class="chip" href="{R}zadania/?rozdzial={quote(c.id)}" '
-            f'title="Wszystkie zadania z rozdziału {c.num}">'
-            f'<span class="chip-nr">{c.num}</span>{e(c.title)}</a>')
+            f'title="Rozdział {c.num}: {e(c.title)}. Wszystkie zadania z tego rozdziału">'
+            f'<span class="chip-nr">{c.num}</span><span class="chip-title">{e(c.title)}</span></a>')
 
 
 def chips(t: Task) -> str:
@@ -108,42 +118,19 @@ def crumbs(*items: tuple[str, str | None]) -> str:
 
 # --- strona główna ---------------------------------------------------------
 
-def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz]) -> str:
+def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz], next_exam: int) -> str:
     tasks = unique_tasks(exams)
-    sections = [zadania_teaser(tasks), materials_teaser(), quizzes_section(quizzes), slides_section(decks)]
-    for x in exams:
-        parts = [f'<section id="{x.id}"><p class="kicker">Ćwiczenia</p><h2>{e(x.title)}</h2>']
-        if x.topics:
-            parts.append(
-                f'<a class="topics" href="{R}{x.id}/zagadnienia/">'
-                '<span class="topics-kicker">Zacznij tutaj</span>'
-                '<span class="topics-title">Zagadnienia do kolokwium</span>'
-                '<span class="topics-arrow" aria-hidden="true">→</span></a>')
-        for year, variants in x.years:
-            parts.append(f'<h3><span class="year">{year}</span></h3><ul class="variants">')
-            for v in variants:
-                titles = "".join(f'<li><a href="{R}{t.path}/">{e(t.title)}</a></li>' for t in v.tasks)
-                if v.has_solutions:
-                    sol = (f'<a class="btn btn-secondary" href="{R}{pdf_href(v, True)}" target="_blank" '
-                           'rel="noopener">PDF z rozwiązaniami</a>')
-                else:
-                    sol = '<span class="no-solution">Bez rozwiązań</span>'
-                parts.append(
-                    f'<li class="variant"><div class="variant-head"><a class="name" href="{R}{v.path}/">{e(v.label)}</a>'
-                    f'<span class="meta">{plural(len(v.tasks), "zadanie", "zadania", "zadań")} · {v.points} pkt</span></div>'
-                    f'<ol class="variant-tasks">{titles}</ol>'
-                    f'<div class="actions"><a class="btn" href="{R}{v.path}/">Otwórz zestaw</a>'
-                    f'<a class="btn btn-secondary" href="{R}{pdf_href(v)}" target="_blank" rel="noopener">PDF</a>{sol}</div></li>')
-            parts.append("</ul>")
-        parts.append("</section>")
-        sections.append("".join(parts))
+    nearest = next((x for x in exams if x.num == next_exam), exams[0])
+    sections = [exam_section(nearest, quizzes, nearest=True)]
+    sections += [exam_section(x, quizzes) for x in exams if x is not nearest]
+    sections += [materials_teaser(), quizzes_section(quizzes), slides_section(decks)]
 
     body = f"""<header class="hero wrap">
-  <p class="kicker">RPiS · AGH Kraków</p>
   <h1>Rachunek Prawdo&shy;podobieństwa i&nbsp;<mark>Statystyka</mark></h1>
-  <p class="lead">Prezentacje z zajęć, zadania z kolokwiów z poprzednich lat z rozwiązaniami, przypisane do rozdziałów skryptu.</p>
+  <p class="lead">Zadania z kolokwiów z rozwiązaniami, quizy i prezentacje z zajęć na AGH.</p>
 </header>
 <div class="wrap">
+{quick_tiles(nearest, tasks, quizzes)}
 {"".join(sections)}
 </div>"""
     return layout("RPiS — materiały", body,
@@ -151,10 +138,75 @@ def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz]) -> str
                               "i Statystyki z poprzednich lat, z rozwiązaniami, przypisane do rozdziałów skryptu.")
 
 
-def zadania_teaser(tasks: list[Task]) -> str:
-    return f"""<section id="zadania"><p class="kicker">Bank zadań</p><h2>Zadania</h2>
-<a class="btn btn-big" href="{R}zadania/">Wszystkie zadania ({len(tasks)}) →</a>
-</section>"""
+def tile(href: str, kicker: str, title: str, meta: str, extra: str = "") -> str:
+    return (f'<li class="tile"><a class="tile-link" href="{href}"><span class="tile-kicker">{kicker}</span>'
+            f'<span class="tile-title">{title}</span><span class="meta">{meta}</span>'
+            f'<span class="tile-arrow" aria-hidden="true">→</span></a>{extra}</li>')
+
+
+def quick_tiles(nearest: Exam, tasks: list[Task], quizzes: list[Quiz]) -> str:
+    """Główne wejścia zaraz pod tytułem: zagadnienia, bank zadań, quizy, PDF-y najbliższego kolokwium."""
+    counts: dict[str, int] = {}
+    chapters: dict[str, Chapter] = {}
+    for t in tasks:
+        for c in t.chapters:
+            counts[c.id] = counts.get(c.id, 0) + 1
+            chapters[c.id] = c
+    top = sorted(counts, key=lambda cid: -counts[cid])[:3]  # sorted jest stabilne: remisy w kolejności zadań
+    top_links = "".join(
+        f'<li><a href="{R}zadania/?rozdzial={quote(cid)}" title="Rozdział {chapters[cid].num}: {e(chapters[cid].title)}">'
+        f'<span class="chip-nr">{chapters[cid].num}</span><span class="top-title">{e(chapters[cid].title)}</span>'
+        f'<span class="meta">{counts[cid]}</span></a></li>' for cid in top)
+    year, variants = nearest.years[0]  # lata są od najnowszego
+
+    tiles = []
+    if nearest.topics:
+        tiles.append(tile(f"{R}{nearest.id}/zagadnienia/", e(nearest.title), "Zagadnienia",
+                          "z odnośnikami do skryptu"))
+    tiles.append(tile(f"{R}zadania/", "Bank zadań", "Zadania",
+                      plural(len(tasks), "zadanie", "zadania", "zadań") + " z rozwiązaniami",
+                      f'<ul class="tile-extra" aria-label="Rozdziały z największą liczbą zadań">{top_links}</ul>'))
+    if quizzes:
+        tiles.append(tile(f"{R}quizy/", "Sprawdź się", "Quizy",
+                          plural(len(quizzes), "quiz", "quizy", "quizów") + " z wyjaśnieniami"))
+    tiles.append(tile(f"#{nearest.id}-{year}", e(nearest.title), "PDF-y zestawów",
+                      f"{year} · {plural(len(variants), 'zestaw', 'zestawy', 'zestawów')}"))
+    return f'<nav aria-label="Na skróty"><ul class="tiles">{"".join(tiles)}</ul></nav>'
+
+
+def exam_section(x: Exam, quizzes: list[Quiz], nearest: bool = False) -> str:
+    kicker, cls = ("Najbliższe kolokwium", ' class="next-exam"') if nearest else ("Ćwiczenia", "")
+    parts = [f'<section id="{x.id}"{cls}><p class="kicker">{kicker}</p><h2>{e(x.title)}</h2>']
+    if x.topics:
+        parts.append(
+            f'<a class="topics" href="{R}{x.id}/zagadnienia/">'
+            '<span class="topics-kicker">Zacznij tutaj</span>'
+            '<span class="topics-title">Zagadnienia do kolokwium</span>'
+            '<span class="topics-arrow" aria-hidden="true">→</span></a>')
+    if nearest and (own := [z for z in quizzes if z.exam == x.num]):
+        parts.append('<ul class="exam-quizzes">' + "".join(
+            f'<li><a class="topics" href="{R}{z.path}/"><span class="topics-kicker">Quiz</span>'
+            f'<span class="topics-title">{e(z.title)}</span>'
+            f'<span class="meta">{plural(len(z.questions), "pytanie", "pytania", "pytań")}</span>'
+            '<span class="topics-arrow" aria-hidden="true">→</span></a></li>' for z in own) + "</ul>")
+    for year, variants in x.years:
+        parts.append(f'<h3 id="{x.id}-{year}"><span class="year">{year}</span></h3><ul class="variants">')
+        for v in variants:
+            titles = "".join(f'<li><a href="{R}{t.path}/">{e(t.title)}</a></li>' for t in v.tasks)
+            if v.has_solutions:
+                sol = (f'<a class="btn btn-secondary" href="{R}{pdf_href(v, True)}" target="_blank" '
+                       'rel="noopener">PDF z rozwiązaniami</a>')
+            else:
+                sol = '<span class="no-solution">Bez rozwiązań</span>'
+            parts.append(
+                f'<li class="variant"><div class="variant-head"><a class="name" href="{R}{v.path}/">{e(v.label)}</a>'
+                f'<span class="meta">{plural(len(v.tasks), "zadanie", "zadania", "zadań")} · {v.points} pkt</span></div>'
+                f'<ol class="variant-tasks">{titles}</ol>'
+                f'<div class="actions"><a class="btn" href="{R}{v.path}/">Otwórz zestaw</a>'
+                f'<a class="btn btn-secondary" href="{R}{pdf_href(v)}" target="_blank" rel="noopener">PDF</a>{sol}</div></li>')
+        parts.append("</ul>")
+    parts.append("</section>")
+    return "".join(parts)
 
 
 def materials_teaser() -> str:
@@ -179,6 +231,23 @@ def quizzes_section(quizzes: list[Quiz]) -> str:
         '<p class="hint">Krótkie pytania zamknięte z wyjaśnieniami.</p>'
         f'<ul class="decks">{items}</ul></section>'
     )
+
+
+def quizzes_page(quizzes: list[Quiz], exams: list[Exam]) -> str:
+    titles = {x.num: x.title for x in exams}
+    items = "".join(
+        f'<li><a class="deck" href="{R}{z.path}/">'
+        f'<span class="tag">{e("Przed " + titles[z.exam].replace("Kolokwium", "kolokwium")) if z.exam else "Quiz"}</span>'
+        f'<span class="deck-title">{e(z.title)}</span>'
+        f'<span class="meta">{plural(len(z.questions), "pytanie", "pytania", "pytań")} →</span></a></li>'
+        for z in quizzes)
+    body = f"""<div class="wrap">
+{crumbs(("RPiS", ""), ("Quizy", None))}
+<h1><mark>Quizy</mark></h1>
+<p class="lead">Krótkie pytania zamknięte i prawda/fałsz. Po każdej odpowiedzi widać wyjaśnienie, a na końcu wynik.</p>
+<ul class="decks">{items}</ul>
+</div>"""
+    return layout("Quizy · RPiS", body, current="quizy", description="Quizy z RPiS z odpowiedziami i wyjaśnieniami.")
 
 
 def slides_section(decks: list[dict]) -> str:
@@ -336,7 +405,7 @@ def quiz_page(z: Quiz) -> str:
     n = plural(len(z.questions), "pytanie", "pytania", "pytań")
     total = len(z.questions)
     body = f"""<div class="wrap reader quiz-page">
-{crumbs(("RPiS", ""), ("Quizy", "#quizy"), (z.title, None))}
+{crumbs(("RPiS", ""), ("Quizy", "quizy/"), (z.title, None))}
 <p class="kicker">Quiz · {n}</p>
 <h1 class="task-title">{e(z.title)}</h1>
 <section class="quiz-summary" id="quiz-summary" hidden tabindex="-1">
@@ -475,17 +544,24 @@ def browse_page(exams: list[Exam], script_url: str, chapters: dict[str, Chapter]
     {"".join(aside)}
   </aside>
   <section class="results" aria-label="Zadania">
-    <div class="toolbar">
+    <div class="toolbar" id="toolbar">
       <label class="field search"><span class="sr-only">Szukaj w zadaniach</span>
         <input type="search" id="q" placeholder="Szukaj: Bayes, gęstość, estymator…" autocomplete="off"></label>
       <label class="field chapter-select"><span class="sr-only">Rozdział</span>
         <select id="chapter-select">{"".join(options)}</select></label>
-      <div class="seg" role="group" aria-label="Kolokwium">
-        <button type="button" data-exam="" aria-pressed="true">Wszystkie</button>{exam_buttons}
-      </div>
-      <div class="seg" role="group" aria-label="Grupowanie">
-        <span class="seg-label">Grupuj</span>
-        <button type="button" data-group="rozdzial" aria-pressed="true">rozdział</button><button type="button" data-group="kolokwium" aria-pressed="false">kolokwium</button>
+      <button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="filters-extra" hidden>Filtry<span class="filters-badge" id="filters-badge" hidden></span></button>
+      <div class="filters-extra" id="filters-extra">
+        <div class="seg" role="group" aria-label="Kolokwium">
+          <button type="button" data-exam="" aria-pressed="true">Wszystkie</button>{exam_buttons}
+        </div>
+        <div class="seg" role="group" aria-label="Grupowanie">
+          <span class="seg-label">Grupuj</span>
+          <button type="button" data-group="rozdzial" aria-pressed="true">rozdział</button><button type="button" data-group="kolokwium" aria-pressed="false">kolokwium</button>
+        </div>
+        <div class="seg" role="group" aria-label="Widok" id="view-seg" hidden>
+          <span class="seg-label">Widok</span>
+          <button type="button" data-view="lista" aria-pressed="false">lista</button><button type="button" data-view="pelny" aria-pressed="true">pełny</button>
+        </div>
       </div>
     </div>
     <div class="chapter-banner" id="chapter-banner" hidden></div>

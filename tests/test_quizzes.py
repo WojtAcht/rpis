@@ -49,3 +49,10 @@ class QuizTest(unittest.TestCase):
                      "pytanie 4: pytanie wyboru potrzebuje", "pytanie 5: nieznane pola ['punkty']",
                      "pytanie 5: brak pól rozdzialy"):
             self.assertIn(part, msg)
+
+    def test_exam_number(self):
+        quiz = self.load("tytul: T\nkolokwium: 2\npytania:\n  - { tresc: A, rozdzialy: [calculus/bayes], poprawna: prawda }\n")
+        self.assertEqual(quiz.exam, 2)
+        with self.assertRaises(ContentError) as caught:
+            self.load("tytul: T\nkolokwium: drugie\npytania:\n  - { tresc: A, rozdzialy: [calculus/bayes], poprawna: prawda }\n")
+        self.assertIn("kolokwium to numer kolokwium", str(caught.exception))
