@@ -39,6 +39,7 @@ jobs:
         run: |
           python3 -m unittest discover -s tests
           npm ci
+          npx playwright install --with-deps chromium
           npm test
       - uses: actions/upload-pages-artifact@v3
         with:

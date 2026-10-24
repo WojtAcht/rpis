@@ -10,6 +10,7 @@ Najpierw spróbuj rozwiązać zadania samodzielnie, a dopiero potem zajrzyj do r
 ## Struktura
 
 ```
+strona.yml                          # ustawienia strony głównej (najbliższe kolokwium)
 rozdzialy.yml                       # rozdziały skryptu, do których przypisujemy zadania
 materialy.yml                       # materiały dodatkowe (książki, filmy, artykuły) do rozdziałów
 quizy/
@@ -115,6 +116,7 @@ Pytania pokazują się po jednym; po odpowiedzi widać wyjaśnienie, a na końcu
 
 ```yaml
 tytul: Kahoot 1
+kolokwium: 1                             # opcjonalnie: przed którym kolokwium
 pytania:
   - tresc: Które stwierdzenie jest **fałszywe**?
     rozdzialy: [calculus/probability]
@@ -127,6 +129,18 @@ pytania:
 ```
 
 Teksty to Markdown ze wzorami, jak w zadaniach. Build sprawdza pola, litery odpowiedzi i identyfikatory rozdziałów.
+Wszystkie quizy są na stronie `quizy/`, a quizy z polem `kolokwium` także w sekcji najbliższego kolokwium.
+
+## Strona główna
+
+Pod tytułem są kafle z głównymi wejściami (zagadnienia, bank zadań, quizy, PDF-y), a pod nimi
+sekcja najbliższego kolokwium. Które kolokwium jest najbliższe, ustawiamy w `strona.yml`:
+
+```yaml
+najblizsze_kolokwium: 1
+```
+
+Po kolokwium przestawiamy je ręcznie na następne.
 
 ## Budowanie lokalnie
 
@@ -141,14 +155,19 @@ Po pushu na `main` GitHub Actions buduje i publikuje stronę na GitHub Pages.
 
 ## Testy
 
-Testy filtrów korzystają z wygenerowanej strony i wymagają Node.js 24:
+Testy filtrów i widoku na telefonie korzystają z wygenerowanej strony i wymagają Node.js 24
+oraz Chromium dla Playwrighta:
 
 ```sh
 make
 python3 -m unittest discover -s tests
 npm ci
+npx playwright install chromium
 npm test
 ```
+
+Testy w przeglądarce sprawdzają na ekranie 375×812, że żadna strona nie przewija się w poziomie,
+nawigacja jest osiągalna, a strona główna, bank zadań i quiz mieszczą najważniejsze rzeczy na ekranie.
 
 CI uruchamia te testy przed publikacją. Parser odrzuca powtórzone sekcje
 `## Wskazówka` i `## Rozwiązanie`, aby nie nadpisywać ich treści.
