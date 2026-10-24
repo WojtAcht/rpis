@@ -146,11 +146,6 @@ mark { background: linear-gradient(transparent 55%, var(--highlight) 55%); color
 .tile-link:hover { background: var(--mark); color: var(--on-mark); }
 .tile-link:hover .tile-kicker, .tile-link:hover .meta { color: inherit; }
 .tile-link:active { transform: translate(3px, 3px); }
-.tile-extra { list-style: none; margin: 0; padding: 0.55em 1.15em 0.75em; border-top: 1px solid var(--faint); display: flex; flex-direction: column; gap: 0.25em; font-size: 0.85em; }
-.tile-extra a { display: flex; align-items: center; gap: 0.5em; min-width: 0; text-decoration: none; }
-.tile-extra .chip-nr { flex-shrink: 0; font-size: 0.8em; }
-.top-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tile-extra a:hover .top-title { text-decoration: underline; text-decoration-color: var(--red); }
 .next-exam > .kicker { color: var(--red); font-weight: 500; }
 .exam-quizzes { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 14px; }
 .exam-quizzes .topics-kicker { color: var(--muted); }
@@ -431,7 +426,6 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   .tile { box-shadow: 3px 3px 0 var(--line); }
   .tile-link { padding: 0.6em 0.9em; }
   .tile-title { font-size: 1.15em; margin: 0; }
-  .tile-extra { padding: 0.45em 0.9em 0.6em; }
   .browse .page-head .lead { font-size: 1em; margin-bottom: 1em; }
   /* chipy rozdziałów: sam numer, pełna nazwa w podpowiedzi i dla czytników ekranu */
   .chips { align-items: center; gap: 0.35em; }
