@@ -67,6 +67,9 @@
     var banner = document.getElementById("chapter-banner");
     var countLine = document.getElementById("result-count");
     var empty = document.getElementById("empty");
+    var toolbar = document.getElementById("toolbar");
+    var filtersToggle = document.getElementById("filters-toggle");
+    var filtersBadge = document.getElementById("filters-badge");
 
     var params = new URLSearchParams(location.search);
     var state = {
@@ -74,11 +77,20 @@
       exam: examFromParam(params.get("kolokwium")),
       group: params.get("grupuj") === "kolokwium" ? "kolokwium" : "rozdzial",
       q: params.get("q") || "",
+      // Na telefonie domyślnie lista: tytuł, rozdziały i punkty, treść po rozwinięciu.
+      view: window.matchMedia && window.matchMedia("(max-width: 600px)").matches ? "lista" : "pelny",
     };
 
     cards.forEach(function (c) {
       c._chapters = c.dataset.chapters.split(" ");
+      var toggle = el("button", { type: "button", class: "card-toggle", "aria-expanded": "false", text: "Pokaż treść" });
+      c.querySelector("header").appendChild(toggle);
     });
+
+    // Kolokwium, grupowanie i widok chowamy na wąskim ekranie pod „Filtry”.
+    toolbar.classList.add("is-collapsible");
+    filtersToggle.hidden = false;
+    document.getElementById("view-seg").hidden = false;
 
     function matches(c, withChapter) {
       if (withChapter && state.chapter && c._chapters.indexOf(state.chapter) < 0) return false;
@@ -157,6 +169,13 @@
       document.querySelectorAll("[data-group]").forEach(function (b) {
         if (b.tagName === "BUTTON") b.setAttribute("aria-pressed", String(b.dataset.group === state.group));
       });
+      document.querySelectorAll("[data-view]").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.dataset.view === state.view));
+      });
+      groupsBox.classList.toggle("is-compact", state.view === "lista");
+      var active = (state.exam ? 1 : 0) + (state.group !== "rozdzial" ? 1 : 0);
+      filtersBadge.textContent = active;
+      filtersBadge.hidden = !active;
       select.value = state.chapter;
       if (q.value !== state.q) q.value = state.q;
 
@@ -204,6 +223,16 @@
       if (t.classList.contains("ch-item")) set({ chapter: t.dataset.chapter }, true);
       else if (t.tagName === "BUTTON" && t.hasAttribute("data-exam")) set({ exam: t.dataset.exam });
       else if (t.tagName === "BUTTON" && t.hasAttribute("data-group")) set({ group: t.dataset.group });
+      else if (t.hasAttribute("data-view")) set({ view: t.dataset.view });
+      else if (t === filtersToggle) {
+        var open = toolbar.classList.toggle("is-open");
+        t.setAttribute("aria-expanded", String(open));
+      } else if (t.classList.contains("card-toggle")) {
+        var card = t.closest(".task-card");
+        var shown = card.classList.toggle("is-open");
+        t.setAttribute("aria-expanded", String(shown));
+        t.textContent = shown ? "Ukryj treść" : "Pokaż treść";
+      }
       else if (t.hasAttribute("data-clear")) set({ chapter: "" });
       else if (t.id === "reset") set({ chapter: "", exam: "", q: "" });
       else if (t.classList.contains("chip")) {
@@ -271,8 +300,17 @@
       var details = q.querySelector(".feedback");
       details.open = true;
       renderMath(details);
+      revealFeedback(details);
       segs[questions.indexOf(q)].classList.add(good ? "is-good" : "is-bad");
       if (quiz.classList.contains("is-stepper")) q.querySelector(".quiz-next").focus({ preventScroll: true });
+    }
+
+    // Na telefonie wyjaśnienie z przyciskiem „Dalej” wypada pod odpowiedziami, poza ekranem.
+    // Przewijamy, żeby było widać całe, a gdy jest wyższe od ekranu, jego początek tuż pod paskiem.
+    function revealFeedback(details) {
+      var box = details.getBoundingClientRect();
+      var by = Math.min(box.bottom - window.innerHeight + 16, box.top - 70);
+      if (by > 0) window.scrollBy({ top: by });
     }
 
     function finish() {
@@ -350,18 +388,22 @@
   // Bez zapisanego wyboru strona idzie za ustawieniem systemu. Wybór równy
   // systemowemu kasujemy, żeby znów podążać za systemem.
   function initTheme() {
-    var btn = document.getElementById("theme-toggle");
-    if (!btn) return;
+    var buttons = document.querySelectorAll(".theme-toggle");
+    if (!buttons.length) return;
     var root = document.documentElement;
     var system = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
     function systemTheme() { return system && system.matches ? "dark" : "light"; }
     function current() { return root.dataset.theme || systemTheme(); }
     function sync() {
       var dark = current() === "dark";
-      btn.firstChild.textContent = dark ? "☀" : "☾";
-      btn.title = dark ? "Tryb jasny" : "Tryb ciemny";
+      buttons.forEach(function (btn) {
+        btn.firstChild.textContent = dark ? "☀" : "☾";
+        btn.title = dark ? "Tryb jasny" : "Tryb ciemny";
+        var label = btn.querySelector(".theme-label");
+        if (label) label.textContent = btn.title;
+      });
     }
-    btn.addEventListener("click", function () {
+    function toggle() {
       var next = current() === "dark" ? "light" : "dark";
       try {
         if (next === systemTheme()) localStorage.removeItem("motyw");
@@ -370,13 +412,31 @@
       if (next === systemTheme()) delete root.dataset.theme;
       else root.dataset.theme = next;
       sync();
-    });
+    }
+    buttons.forEach(function (btn) { btn.addEventListener("click", toggle); });
     if (system && system.addEventListener) system.addEventListener("change", sync);
     sync();
   }
 
+  // --- Menu „Więcej” w pasku -----------------------------------------------
+  // <details> działa bez JS; tu tylko zamykamy je kliknięciem obok, w link i klawiszem Escape.
+  function initMenu() {
+    var menu = document.querySelector(".nav-more");
+    if (!menu) return;
+    document.addEventListener("click", function (ev) {
+      if (menu.open && (!menu.contains(ev.target) || ev.target.closest(".nav-menu a"))) menu.open = false;
+    });
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape" && menu.open) {
+        menu.open = false;
+        menu.querySelector("summary").focus();
+      }
+    });
+  }
+
   function init() {
     initTheme();
+    initMenu();
     initBrowse();
     initQuiz();
     renderMath(document);

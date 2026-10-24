@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from datetime import date
 from pathlib import Path
 
 import convert
@@ -63,6 +64,14 @@ def collect_slides():
     return decks
 
 
+def nearest_exam(today: date) -> int:
+    """Kolokwium pokazywane na górze strony głównej: I od września do 19 grudnia, potem II.
+
+    Strona jest statyczna, więc przełącza się przy buildzie; pages.yml przebudowuje ją 20.12 i 1.09.
+    """
+    return 2 if (today.month, today.day) >= (12, 20) or today.month < 9 else 1
+
+
 def write_page(rel: str, content: str) -> None:
     """rel to ścieżka katalogu strony względem _site ("" = strona główna)."""
     depth = len([p for p in rel.split("/") if p])
@@ -77,6 +86,8 @@ def main() -> int:
         exams = collect(ROOT, chapters)
         mats = load_materials(ROOT / "materialy.yml", chapters)
         quizzes = collect_quizzes(ROOT, chapters)
+        if bad := [z.slug for z in quizzes if z.exam and z.exam not in {x.num for x in exams}]:
+            raise ContentError(f"quizy: nieznany numer kolokwium w {bad}")
     except ContentError as err:
         print(f"Błędy w plikach zadań, materiałów i quizów:\n{err}", file=sys.stderr)
         return 1
@@ -109,9 +120,10 @@ def main() -> int:
 
     # Strony.
     decks = collect_slides()
-    write_page("", pages.index_page(exams, decks, quizzes))
+    write_page("", pages.index_page(exams, decks, quizzes, nearest_exam(date.today())))
     write_page("zadania", pages.browse_page(exams, script_url, chapters, mats))
     write_page("materialy", pages.materials_page(mats, chapters))
+    write_page("quizy", pages.quizzes_page(quizzes, exams))
     for z in quizzes:
         write_page(z.path, pages.quiz_page(z))
     for x in exams:

@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  schedule:
+    # Przebudowa w dniu zmiany najbliższego kolokwium na stronie głównej (scripts/build.py).
+    - cron: "0 4 20 12 *"
+    - cron: "0 4 1 9 *"
 
 permissions:
   contents: read

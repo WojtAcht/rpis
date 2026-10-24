@@ -2,6 +2,7 @@
 # Format opisuje scripts/quizzes.py.
 
 tytul: Kahoot 1
+kolokwium: 1
 pytania:
   - tresc: Które stwierdzenie jest **fałszywe**? ($A$, $B$ — dowolne zdarzenia)
     rozdzialy: [calculus/probability]

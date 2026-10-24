@@ -1,6 +1,7 @@
 """Quizy (quizy/<nazwa>.yml): pytania zamknięte i prawda/fałsz z wyjaśnieniami.
 
     tytul: Kahoot 1
+    kolokwium: 1                                 (opcjonalnie: przed którym kolokwium)
     pytania:
       - tresc: Które stwierdzenie jest fałszywe?
         rozdzialy: [calculus/probability]
@@ -21,7 +22,7 @@ import yaml
 
 from tasks import Chapter, ContentError
 
-QUIZ_KEYS = {"tytul", "pytania"}
+QUIZ_KEYS = {"tytul", "kolokwium", "pytania"}
 QUESTION_KEYS = {"tresc", "rozdzialy", "odpowiedzi", "poprawna", "wyjasnienie"}
 TRUE_FALSE = ["Prawda", "Fałsz"]
 LETTERS = "abcdefgh"
@@ -44,6 +45,7 @@ class Quiz:
     slug: str
     title: str
     questions: list[Question]
+    exam: int | None = None
 
     @property
     def path(self) -> str:
@@ -61,6 +63,9 @@ def parse_quiz(path: Path, chapters: dict[str, Chapter], root: Path) -> Quiz:
         errors.append(f"{name}: brak pola tytul")
     if not data.get("pytania"):
         errors.append(f"{name}: brak pytań")
+    exam = data.get("kolokwium")
+    if exam is not None and (not isinstance(exam, int) or isinstance(exam, bool) or exam < 1):
+        errors.append(f"{name}: kolokwium to numer kolokwium, np. `kolokwium: 1`")
 
     questions = []
     for i, q in enumerate(data.get("pytania") or [], 1):
@@ -96,7 +101,7 @@ def parse_quiz(path: Path, chapters: dict[str, Chapter], root: Path) -> Quiz:
 
     if errors:
         raise ContentError("\n".join(errors))
-    return Quiz(path.stem, str(data["tytul"]), questions)
+    return Quiz(path.stem, str(data["tytul"]), questions, exam)
 
 
 def collect_quizzes(root: Path, chapters: dict[str, Chapter]) -> list[Quiz]:

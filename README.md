@@ -119,6 +119,7 @@ Pytania pokazują się po jednym; po odpowiedzi widać wyjaśnienie, a na końcu
 
 ```yaml
 tytul: Kahoot 1
+kolokwium: 1                             # opcjonalnie: przed którym kolokwium
 pytania:
   - tresc: Które stwierdzenie jest **fałszywe**?
     rozdzialy: [calculus/probability]
@@ -131,6 +132,13 @@ pytania:
 ```
 
 Teksty to Markdown ze wzorami, jak w zadaniach. Build sprawdza pola, litery odpowiedzi i identyfikatory rozdziałów.
+Wszystkie quizy są na stronie `quizy/`, a quizy z polem `kolokwium` także w sekcji najbliższego kolokwium.
+
+## Strona główna
+
+Pod tytułem są kafle z głównymi wejściami (zagadnienia, bank zadań, quizy, PDF-y), a pod nimi
+sekcja najbliższego kolokwium: od września do 19 grudnia Kolokwium I, od 20 grudnia Kolokwium II.
+Strona przebudowuje się sama w te dni (harmonogram w GitHub Actions).
 
 ## Budowanie lokalnie
 
