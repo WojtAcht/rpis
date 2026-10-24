@@ -400,3 +400,40 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   .mat-card { grid-template-columns: 1fr; padding: 1em 1.1em; box-shadow: 3px 3px 0 var(--line); }
   .mat-row { grid-template-columns: 1fr; }
 }
+
+/* --- quiz --- */
+.quiz { list-style: none; margin: 1.6rem 0; padding: 0; display: flex; flex-direction: column; gap: 26px; }
+.question { border: 1.5px solid var(--line); background: var(--card); box-shadow: 5px 5px 0 var(--line); padding: 1.1em 1.3em 0.2em; }
+.question .kicker { margin-bottom: 0.5em; }
+.q-text { font-size: 1.1em; font-weight: 500; }
+.q-text p:last-child { margin-bottom: 0.7em; }
+.options { display: grid; gap: 0.6em; margin: 0 0 0.8em; }
+.options-tf { grid-template-columns: repeat(2, minmax(0, 12em)); }
+.option {
+  display: flex; align-items: baseline; gap: 0.6em; text-align: left; cursor: pointer;
+  font: inherit; color: var(--fg); background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: 2px; padding: 0.55em 0.85em; box-shadow: 3px 3px 0 var(--line);
+}
+.options-tf .option { justify-content: center; font-family: var(--mono); font-weight: 500; }
+.option:hover:not(:disabled) { background: var(--mark); color: var(--on-mark); }
+.option:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--line); }
+.option:disabled { cursor: default; opacity: 0.55; }
+.option.is-correct, .option.is-chosen { opacity: 1; }
+.option.is-correct { border-color: var(--green); box-shadow: 3px 3px 0 var(--green); outline: 2px solid var(--green); outline-offset: -3px; }
+.option.is-chosen:not(.is-correct) { border-color: var(--red); box-shadow: 3px 3px 0 var(--red); text-decoration: line-through; text-decoration-color: var(--red); }
+.opt-letter { font-family: var(--mono); font-weight: 500; color: var(--muted); }
+.option:hover:not(:disabled) .opt-letter { color: inherit; }
+.verdict { font-family: var(--mono); font-weight: 500; margin: 0 0 0.4em; }
+.is-good .verdict { color: var(--green); }
+.is-bad .verdict { color: var(--red); }
+.question .reveal { margin: 0.4em 0 1em; }
+.question .chips { margin-bottom: 0.9em; }
+.quiz-score {
+  position: sticky; top: 3.4rem; z-index: 5; margin: 1.4em 0 0;
+  font-family: var(--mono); font-weight: 500; padding: 0.5em 0.9em;
+  border: 1.5px solid var(--line); background: var(--mark); color: var(--on-mark);
+}
+@media (max-width: 600px) {
+  .question { padding: 1em 1em 0.2em; box-shadow: 3px 3px 0 var(--line); }
+  .options-tf { grid-template-columns: 1fr 1fr; }
+}

@@ -4,6 +4,7 @@ import re
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 
+from quizzes import Quiz
 from tasks import Task
 
 PANDOC_FROM = "markdown-auto_identifiers"
@@ -30,6 +31,34 @@ def to_html(md: str, asset_prefix: str) -> str:
 def to_latex(md: str) -> str:
     out = pandoc(md, "latex", "--no-highlight")
     return re.sub(r"\\label\{[^}]*\}", "", out)
+
+
+def to_inline_html(md: str) -> str:
+    """Jak to_html, ale bez otaczającego <p> — do odpowiedzi w quizie."""
+    out = to_html(md, "").strip()
+    if out.startswith("<p>") and out.endswith("</p>") and out.count("<p>") == 1:
+        out = out[3:-4]
+    return out
+
+
+def convert_quizzes(quizzes: list[Quiz]) -> None:
+    """Wypełnia q.html: "text", "explanation" i numery odpowiedzi (0, 1, ...) dla pytań wyboru."""
+    jobs = []
+    for quiz in quizzes:
+        for q in quiz.questions:
+            jobs.append((q, "text", q.text, False))
+            if q.explanation:
+                jobs.append((q, "explanation", q.explanation, False))
+            if not q.true_false:
+                jobs += [(q, i, o, True) for i, o in enumerate(q.options)]
+
+    def run(job):
+        _, _, md, inline = job
+        return to_inline_html(md) if inline else to_html(md, "")
+
+    with ThreadPoolExecutor() as pool:
+        for (q, key, _, _), html in zip(jobs, pool.map(run, jobs)):
+            q.html[key] = html
 
 
 def convert_all(tasks: list[Task]) -> None:

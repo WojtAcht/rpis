@@ -1,0 +1,83 @@
+# Pytania z Kahoota rozegranego na zajęciach (2025/26), przed kolokwium I.
+# Format opisuje scripts/quizzes.py.
+
+tytul: Kahoot 1
+opis: Szybki sprawdzian z podstaw przed kolokwium I — aksjomaty, niezależność, układ zupełny i pierwsze zmienne losowe.
+
+pytania:
+  - tresc: Które stwierdzenie jest **fałszywe**? ($A$, $B$ — dowolne zdarzenia)
+    rozdzialy: [calculus/probability]
+    odpowiedzi:
+      - $P(\Omega) = 1$
+      - $P(A \cap B) \le P(A)$
+      - $P((A \cup B)') = P(A') \cdot P(B')$
+      - $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
+    poprawna: c
+    wyjasnienie: >-
+      Z praw de Morgana $(A \cup B)' = A' \cap B'$, a $P(A' \cap B') = P(A')\,P(B')$ zachodzi tylko wtedy,
+      gdy $A'$ i $B'$ są niezależne. Pozostałe równości to aksjomat, monotoniczność i wzór włączeń i wyłączeń.
+
+  - tresc: Jeśli trzy zdarzenia są niezależne, to są również parami niezależne.
+    rozdzialy: [calculus/conditional-independence]
+    poprawna: prawda
+    wyjasnienie: >-
+      Niezależność zespołowa wymaga równości $P(A_i \cap A_j) = P(A_i)\,P(A_j)$ dla każdej pary
+      i dodatkowo dla całej trójki. Odwrotna implikacja nie zachodzi.
+
+  - tresc: Zdarzenia $A$, $B$ tworzą układ zupełny. Wskaż **nieprawdziwe** stwierdzenie.
+    rozdzialy: [calculus/bayes]
+    odpowiedzi:
+      - $A = B'$
+      - $P(A) = 1 - P(B)$
+      - $P(A \mid B) = P(A) - P(B)$
+      - $P(A \cup B) = P(A) + P(B)$
+    poprawna: c
+    wyjasnienie: >-
+      Dla układu zupełnego $A \cap B = \emptyset$ i $A \cup B = \Omega$, więc a), b) i d) są prawdziwe.
+      Natomiast $P(A \mid B) = 0$, bo zdarzenia są rozłączne.
+
+  - tresc: Zdarzenia są rozłączne, jeśli $P(A, B) = P(A)\,P(B)$.
+    rozdzialy: [calculus/conditional-independence]
+    poprawna: fałsz
+    wyjasnienie: >-
+      Równość $P(A \cap B) = P(A)\,P(B)$ to niezależność. Rozłączność oznacza $A \cap B = \emptyset$,
+      a więc $P(A \cap B) = 0$.
+
+  - tresc: $P(A \setminus B) = P(A \cup B) - P(B)$.
+    rozdzialy: [calculus/probability]
+    poprawna: prawda
+    wyjasnienie: >-
+      $P(A \cup B) = P(A) + P(B) - P(A \cap B)$, więc
+      $P(A \cup B) - P(B) = P(A) - P(A \cap B) = P(A \setminus B)$.
+
+  - tresc: Rzucamy uczciwą monetą. Za reszkę otrzymujemy 2 zł, a za orła tracimy 1 zł. Jaka jest wartość oczekiwana wygranej?
+    rozdzialy: [rv/real/moments]
+    odpowiedzi: ["0,5 zł", "1 zł", "0,25 zł", "0 zł"]
+    poprawna: a
+    wyjasnienie: $E X = \frac12 \cdot 2 + \frac12 \cdot (-1) = 0{,}5$.
+
+  - tresc: Gęstość rozkładu ciągłego zawsze jest funkcją ciągłą.
+    rozdzialy: [rv/real/distributions]
+    poprawna: fałsz
+    wyjasnienie: >-
+      Ciągła jest dystrybuanta, a nie gęstość. Na przykład gęstość rozkładu jednostajnego na $[0, 1]$
+      ma skoki w punktach $0$ i $1$.
+
+  - tresc: Zdarzenia $A$, $B$ o dodatnich prawdopodobieństwach wzajemnie się wykluczają. Wskaż **fałszywe** stwierdzenie.
+    rozdzialy: [calculus/conditional-independence, calculus/probability]
+    odpowiedzi:
+      - $P(A \cup B) = P(A) + P(B)$
+      - $P(A, B) = P(A)\,P(B)$
+      - $P(A \mid B) = 0$
+      - $P(A, B) = 0$
+    poprawna: b
+    wyjasnienie: >-
+      Dla zdarzeń rozłącznych $P(A \cap B) = 0$, więc a), c) i d) są prawdziwe. Iloczyn $P(A)\,P(B)$
+      jest dodatni, więc nie może być równy $0$. Rozłączne zdarzenia o dodatnich prawdopodobieństwach są zależne.
+
+  - tresc: Zdarzenia $A$ i $B$ są warunkowo niezależne względem $\Omega$ wtedy i tylko wtedy, gdy są niezależne.
+    rozdzialy: [calculus/conditional-independence]
+    poprawna: prawda
+    wyjasnienie: >-
+      $P(A \cap B \mid \Omega) = P(A \cap B)$ oraz $P(A \mid \Omega)\,P(B \mid \Omega) = P(A)\,P(B)$,
+      więc warunek sprowadza się do $P(A \cap B) = P(A)\,P(B)$.

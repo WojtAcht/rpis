@@ -1,4 +1,4 @@
-// RPiS: renderowanie wzorów (KaTeX), filtrowanie banku zadań i przełącznik motywu.
+// RPiS: renderowanie wzorów (KaTeX), filtrowanie banku zadań, quizy i przełącznik motywu.
 (function () {
   "use strict";
 
@@ -218,6 +218,65 @@
     render();
   }
 
+  // --- Quiz --------------------------------------------------------------
+  // Kliknięcie odpowiedzi blokuje pytanie, zaznacza poprawną odpowiedź
+  // i rozwija wyjaśnienie. Bez JS zostaje samo „Pokaż odpowiedź”.
+  function initQuiz() {
+    var quiz = document.querySelector(".quiz");
+    if (!quiz) return;
+    var questions = Array.prototype.slice.call(quiz.querySelectorAll(".question"));
+    var score = document.getElementById("quiz-score");
+
+    function updateScore() {
+      var answered = quiz.querySelectorAll(".question.is-answered").length;
+      var good = quiz.querySelectorAll(".question.is-good").length;
+      score.hidden = answered === 0;
+      var left = questions.length - answered;
+      score.textContent = left === 0
+        ? "Koniec! Wynik: " + good + " / " + questions.length
+        : "Wynik: " + good + " / " + answered + " · " + polish(left, "pytanie", "pytania", "pytań") + " do końca";
+    }
+
+    function answer(option) {
+      var q = option.closest(".question");
+      if (q.classList.contains("is-answered")) return;
+      var good = option.hasAttribute("data-correct");
+      q.classList.add("is-answered", good ? "is-good" : "is-bad");
+      option.classList.add("is-chosen");
+      q.querySelectorAll(".option").forEach(function (b) {
+        b.disabled = true;
+        if (b.hasAttribute("data-correct")) b.classList.add("is-correct");
+      });
+      var verdict = q.querySelector(".verdict");
+      verdict.textContent = good ? "Dobrze!" : "Niestety nie.";
+      verdict.hidden = false;
+      var details = q.querySelector("details");
+      details.open = true;
+      renderMath(details);
+      updateScore();
+    }
+
+    function reset() {
+      questions.forEach(function (q) {
+        q.classList.remove("is-answered", "is-good", "is-bad");
+        q.querySelectorAll(".option").forEach(function (b) {
+          b.disabled = false;
+          b.classList.remove("is-chosen", "is-correct");
+        });
+        q.querySelector(".verdict").hidden = true;
+        q.querySelector("details").open = false;
+      });
+      updateScore();
+      questions[0].scrollIntoView({ block: "start" });
+    }
+
+    quiz.addEventListener("click", function (ev) {
+      var option = ev.target.closest(".option");
+      if (option) answer(option);
+    });
+    document.getElementById("quiz-reset").addEventListener("click", reset);
+  }
+
   // --- Motyw -------------------------------------------------------------
   // Bez zapisanego wyboru strona idzie za ustawieniem systemu. Wybór równy
   // systemowemu kasujemy, żeby znów podążać za systemem.
@@ -250,6 +309,7 @@
   function init() {
     initTheme();
     initBrowse();
+    initQuiz();
     renderMath(document);
   }
 

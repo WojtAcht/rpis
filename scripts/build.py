@@ -7,9 +7,10 @@ Konwencja katalogów:
     kolokwium-N/zagadnienia.md                     zagadnienia z odnośnikami do skryptu
     kolokwium-N/RRRR/<wariant>/zadanie-K.md        treść + rozwiązanie (Markdown)
     kolokwium-N/RRRR/<wariant>/*.png               obrazki używane w zadaniach
+    quizy/<nazwa>.yml                              quizy (pytania zamknięte i prawda/fałsz)
     prezentacje/NN-nazwa.html                      samodzielne slajdy
 
-Wariant to np. `kolokwium`, `zestaw-a`, `termin-2`. Format pliku zadania opisuje tasks.py.
+Wariant to np. `kolokwium`, `zestaw-a`, `termin-2`. Format pliku zadania opisuje tasks.py, a quizu quizzes.py.
 """
 
 import re
@@ -23,6 +24,7 @@ import convert
 import pages
 import pdf
 from materials import load_materials
+from quizzes import collect_quizzes
 from tasks import ContentError, all_tasks, all_variants, collect, load_chapters, plural
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -74,8 +76,9 @@ def main() -> int:
         script_url, chapters = load_chapters(ROOT / "rozdzialy.yml")
         exams = collect(ROOT, chapters)
         mats = load_materials(ROOT / "materialy.yml", chapters)
+        quizzes = collect_quizzes(ROOT, chapters)
     except ContentError as err:
-        print(f"Błędy w plikach zadań i materiałów:\n{err}", file=sys.stderr)
+        print(f"Błędy w plikach zadań, materiałów i quizów:\n{err}", file=sys.stderr)
         return 1
 
     if SITE.exists():
@@ -85,6 +88,7 @@ def main() -> int:
 
     tasks = all_tasks(exams)
     convert.convert_all(tasks)
+    convert.convert_quizzes(quizzes)
     for x in exams:
         if x.topics:
             x.topics_html = convert.to_html(x.topics, x.id)
@@ -105,9 +109,11 @@ def main() -> int:
 
     # Strony.
     decks = collect_slides()
-    write_page("", pages.index_page(exams, decks))
+    write_page("", pages.index_page(exams, decks, quizzes))
     write_page("zadania", pages.browse_page(exams, script_url, chapters, mats))
     write_page("materialy", pages.materials_page(mats, chapters))
+    for z in quizzes:
+        write_page(z.path, pages.quiz_page(z))
     for x in exams:
         if x.topics:
             write_page(f"{x.id}/zagadnienia", pages.topics_page(x, script_url))

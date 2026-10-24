@@ -50,3 +50,37 @@ for (const query of ["rozdzial=calculus/bayes", "kolokwium=1", "q=monety"]) {
     }
   });
 }
+
+test("quiz: odpowiedź blokuje pytanie, rozwija wyjaśnienie i liczy wynik", () => {
+  const quizHtml = fs.readFileSync(path.join(root, "_site/quizy/kahoot-1/index.html"), "utf8");
+  const dom = new JSDOM(quizHtml, { url: "https://wojtacht.github.io/rpis/quizy/kahoot-1/", runScripts: "outside-only" });
+  const { window } = dom;
+  const { document } = window;
+  window.katex = { render() {} };
+  window.HTMLElement.prototype.scrollIntoView = () => {};
+  try {
+    window.eval(script);
+    document.dispatchEvent(new window.Event("DOMContentLoaded"));
+    const [first, second] = document.querySelectorAll(".question");
+    const score = document.getElementById("quiz-score");
+    assert.equal(score.hidden, true);
+
+    first.querySelector(".option[data-correct]").click();
+    assert.ok(first.classList.contains("is-good"));
+    assert.ok(first.querySelector("details").open);
+    assert.equal(first.querySelectorAll("details .math:not([data-done])").length, 0);
+    assert.ok([...first.querySelectorAll(".option")].every(b => b.disabled));
+
+    second.querySelector(".option:not([data-correct])").click();
+    assert.ok(second.classList.contains("is-bad"));
+    assert.ok(second.querySelector(".option[data-correct]").classList.contains("is-correct"));
+    assert.match(score.textContent, /1 \/ 2/);
+
+    document.getElementById("quiz-reset").click();
+    assert.equal(document.querySelectorAll(".question.is-answered").length, 0);
+    assert.equal(score.hidden, true);
+    assert.ok(!first.querySelector("details").open);
+  } finally {
+    window.close();
+  }
+});
