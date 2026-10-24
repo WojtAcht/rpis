@@ -1,4 +1,4 @@
-"""Strony HTML: główna, bank zadań (filtrowanie po rozdziałach), zestaw i pojedyncze zadanie.
+"""Strony HTML: główna, bank zadań (filtrowanie po rozdziałach), zestaw, pojedyncze zadanie i materiały.
 
 Linki wewnętrzne zaczynają się od {{ROOT}}; przy zapisie strony build.py podmienia
 to na względną ścieżkę do katalogu głównego, więc strona działa i lokalnie, i pod /rpis/.
@@ -9,6 +9,7 @@ import json
 import os
 from urllib.parse import quote, urlencode
 
+from materials import Material, Materials, anchor
 from pdf import pdf_href
 from tasks import Chapter, Exam, Task, Variant, all_variants, fold, plural, unique_tasks
 
@@ -23,7 +24,8 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
         cur = ' aria-current="page"' if key and key == current else ""
         return f'<a href="{R}{href}"{cur}>{label}</a>'
 
-    nav = (link("zadania/", "Zadania", "zadania") + link("#kolokwium-1", "Kolokwium I")
+    nav = (link("zadania/", "Zadania", "zadania") + link("materialy/", "Materiały", "materialy")
+           + link("#kolokwium-1", "Kolokwium I")
            + link("#kolokwium-2", "Kolokwium II") + link("#prezentacje", "Prezentacje"))
     return f"""<!doctype html>
 <html lang="pl">
@@ -106,7 +108,7 @@ def crumbs(*items: tuple[str, str | None]) -> str:
 
 def index_page(exams: list[Exam], decks: list[dict]) -> str:
     tasks = unique_tasks(exams)
-    sections = [zadania_teaser(tasks), slides_section(decks)]
+    sections = [zadania_teaser(tasks), materials_teaser(), slides_section(decks)]
     for x in exams:
         parts = [f'<section id="{x.id}"><p class="kicker">Ćwiczenia</p><h2>{e(x.title)}</h2>']
         if x.topics:
@@ -153,6 +155,13 @@ def zadania_teaser(tasks: list[Task]) -> str:
 </section>"""
 
 
+def materials_teaser() -> str:
+    return f"""<section id="materialy"><p class="kicker">Do nauki</p><h2>Materiały dodatkowe</h2>
+<p class="lead">Podręczniki, filmy i artykuły przypisane do rozdziałów skryptu.</p>
+<a class="btn btn-big" href="{R}materialy/">Materiały do rozdziałów →</a>
+</section>"""
+
+
 def slides_section(decks: list[dict]) -> str:
     if not decks:
         return ""
@@ -183,6 +192,76 @@ def topics_page(x: Exam, script_url: str) -> str:
 </div>"""
     return layout(f"Zagadnienia · {x.title} · RPiS", body,
                   description=f"Zagadnienia do kolokwium z RPiS ({x.title}) z odnośnikami do skryptu.")
+
+
+# --- materiały dodatkowe ---------------------------------------------------
+
+def link_or_text(href: str, text: str) -> str:
+    if not href:
+        return e(text)
+    return f'<a href="{e(href)}" target="_blank" rel="noopener">{e(text)} ↗</a>'
+
+
+def material_item(m: Material) -> str:
+    if m.source:
+        title = link_or_text(m.link or m.source.link, m.title)
+        where = f'<span class="mat-where">{e(m.where)}</span>' if m.where else ""
+        meta = f"{e(m.author)}{' · ' + where if where else ''}"
+    else:
+        title, meta = link_or_text(m.link, m.title), e(m.author)
+    section = f'<span class="tag">skrypt {e(m.section)}</span>' if m.section else ""
+    note = f'<p class="mat-note">{e(m.note)}</p>' if m.note else ""
+    return (f'<li class="mat-item"><span class="mat-kind" data-kind="{m.kind}">{m.label}</span>'
+            f'<div class="mat-body"><p class="mat-title">{title}</p>'
+            f'<p class="meta">{meta}</p>{note}</div>{section}</li>')
+
+
+def materials_page(mats: Materials, chapters: dict[str, Chapter], script_url: str) -> str:
+    def chapter_link(c: Chapter) -> str:
+        return f'<a class="nr-link" href="#{anchor(c.id)}" title="{c.num}. {e(c.title)}">{c.num}</a>'
+
+    books = []
+    for src in mats.sources.values():
+        used = mats.chapters_using(src.id, chapters)
+        refs = (f'<p class="nr-links"><span class="meta">Rozdziały skryptu:</span> '
+                f'{"".join(chapter_link(c) for c in used)}</p>') if used else ""
+        note = f'<p>{e(src.note)}</p>' if src.note else ""
+        avail = "" if src.link else '<p class="meta">Brak darmowej wersji online — szukaj w bibliotece.</p>'
+        books.append(f'<li class="book"><h3>{link_or_text(src.link, src.title)}</h3>'
+                     f'<p class="meta">{e(src.author)}</p>{note}{avail}{refs}</li>')
+
+    parts: dict[str, list[Chapter]] = {}
+    for cid in mats.by_chapter:
+        parts.setdefault(chapters[cid].part, []).append(chapters[cid])
+    jump, body_parts = [], []
+    for part, chs in parts.items():
+        jump.append(f'<p class="nr-links"><span class="part">{e(part)}</span> {"".join(chapter_link(c) for c in chs)}</p>')
+        body_parts.append(f'<h2 class="mat-part">{e(part)}</h2>')
+        for c in chs:
+            items = "".join(material_item(m) for m in mats.by_chapter[c.id])
+            body_parts.append(
+                f'<section class="mat-chapter" id="{anchor(c.id)}"><header class="group-head">'
+                f'<h3><span class="group-nr">Rozdział {c.num}</span> {e(c.title)}</h3>'
+                f'<span class="mat-links"><a href="{c.url}" target="_blank" rel="noopener">skrypt ↗</a>'
+                f'<a href="{R}zadania/?rozdzial={quote(c.id)}">zadania →</a></span></header>'
+                f'<ul class="mat-list">{items}</ul></section>')
+
+    body = f"""<div class="wrap reader materials">
+{crumbs(("RPiS", ""), ("Materiały", None))}
+<p class="kicker">Do nauki</p>
+<h1 class="task-title"><mark>Materiały</mark> dodatkowe</h1>
+<p class="lead">Podręczniki, filmy i artykuły, które pomagają zrozumieć kolejne rozdziały
+<a href="{script_url}" target="_blank" rel="noopener">skryptu do wykładu ↗</a>.
+Przy książkach podajemy konkretne podrozdziały, przy pozostałych — miejsce w skrypcie, do którego pasują.</p>
+<nav class="mat-jump" aria-label="Przejdź do rozdziału">{"".join(jump)}</nav>
+<section class="mat-books"><h2>Książki</h2><ul class="books">{"".join(books)}</ul></section>
+{"".join(body_parts)}
+<p class="callout">Znasz coś, co warto tu dodać? Dopisz to do
+<a href="https://github.com/{REPO}/edit/main/materialy.yml" target="_blank" rel="noopener">materialy.yml ↗</a>
+albo <a href="https://github.com/{REPO}/issues" target="_blank" rel="noopener">zgłoś w Issues ↗</a>.</p>
+</div>"""
+    return layout("Materiały dodatkowe · RPiS", body, current="materialy",
+                  description="Podręczniki, filmy i artykuły do nauki RPiS, przypisane do rozdziałów skryptu.")
 
 
 # --- strona zadania --------------------------------------------------------
@@ -291,7 +370,7 @@ def group_html(c: Chapter, inner: str) -> str:
             f'<a href="{c.url}" target="_blank" rel="noopener">skrypt ↗</a></header>{inner}</section>')
 
 
-def browse_page(exams: list[Exam], script_url: str, chapters: dict[str, Chapter]) -> str:
+def browse_page(exams: list[Exam], script_url: str, chapters: dict[str, Chapter], mats: Materials) -> str:
     tasks = unique_tasks(exams)
     counts = {cid: sum(any(c.id == cid for c in t.chapters) for t in tasks) for cid in chapters}
     years = sorted({t.year for t in tasks})
@@ -323,7 +402,9 @@ def browse_page(exams: list[Exam], script_url: str, chapters: dict[str, Chapter]
         for c in chapters.values() if any(t.chapters[0].id == c.id for t in tasks))
 
     data = {
-        "chapters": {c.id: {"nr": c.num, "title": c.title, "url": c.url} for c in chapters.values()},
+        "chapters": {c.id: {"nr": c.num, "title": c.title, "url": c.url,
+                            "materials": anchor(c.id) if c.id in mats.by_chapter else ""}
+                     for c in chapters.values()},
         "variants": {v.path: {"title": v.title, "year": v.year} for v in all_variants(exams)},
     }
     exam_buttons = "".join(f'<button type="button" data-exam="{x.id}" aria-pressed="false">{e(x.title)}</button>'

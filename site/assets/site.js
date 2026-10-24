@@ -163,6 +163,7 @@
             el("strong", { text: ch.title }),
           ]),
           el("a", { href: ch.url, target: "_blank", rel: "noopener", text: "Czytaj w skrypcie ↗" }),
+          ch.materials ? el("a", { href: "../materialy/#" + ch.materials, text: "Materiały dodatkowe →" }) : "",
           el("button", { type: "button", "data-clear": "", text: "Pokaż wszystkie rozdziały" })
         );
         banner.hidden = false;
