@@ -216,46 +216,25 @@ def material_item(m: Material) -> str:
             f'<p class="meta">{meta}</p>{note}</div>{section}</li>')
 
 
-def materials_page(mats: Materials, chapters: dict[str, Chapter], script_url: str) -> str:
-    def chapter_link(c: Chapter) -> str:
-        return f'<a class="nr-link" href="#{anchor(c.id)}" title="{c.num}. {e(c.title)}">{c.num}</a>'
-
-    books = []
-    for src in mats.sources.values():
-        used = mats.chapters_using(src.id, chapters)
-        refs = (f'<p class="nr-links"><span class="meta">Rozdziały skryptu:</span> '
-                f'{"".join(chapter_link(c) for c in used)}</p>') if used else ""
-        note = f'<p>{e(src.note)}</p>' if src.note else ""
-        avail = "" if src.link else '<p class="meta">Brak darmowej wersji online — szukaj w bibliotece.</p>'
-        books.append(f'<li class="book"><h3>{link_or_text(src.link, src.title)}</h3>'
-                     f'<p class="meta">{e(src.author)}</p>{note}{avail}{refs}</li>')
-
+def materials_page(mats: Materials, chapters: dict[str, Chapter]) -> str:
     parts: dict[str, list[Chapter]] = {}
     for cid in mats.by_chapter:
         parts.setdefault(chapters[cid].part, []).append(chapters[cid])
-    jump, body_parts = [], []
+    sections = []
     for part, chs in parts.items():
-        jump.append(f'<p class="nr-links"><span class="part">{e(part)}</span> {"".join(chapter_link(c) for c in chs)}</p>')
-        body_parts.append(f'<h2 class="mat-part">{e(part)}</h2>')
-        for c in chs:
-            items = "".join(material_item(m) for m in mats.by_chapter[c.id])
-            body_parts.append(
-                f'<section class="mat-chapter" id="{anchor(c.id)}"><header class="group-head">'
-                f'<h3><span class="group-nr">Rozdział {c.num}</span> {e(c.title)}</h3>'
-                f'<span class="mat-links"><a href="{c.url}" target="_blank" rel="noopener">skrypt ↗</a>'
-                f'<a href="{R}zadania/?rozdzial={quote(c.id)}">zadania →</a></span></header>'
-                f'<ul class="mat-list">{items}</ul></section>')
+        cards = "".join(
+            f'<section class="mat-chapter" id="{anchor(c.id)}"><header class="group-head">'
+            f'<h3><span class="group-nr">Rozdział {c.num}</span> {e(c.title)}</h3>'
+            f'<span class="mat-links"><a href="{c.url}" target="_blank" rel="noopener">skrypt ↗</a>'
+            f'<a href="{R}zadania/?rozdzial={quote(c.id)}">zadania →</a></span></header>'
+            f'<ul class="mat-list">{"".join(material_item(m) for m in mats.by_chapter[c.id])}</ul></section>'
+            for c in chs)
+        sections.append(f'<h2 class="mat-part">{e(part)}</h2><div class="mat-grid">{cards}</div>')
 
-    body = f"""<div class="wrap reader materials">
+    body = f"""<div class="wrap materials">
 {crumbs(("RPiS", ""), ("Materiały", None))}
-<p class="kicker">Do nauki</p>
-<h1 class="task-title"><mark>Materiały</mark> dodatkowe</h1>
-<p class="lead">Podręczniki, filmy i artykuły, które pomagają zrozumieć kolejne rozdziały
-<a href="{script_url}" target="_blank" rel="noopener">skryptu do wykładu ↗</a>.
-Przy książkach podajemy konkretne podrozdziały, przy pozostałych — miejsce w skrypcie, do którego pasują.</p>
-<nav class="mat-jump" aria-label="Przejdź do rozdziału">{"".join(jump)}</nav>
-<section class="mat-books"><h2>Książki</h2><ul class="books">{"".join(books)}</ul></section>
-{"".join(body_parts)}
+<h1><mark>Materiały</mark> dodatkowe</h1>
+{"".join(sections)}
 <p class="callout">Znasz coś, co warto tu dodać? Dopisz to do
 <a href="https://github.com/{REPO}/edit/main/materialy.yml" target="_blank" rel="noopener">materialy.yml ↗</a>
 albo <a href="https://github.com/{REPO}/issues" target="_blank" rel="noopener">zgłoś w Issues ↗</a>.</p>

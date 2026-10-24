@@ -1,7 +1,7 @@
 """Materiały dodatkowe (materialy.yml): książki opisane raz i pozycje przypisane do rozdziałów skryptu.
 
     zrodla:
-      tsun: { tytul, autor, link?, opis? }
+      tsun: { tytul, autor, link? }
     rozdzialy:
       calculus/bayes:
         - { zrodlo: tsun, gdzie: "2.2.2–2.2.4", link?, podrozdzial?, opis? }
@@ -16,7 +16,7 @@ import yaml
 from tasks import Chapter, ContentError
 
 TYPES = {"ksiazka": "Książka", "wideo": "Wideo", "artykul": "Artykuł", "notatki": "Notatki"}
-SOURCE_KEYS = {"tytul", "autor", "link", "opis"}
+SOURCE_KEYS = {"tytul", "autor", "link"}
 ITEM_KEYS = {"zrodlo", "gdzie", "typ", "tytul", "autor", "link", "podrozdzial", "opis"}
 
 
@@ -26,7 +26,6 @@ class Source:
     title: str
     author: str
     link: str = ""
-    note: str = ""
 
 
 @dataclass
@@ -50,10 +49,6 @@ class Materials:
     sources: dict[str, Source]
     by_chapter: dict[str, list[Material]]
 
-    def chapters_using(self, source_id: str, chapters: dict[str, Chapter]) -> list[Chapter]:
-        return [chapters[cid] for cid, items in self.by_chapter.items()
-                if any(m.source and m.source.id == source_id for m in items)]
-
 
 def anchor(chapter_id: str) -> str:
     return "rozdzial-" + chapter_id.replace("/", "-")
@@ -73,7 +68,7 @@ def load_materials(path: Path, chapters: dict[str, Chapter]) -> Materials:
         if not s.get("tytul") or not s.get("autor"):
             errors.append(f"{where}: brak pola `tytul` lub `autor`")
             continue
-        sources[sid] = Source(sid, s["tytul"], s["autor"], s.get("link", ""), s.get("opis", ""))
+        sources[sid] = Source(sid, s["tytul"], s["autor"], s.get("link", ""))
 
     by_chapter = {}
     for cid, items in (data.get("rozdzialy") or {}).items():

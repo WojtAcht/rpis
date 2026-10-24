@@ -35,7 +35,6 @@ class MaterialsTest(unittest.TestCase):
         ref = mats.by_chapter["calculus/bayes"][0]
         self.assertEqual((ref.kind, ref.title, ref.where, ref.source.id), ("ksiazka", "A First Course", "3.3", "ross"))
         self.assertEqual(mats.by_chapter["calculus/probability"][0].section, "2.4")
-        self.assertEqual([c.num for c in mats.chapters_using("ross", CHAPTERS)], [4])
 
     def test_all_errors_are_reported_together(self):
         with self.assertRaises(ContentError) as caught:

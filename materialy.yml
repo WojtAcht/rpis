@@ -12,27 +12,20 @@ zrodla:
     tytul: Probability & Statistics with Applications to Computing
     autor: Alex Tsun
     link: https://www.alextsun.com/files/Prob_Stat_for_CS_Book.pdf
-    opis: Przystępny podręcznik z dobrymi wizualizacjami i zadaniami; udostępniony za darmo przez autora.
   ross:
-    tytul: A First Course in Probability
+    tytul: A First Course in Probability (wyd. 10)
     autor: Sheldon M. Ross
-    opis: >-
-      Klasyczny podręcznik napisany w bardzo przystępny sposób, z dużą liczbą zadań.
-      Numeracja według wydania 10.
   think-bayes:
     tytul: Think Bayes
     autor: Allen B. Downey
     link: https://allendowney.github.io/ThinkBayes2/
-    opis: Statystyka bayesowska na przykładach w Pythonie; darmowa wersja od autora.
   islp:
     tytul: An Introduction to Statistical Learning (with Applications in Python)
     autor: G. James, D. Witten, T. Hastie, R. Tibshirani, J. Taylor
     link: https://www.statlearning.com/
-    opis: Standardowy wstęp do uczenia statystycznego; darmowy PDF na stronie autorów.
   kolmogorov:
     tytul: Foundations of the Theory of Probability
     autor: A. N. Kołmogorow
-    opis: Najciekawsze są pierwsze strony, na których Kołmogorow wprowadza aksjomatykę rachunku prawdopodobieństwa.
 
 rozdzialy:
   descriptive:
@@ -54,7 +47,7 @@ rozdzialy:
     - { zrodlo: ross, gdzie: "2.2–2.5" }
     - { zrodlo: ross, gdzie: "5.3 (paradoks Bertranda), 6.2 (igła Buffona)", podrozdzial: "2.4",
         opis: Prawdopodobieństwo geometryczne. }
-    - { zrodlo: kolmogorov }
+    - { zrodlo: kolmogorov, opis: "Najciekawsze są pierwsze strony, na których Kołmogorow wprowadza aksjomatykę." }
     - typ: wideo
       tytul: "Lecture 1: Probability Models and Axioms"
       autor: MIT OpenCourseWare (6.041)

@@ -107,7 +107,7 @@ def main() -> int:
     decks = collect_slides()
     write_page("", pages.index_page(exams, decks))
     write_page("zadania", pages.browse_page(exams, script_url, chapters, mats))
-    write_page("materialy", pages.materials_page(mats, chapters, script_url))
+    write_page("materialy", pages.materials_page(mats, chapters))
     for x in exams:
         if x.topics:
             write_page(f"{x.id}/zagadnienia", pages.topics_page(x, script_url))
