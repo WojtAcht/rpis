@@ -140,6 +140,21 @@ Pod tytułem są kafle z głównymi wejściami (zagadnienia, bank zadań, quizy,
 sekcja najbliższego kolokwium: od września do 19 grudnia Kolokwium I, od 20 grudnia Kolokwium II.
 Strona przebudowuje się sama w te dni (harmonogram w GitHub Actions).
 
+## Dla LLM-ów i agentów
+
+Build zapisuje też treści w zwykłym Markdownie (wzory w LaTeX-u, pełne adresy obrazków i odnośników do skryptu),
+żeby można je było podać ChatGPT, Claude'owi albo agentowi jako link lub plik:
+
+| Plik | Zawartość |
+|---|---|
+| [`rpis.md`](https://wojtacht.github.io/rpis/rpis.md) (= `llms-full.txt`) | wszystko: zagadnienia, zadania z rozwiązaniami, quizy (powtórzone zadania raz) |
+| [`kolokwium-N.md`](https://wojtacht.github.io/rpis/kolokwium-1.md) | to samo dla jednego kolokwium, z wejściówkami z jego materiału |
+| `<zadanie>/index.html.md` | jedno zadanie obok jego strony, np. `kolokwium-1/2025/zestaw-a/1/index.html.md` |
+| [`llms.txt`](https://wojtacht.github.io/rpis/llms.txt) | spis tych plików według [llmstxt.org](https://llmstxt.org) |
+
+Pliki mają na początku krótką instrukcję dla modelu: najpierw wskazówka, pełne rozwiązanie dopiero na prośbę.
+Generuje je `scripts/llms.py`; adres strony bierze z `GITHUB_REPOSITORY` (można nadpisać przez `SITE_URL`).
+
 ## Budowanie lokalnie
 
 Potrzebne: TeX Live (`latexmk`), [pandoc](https://pandoc.org) 3.x i Python 3.10+ z PyYAML.
