@@ -10,6 +10,7 @@ import os
 from urllib.parse import quote, urlencode
 
 from materials import TYPES, Material, Materials, anchor
+from ml_paths import Group, Item, MlPath, MlPaths
 from pdf import pdf_href
 from quizzes import LETTERS, Question, Quiz
 from tasks import ENTRY_CATEGORY, Chapter, Exam, Task, Variant, all_variants, fold, plural, unique_tasks
@@ -32,6 +33,7 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
         + link(f"#kolokwium-{n}", "Zestawy z poprzednich lat")
         for n, title in ((1, "Kolokwium I"), (2, "Kolokwium II")))
     more += '<p class="nav-group">Zajęcia</p>' + link("#wejsciowki", "Wejściówki") + link("#prezentacje", "Prezentacje")
+    more += '<p class="nav-group">Po RPiS</p>' + link("ml/", "Od czego zacząć ML")
     # Na telefonie przełącznik motywu jest w menu, żeby pasek zmieścił się w jednym rzędzie.
     more += ('<button class="theme-toggle theme-item" type="button"><span aria-hidden="true"></span>'
              '<span class="theme-label">Tryb ciemny</span></button>')
@@ -118,13 +120,16 @@ def crumbs(*items: tuple[str, str | None]) -> str:
 
 # --- strona główna ---------------------------------------------------------
 
-def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz], next_exam: int) -> str:
+def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz], next_exam: int,
+               ml: MlPaths | None = None) -> str:
     tasks = unique_tasks(exams)
     nearest = next((x for x in exams if x.num == next_exam), exams[0])
     sections = [exam_section(nearest, quizzes, nearest=True)]
     sections += [exam_section(x, quizzes) for x in exams if x is not nearest]
     sections.append(entries_section(exams))
     sections += [materials_teaser(), quizzes_section(quizzes), slides_section(decks)]
+    if ml:
+        sections.append(ml_paths_teaser())
 
     body = f"""<header class="hero wrap">
   <h1>Rachunek Prawdo&shy;podobieństwa i&nbsp;<mark>Statystyka</mark></h1>
@@ -224,6 +229,12 @@ def entries_section(exams: list[Exam]) -> str:
         parts.append(variant_list(variants, lambda v: v.title))
     parts.append("</section>")
     return "".join(parts)
+
+
+def ml_paths_teaser() -> str:
+    return f"""<section id="ml"><h2>Od czego zacząć naukę <mark>ML-a</mark>?</h2>
+<a class="btn btn-big" href="{R}ml/">Zobacz materiały →</a>
+</section>"""
 
 
 def materials_teaser() -> str:
@@ -350,6 +361,71 @@ albo <a href="https://github.com/{REPO}/issues" target="_blank" rel="noopener">z
 </div>"""
     return layout("Materiały dodatkowe · RPiS", body, current="materialy",
                   description="Podręczniki, filmy i artykuły do nauki RPiS, przypisane do rozdziałów skryptu.")
+
+
+# --- ścieżki do ML -------------------------------------------------------
+
+# Sieć z hero: warstwy 3-4-4-2, krawędzie rysowane w CSS (animacja tylko bez prefers-reduced-motion).
+def _net_svg() -> str:
+    layers = [3, 4, 4, 2]
+    xs = [30, 120, 210, 300]
+    pts = [[(x, 140 + (j - (n - 1) / 2) * 62) for j in range(n)] for x, n in zip(xs, layers)]
+    edges = "".join(f'<line x1="{a[0]}" y1="{a[1]:.0f}" x2="{b[0]}" y2="{b[1]:.0f}" pathLength="1" style="--d:{k * 0.04:.2f}s"/>'
+                    for k, (a, b) in enumerate((a, b) for l1, l2 in zip(pts, pts[1:]) for a in l1 for b in l2))
+    nodes = "".join(f'<circle cx="{x}" cy="{y:.0f}" r="13" style="--d:{0.25 * i:.2f}s"/>'
+                    for i, layer in enumerate(pts) for x, y in layer)
+    return (f'<svg class="mlp-net" viewBox="0 0 330 280" aria-hidden="true" focusable="false">'
+            f'<g class="mlp-edges">{edges}</g><g class="mlp-nodes">{nodes}</g></svg>')
+
+
+def ml_item(m: Item, i: int) -> str:
+    return f"""<li class="mlp-step" style="--i:{i}">
+  <span class="mlp-nr">{i + 1:02d}</span>
+  <h3><a href="{e(m.link)}" target="_blank" rel="noopener">{e(m.title)}<span class="mlp-ext" aria-hidden="true"> ↗</span></a></h3>
+  <p class="mlp-by">{e(m.author)}</p>
+  <p class="mlp-text">{e(m.text)}</p>
+</li>"""
+
+
+def ml_path_section(p: MlPath) -> str:
+    items = "".join(ml_item(m, i) for i, m in enumerate(p.items))
+    cols = 4 if len(p.items) % 4 == 0 else 3  # 4 → 4, 5 → 3+2, 6 → 3+3
+    return f"""<section class="mlp-path" id="{e(p.id)}">
+<header class="mlp-path-head"><h2>{e(p.name)}</h2><p class="lead">{e(p.text)}</p></header>
+<ol class="mlp-steps" style="--cols:{cols}">{items}</ol>
+</section>"""
+
+
+def ml_group(g: Group) -> str:
+    points = f'<ul class="mlp-points">{"".join(f"<li>{e(x)}</li>" for x in g.points)}</ul>' if g.points else ""
+    return (f'<li class="mlp-group"><h3>{e(g.name)}</h3><p>{e(g.text)}</p>{points}'
+            f'<a class="btn" href="{e(g.link)}" target="_blank" rel="noopener">{e(g.link_text or "Dołącz")} ↗</a></li>')
+
+
+def ml_groups_section(groups: list[Group]) -> str:
+    if not groups:
+        return ""
+    return f"""<section class="mlp-agh" id="na-agh">
+<p class="kicker">Na AGH</p><h2>Koła <mark>naukowe</mark></h2>
+<ul class="mlp-groups">{"".join(ml_group(g) for g in groups)}</ul>
+</section>"""
+
+
+def ml_paths_page(ml: MlPaths) -> str:
+    sections = "".join(ml_path_section(p) for p in ml.paths)
+    updated = f'<p class="hint mlp-foot">Aktualizacja: {e(ml.updated)}.</p>' if ml.updated else ""
+    body = f"""<div class="wrap mlp">
+{crumbs(("RPiS", ""), ("Od czego zacząć ML", None))}
+<header class="mlp-hero">
+  <h1>Od czego zacząć naukę <mark>ML-a</mark>?</h1>
+  {_net_svg()}
+</header>
+{sections}
+{ml_groups_section(ml.groups)}
+{updated}
+</div>"""
+    return layout("Od czego zacząć ML · RPiS", body, current="ml",
+                  description="Sprawdzone materiały do nauki ML i AI oraz koła naukowe na AGH.")
 
 
 # --- strona zadania --------------------------------------------------------
