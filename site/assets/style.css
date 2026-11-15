@@ -609,7 +609,8 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 .mlp-by { margin: 0; font-size: 0.88em; color: var(--muted); }
 .mlp-text { margin: 0; font-size: 0.95em; }
 
-.mlp-agh { margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1.5px solid var(--line); }
+.mlp-agh { padding-top: 2.5rem; }
+.mlp-agh .mlp-groups { margin-top: 1rem; }
 .mlp-groups { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 28px; align-items: stretch; }
 .mlp-group {
   display: flex; flex-direction: column; gap: 0.7em; padding: 1.3em 1.35em 1.4em;

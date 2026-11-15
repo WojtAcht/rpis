@@ -28,6 +28,8 @@ class MlPathsTest(unittest.TestCase):
         ml = self.load("aktualizacja: 2026\nsciezki:\n" + PATH.format(id="ml") + ITEM * 4)
         self.assertEqual(len(ml.paths[0].items), 4)
         self.assertEqual(ml.paths[0].items[0].link, "https://x")
+        no_text = self.load("sciezki:\n" + PATH.format(id="ml").replace("    opis: O\n", "") + ITEM)
+        self.assertEqual(no_text.paths[0].text, "")
 
     def test_groups(self):
         base = "sciezki:\n" + PATH.format(id="ml") + ITEM
