@@ -1,8 +1,9 @@
 # Od czego zacząć ML: strona ml/ dla studentów, którzy pytają, od czego zacząć.
 #
-# `sciezki`: sekcje jedna pod drugą (id, nazwa, opis, materialy). Każdy materiał to kafelek
+# `sciezki`: sekcje jedna pod drugą (id, nazwa, materialy; opcjonalnie opis). Każdy materiał to kafelek
 # z polami tytul, autor, link, opis; kolejność na liście = kolejność na stronie.
 # `na_agh`: koła naukowe (nazwa, opis, link; opcjonalnie link_tekst, punkty).
+# Na stronie najpierw są koła naukowe, potem ścieżki w kolejności z pliku.
 # Zaproszenia na Discorda wygasają, więc używaj zaproszeń bez daty ważności.
 
 aktualizacja: listopad 2026
@@ -61,6 +62,55 @@ sciezki:
         autor: Andrej Karpathy
         link: https://www.youtube.com/watch?v=7xTGNNLPyMI
         opis: Jak powstaje model taki jak ChatGPT i skąd biorą się jego błędy.
+
+  - id: ksiazki
+    nazwa: Książki
+    materialy:
+      - tytul: Probably Overthinking It
+        autor: Allen B. Downey
+        link: https://www.goodreads.com/book/show/123226972-probably-overthinking-it
+        opis: Statystyka i paradoksy w danych, na prawdziwych przykładach.
+      - tytul: Bernoulli's Fallacy
+        autor: Aubrey Clayton
+        link: https://www.goodreads.com/book/show/55825328-bernoulli-s-fallacy
+        opis: Krytyka statystyki częstościowej i argumenty za podejściem bayesowskim.
+      - tytul: Szum
+        autor: Daniel Kahneman, Olivier Sibony, Cass R. Sunstein
+        link: https://lubimyczytac.pl/ksiazka/5016849/szum-czyli-skad-sie-biora-bledy-w-naszych-decyzjach
+        opis: Szum a obciążenie w ludzkich osądach, czyli wariancja i bias poza ML-em.
+      - tytul: Zwiedzeni przez przypadek
+        autor: Nassim Nicholas Taleb
+        link: https://lubimyczytac.pl/ksiazka/4930427/zwiedzeni-przez-przypadek-tajemnicza-rola-losowosci-w-zyciu-i-w-rynkowej-grze
+        opis: Jak mylimy szczęście z umiejętnościami, m.in. przez błąd przeżywalności.
+      - tytul: Thinking in Bets
+        autor: Annie Duke
+        link: https://www.goodreads.com/book/show/35957157-thinking-in-bets
+        opis: Decyzje w warunkach niepewności oczami zawodowej pokerzystki. Dobra decyzja to nie to samo co dobry wynik.
+      - tytul: An Introduction to Statistical Learning with Applications in Python
+        autor: James, Witten, Hastie, Tibshirani, Taylor
+        link: https://www.statlearning.com/
+        opis: Klasyczny podręcznik ML od strony statystyki, z labami w Pythonie. Darmowy PDF.
+
+  - id: zrodla
+    nazwa: Źródła
+    opis: Blogi i serwisy, z których warto czerpać na bieżąco.
+    materialy:
+      - tytul: Hacker News
+        autor: Y Combinator
+        link: https://news.ycombinator.com/
+        opis: Szerszy kontekst branży tech. Czytaj selektywnie, bo łatwo stracić tu dużo czasu.
+      - tytul: Andrej Karpathy
+        autor: Blog
+        link: https://karpathy.bearblog.dev/blog/
+        opis: Eseje o LLM-ach i o tym, dokąd zmierza AI, np. coroczne podsumowanie roku w LLM-ach.
+      - tytul: Ahead of AI
+        autor: Sebastian Raschka
+        link: https://magazine.sebastianraschka.com/
+        opis: Przystępne omówienia najważniejszych nowych prac badawczych i architektur LLM.
+      - tytul: Simon Willison
+        autor: Blog
+        link: https://simonwillison.net/
+        opis: Praktyczne testy nowych modeli i narzędzi, czyli jak faktycznie budować z LLM-ami.
 
 na_agh:
   - nazwa: BIT AI Konkursy

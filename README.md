@@ -138,14 +138,14 @@ Wszystkie quizy są na stronie `quizy/`, a quizy z polem `kolokwium` także w se
 ## Od czego zacząć ML
 
 `ml.yml` opisuje stronę [`ml/`](https://wojtacht.github.io/rpis/ml/) dla studentów,
-którzy pytają, od czego zacząć uczenie maszynowe. Ścieżki (ML, AI) są jedna pod drugą,
+którzy pytają, od czego zacząć uczenie maszynowe. Sekcje (ML, AI, książki, źródła) są jedna pod drugą,
 a każdy materiał to kafelek, w kolejności z pliku:
 
 ```yaml
 sciezki:
   - id: ml                      # kotwica: ml/#ml
     nazwa: ML
-    opis: Jedno zdanie o ścieżce.
+    opis: Jedno zdanie o ścieżce.   # opcjonalnie
     materialy:
       - tytul: Neural Networks
         autor: 3Blue1Brown
@@ -153,8 +153,8 @@ sciezki:
         opis: Jedno zdanie, co to jest.
 ```
 
-Pod ścieżkami jest sekcja „Koła naukowe” (`na_agh`: `nazwa`, `opis`, `link`, opcjonalnie
-`link_tekst` i `punkty`). Zaproszenia na Discorda dawaj bez daty ważności.
+Nad ścieżkami jest sekcja „Koła naukowe” (`na_agh`: `nazwa`, `opis`, `link`, opcjonalnie
+`link_tekst` i `punkty`). Książki i źródła to zwykłe wpisy w `sciezki`. Zaproszenia na Discorda dawaj bez daty ważności.
 
 Build sprawdza pola. Bez pliku strony nie ma.
 

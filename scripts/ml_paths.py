@@ -2,11 +2,11 @@
 
     aktualizacja: listopad 2026
     sciezki:
-      - { id, nazwa, opis, materialy: [{ tytul, autor, link, opis }, ...] }
+      - { id, nazwa, opis?, materialy: [{ tytul, autor, link, opis }, ...] }
     na_agh:
       - { nazwa, opis, link, link_tekst?, punkty?: [..] }
 
-Ścieżki są na stronie jedna pod drugą, a materiały w kolejności z pliku.
+Na stronie: koła naukowe, potem ścieżki jedna pod drugą (ML, AI, książki, źródła). Materiały w kolejności z pliku.
 `na_agh` to koła naukowe na AGH, w których można uczyć się z innymi.
 """
 
@@ -18,7 +18,8 @@ import yaml
 
 from tasks import ContentError
 
-PATH_KEYS = ("id", "nazwa", "opis", "materialy")
+PATH_REQUIRED = ("id", "nazwa", "materialy")
+PATH_KEYS = (*PATH_REQUIRED, "opis")
 ITEM_KEYS = ("tytul", "autor", "link", "opis")
 GROUP_REQUIRED = ("nazwa", "opis", "link")
 GROUP_KEYS = set(GROUP_REQUIRED) | {"link_tekst", "punkty"}
@@ -56,6 +57,26 @@ class MlPaths:
     groups: list[Group] = field(default_factory=list)
 
 
+def _path(p, where: str, errors: list[str]) -> MlPath | None:
+    if not isinstance(p, dict):
+        errors.append(f"{where}: oczekiwano pól {', '.join(PATH_KEYS)}")
+        return None
+    if extra := set(p) - set(PATH_KEYS):
+        errors.append(f"{where}: nieznane pola {sorted(extra)}")
+    if missing := [k for k in PATH_REQUIRED if not p.get(k)]:
+        errors.append(f"{where}: brak pól {', '.join(missing)}")
+        return None
+    if not re.fullmatch(r"[a-z0-9-]+", str(p["id"])):
+        errors.append(f"{where}: `id` musi być unikalne i składać się z małych liter, cyfr i myślników")
+    items = []
+    for j, m in enumerate(p["materialy"], 1):
+        if not isinstance(m, dict) or set(m) != set(ITEM_KEYS) or not all(m.values()):
+            errors.append(f"{where}, materiał {j}: potrzebne są dokładnie pola {', '.join(ITEM_KEYS)}")
+            continue
+        items.append(Item(str(m["tytul"]), str(m["autor"]), m["link"], m["opis"]))
+    return MlPath(str(p["id"]), str(p["nazwa"]), p.get("opis", ""), items)
+
+
 def load_ml_paths(path: Path) -> MlPaths | None:
     """Wczytuje i sprawdza ml.yml; brak pliku = brak strony. Wszystkie błędy zgłasza naraz."""
     if not path.exists():
@@ -65,22 +86,12 @@ def load_ml_paths(path: Path) -> MlPaths | None:
     errors, paths, seen = [], [], set()
 
     for i, p in enumerate(data.get("sciezki") or [], 1):
-        where = f"{name}: ścieżka {p.get('id') or i}"
-        if extra := set(p) - set(PATH_KEYS):
-            errors.append(f"{where}: nieznane pola {sorted(extra)}")
-        if missing := [k for k in PATH_KEYS if not p.get(k)]:
-            errors.append(f"{where}: brak pól {', '.join(missing)}")
-            continue
-        if not re.fullmatch(r"[a-z0-9-]+", p["id"]) or p["id"] in seen:
-            errors.append(f"{where}: `id` musi być unikalne i składać się z małych liter, cyfr i myślników")
-        seen.add(p["id"])
-        items = []
-        for j, m in enumerate(p["materialy"], 1):
-            if not isinstance(m, dict) or set(m) != set(ITEM_KEYS) or not all(m.values()):
-                errors.append(f"{where}, materiał {j}: potrzebne są dokładnie pola {', '.join(ITEM_KEYS)}")
-                continue
-            items.append(Item(str(m["tytul"]), str(m["autor"]), m["link"], m["opis"]))
-        paths.append(MlPath(p["id"], str(p["nazwa"]), p["opis"], items))
+        where = f"{name}: ścieżka {p.get('id') if isinstance(p, dict) and p.get('id') else i}"
+        if path_ := _path(p, where, errors):
+            if path_.id in seen:
+                errors.append(f"{where}: `id` musi być unikalne i składać się z małych liter, cyfr i myślników")
+            seen.add(path_.id)
+            paths.append(path_)
 
     groups = []
     for i, g in enumerate(data.get("na_agh") or [], 1):

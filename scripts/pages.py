@@ -389,9 +389,10 @@ def ml_item(m: Item, i: int) -> str:
 
 def ml_path_section(p: MlPath) -> str:
     items = "".join(ml_item(m, i) for i, m in enumerate(p.items))
+    lead = f'<p class="lead">{e(p.text)}</p>' if p.text else ""
     cols = 4 if len(p.items) % 4 == 0 else 3  # 4 → 4, 5 → 3+2, 6 → 3+3
     return f"""<section class="mlp-path" id="{e(p.id)}">
-<header class="mlp-path-head"><h2>{e(p.name)}</h2><p class="lead">{e(p.text)}</p></header>
+<header class="mlp-path-head"><h2>{e(p.name)}</h2>{lead}</header>
 <ol class="mlp-steps" style="--cols:{cols}">{items}</ol>
 </section>"""
 
@@ -406,7 +407,7 @@ def ml_groups_section(groups: list[Group]) -> str:
     if not groups:
         return ""
     return f"""<section class="mlp-agh" id="na-agh">
-<p class="kicker">Na AGH</p><h2>Koła <mark>naukowe</mark></h2>
+<header class="mlp-path-head"><h2>Koła naukowe</h2></header>
 <ul class="mlp-groups">{"".join(ml_group(g) for g in groups)}</ul>
 </section>"""
 
@@ -420,8 +421,8 @@ def ml_paths_page(ml: MlPaths) -> str:
   <h1>Od czego zacząć naukę <mark>ML-a</mark>?</h1>
   {_net_svg()}
 </header>
-{sections}
 {ml_groups_section(ml.groups)}
+{sections}
 {updated}
 </div>"""
     return layout("Od czego zacząć ML · RPiS", body, current="ml",
