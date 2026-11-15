@@ -12,6 +12,7 @@ Najpierw spróbuj rozwiązać zadania samodzielnie, a dopiero potem zajrzyj do r
 ```
 rozdzialy.yml                       # rozdziały skryptu, do których przypisujemy zadania
 materialy.yml                       # materiały dodatkowe (książki, filmy, artykuły) do rozdziałów
+ml.yml                              # od czego zacząć ML: materiały i koła naukowe
 quizy/
 └── <nazwa>.yml                     # quiz: pytania zamknięte i prawda/fałsz
 prezentacje/
@@ -133,6 +134,29 @@ pytania:
 
 Teksty to Markdown ze wzorami, jak w zadaniach. Build sprawdza pola, litery odpowiedzi i identyfikatory rozdziałów.
 Wszystkie quizy są na stronie `quizy/`, a quizy z polem `kolokwium` także w sekcji najbliższego kolokwium.
+
+## Od czego zacząć ML
+
+`ml.yml` opisuje stronę [`ml/`](https://wojtacht.github.io/rpis/ml/) dla studentów,
+którzy pytają, od czego zacząć uczenie maszynowe. Ścieżki (ML, AI) są jedna pod drugą,
+a każdy materiał to kafelek, w kolejności z pliku:
+
+```yaml
+sciezki:
+  - id: ml                      # kotwica: ml/#ml
+    nazwa: ML
+    opis: Jedno zdanie o ścieżce.
+    materialy:
+      - tytul: Neural Networks
+        autor: 3Blue1Brown
+        link: https://www.3blue1brown.com/topics/neural-networks
+        opis: Jedno zdanie, co to jest.
+```
+
+Pod ścieżkami jest sekcja „Koła naukowe” (`na_agh`: `nazwa`, `opis`, `link`, opcjonalnie
+`link_tekst` i `punkty`). Zaproszenia na Discorda dawaj bez daty ważności.
+
+Build sprawdza pola. Bez pliku strony nie ma.
 
 ## Strona główna
 

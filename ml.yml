@@ -1,0 +1,83 @@
+# Od czego zacząć ML: strona ml/ dla studentów, którzy pytają, od czego zacząć.
+#
+# `sciezki`: sekcje jedna pod drugą (id, nazwa, opis, materialy). Każdy materiał to kafelek
+# z polami tytul, autor, link, opis; kolejność na liście = kolejność na stronie.
+# `na_agh`: koła naukowe (nazwa, opis, link; opcjonalnie link_tekst, punkty).
+# Zaproszenia na Discorda wygasają, więc używaj zaproszeń bez daty ważności.
+
+aktualizacja: listopad 2026
+
+sciezki:
+  - id: ml
+    nazwa: ML
+    opis: Jak i dlaczego działają sieci neuronowe.
+    materialy:
+      - tytul: Kaggle Learn
+        autor: Kaggle
+        link: https://www.kaggle.com/learn
+        opis: Krótkie kursy w przeglądarce, bez instalowania niczego, m.in. Python, pandas i wprowadzenie do ML.
+      - tytul: Neural Networks
+        autor: 3Blue1Brown
+        link: https://www.3blue1brown.com/topics/neural-networks
+        opis: Wizualne wprowadzenie do sieci neuronowych i transformerów.
+      - tytul: "Stanford CS229: Machine Learning"
+        autor: Andrew Ng · Stanford, 2018
+        link: https://www.youtube.com/watch?v=jGwO_UgTS7I&list=PLoROMvodv4rMiGQp3WXShtMGgzqpfVfbU
+        opis: Klasyczny kurs ML z matematyką, od regresji i klasyfikacji po SVM i uczenie bez nadzoru.
+      - tytul: "MIT 6.S191: Introduction to Deep Learning"
+        autor: Alexander Amini, Ava Amini · MIT
+        link: https://introtodeeplearning.com/
+        opis: Wykłady i laby w Colabie, od podstaw po modele generatywne i LLM-y.
+      - tytul: "Neural Networks: Zero to Hero"
+        autor: Andrej Karpathy
+        link: https://karpathy.ai/zero-to-hero.html
+        opis: Piszesz od zera autograd, model językowy i małego GPT.
+      - tytul: A Recipe for Training Neural Networks
+        autor: Andrej Karpathy
+        link: https://karpathy.github.io/2019/04/25/recipe/
+        opis: Krótki esej o tym, jak trenować sieć i wyłapywać ciche błędy.
+
+  - id: ai
+    nazwa: AI
+    opis: Jak budować aplikacje na gotowych modelach językowych.
+    materialy:
+      - tytul: Building with the Claude API
+        autor: Anthropic Academy
+        link: https://academy.claude.com/courses/building-with-the-claude-api
+        opis: Tool use, RAG, MCP i agenty, z kodem w Pythonie. Do ćwiczeń potrzebny jest klucz API.
+      - tytul: Introduction to Agent Skills
+        autor: Anthropic Academy
+        link: https://academy.claude.com/courses/introduction-to-agent-skills
+        opis: Jak tworzyć skille dla agentów.
+      - tytul: Introduction to Model Context Protocol
+        autor: Anthropic Academy
+        link: https://academy.claude.com/courses/introduction-to-model-context-protocol
+        opis: Jak podłączyć model do narzędzi i danych.
+      - tytul: Introduction to evals
+        autor: Anthropic Academy
+        link: https://academy.claude.com/courses/introduction-to-evals
+        opis: Jak sprawdzić, czy aplikacja na LLM-ie naprawdę działa.
+      - tytul: Deep Dive into LLMs like ChatGPT
+        autor: Andrej Karpathy
+        link: https://www.youtube.com/watch?v=7xTGNNLPyMI
+        opis: Jak powstaje model taki jak ChatGPT i skąd biorą się jego błędy.
+
+na_agh:
+  - nazwa: BIT AI Konkursy
+    opis: >-
+      Grupa w kole naukowym BIT, która startuje razem w konkursach ML. Nie trzeba być ekspertem,
+      wystarczy przyjść na spotkanie.
+    punkty:
+      - wspólne starty w konkursach, od comiesięcznych Kaggle Playground po wyzwania branżowe i hackathony
+      - prelekcje inżynierów z firm budujących systemy AI
+      - coding challenge z firmą z branży HFT
+      - konkursy przy międzynarodowych konferencjach naukowych, z szansą na zaprezentowanie tam rozwiązania
+    link: https://discord.gg/eZUC6xtuk
+    link_tekst: Discord BIT (kanał BIT AI)
+  - nazwa: RL Reading Group
+    opis: >-
+      Regularne spotkania, na których omawiamy artykuły o uczeniu ze wzmocnieniem, ale też z bardziej
+      standardowego ML. Spotkania są stacjonarne i transmitowane na Discordzie. Dobry sposób, żeby nauczyć się
+      czytać prace naukowe.
+    link: https://discord.com/invite/AvVnKvf2w
+    link_tekst: Discord RLRG

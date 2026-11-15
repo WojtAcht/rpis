@@ -8,6 +8,7 @@ Konwencja katalogów:
     kolokwium-N/RRRR/<wariant>/zadanie-K.md        treść + rozwiązanie (Markdown)
     kolokwium-N/RRRR/<wariant>/*.png               obrazki używane w zadaniach
     quizy/<nazwa>.yml                              quizy (pytania zamknięte i prawda/fałsz)
+    ml.yml                                         od czego zacząć ML: ścieżki po trzy materiały (strona ml/)
     prezentacje/NN-nazwa.html                      samodzielne slajdy
 
 Oprócz HTML-a i PDF-ów build zapisuje treści w Markdownie dla LLM-ów (llms.txt, rpis.md; zob. llms.py).
@@ -28,6 +29,7 @@ import llms
 import pages
 import pdf
 from materials import load_materials
+from ml_paths import load_ml_paths
 from quizzes import collect_quizzes
 from tasks import ContentError, all_tasks, all_variants, collect, load_chapters, plural
 
@@ -89,6 +91,7 @@ def main() -> int:
         exams = collect(ROOT, chapters)
         mats = load_materials(ROOT / "materialy.yml", chapters)
         quizzes = collect_quizzes(ROOT, chapters)
+        ml = load_ml_paths(ROOT / "ml.yml")
         if bad := [z.slug for z in quizzes if z.exam and z.exam not in {x.num for x in exams}]:
             raise ContentError(f"quizy: nieznany numer kolokwium w {bad}")
     except ContentError as err:
@@ -123,10 +126,12 @@ def main() -> int:
 
     # Strony.
     decks = collect_slides()
-    write_page("", pages.index_page(exams, decks, quizzes, nearest_exam(date.today())))
+    write_page("", pages.index_page(exams, decks, quizzes, nearest_exam(date.today()), ml))
     write_page("zadania", pages.browse_page(exams, chapters, mats))
     write_page("materialy", pages.materials_page(mats, chapters))
     write_page("quizy", pages.quizzes_page(quizzes, exams))
+    if ml:
+        write_page("ml", pages.ml_paths_page(ml))
     for z in quizzes:
         write_page(z.path, pages.quiz_page(z))
     for x in exams:

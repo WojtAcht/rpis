@@ -567,3 +567,73 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   .option { min-height: 3.1em; }
 }
 .is-stepper .feedback:not([open]) { display: none; }
+
+/* --- ścieżki do ML (ml/) --- */
+.mlp { padding-bottom: 3rem; }
+.mlp-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 300px); gap: clamp(24px, 4vw, 64px); align-items: center; padding: 1rem 0 1rem; }
+.mlp-hero h1 { max-width: 14ch; margin: 0; }
+.mlp-net { width: 100%; height: auto; overflow: visible; }
+.mlp-edges line { stroke: var(--line); stroke-width: 1.5; opacity: 0.35; }
+.mlp-nodes circle { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.mlp-nodes circle:nth-child(3n + 1) { fill: var(--mark); }
+@media (prefers-reduced-motion: no-preference) {
+  .mlp-edges line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: mlp-draw 0.7s ease-out forwards; animation-delay: var(--d); }
+  .mlp-nodes circle { transform-box: fill-box; transform-origin: center; animation: mlp-pulse 3.2s ease-in-out infinite; animation-delay: var(--d); }
+  .mlp-step { animation: mlp-rise 0.45s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i) * 0.06s); }
+}
+@keyframes mlp-draw { to { stroke-dashoffset: 0; } }
+@keyframes mlp-pulse { 0%, 70%, 100% { transform: scale(1); } 35% { transform: scale(1.18); } }
+@keyframes mlp-rise { from { opacity: 0; transform: translateY(14px); } }
+
+.mlp-path { padding-top: 2.5rem; }
+.mlp-path-head h2 { font-size: clamp(40px, 7vw, 80px); margin-bottom: 0.1em; }
+.mlp-path-head h2::after { content: "."; color: var(--green); }
+.mlp-path-head .lead { margin-top: 0; }
+
+/* kafelki materiałów, numerowane w kolejności */
+.mlp-steps { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: 24px; align-items: stretch; }
+.mlp-step {
+  display: flex; flex-direction: column; gap: 0.5em; padding: 1.1em 1.2em 1.2em;
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: 5px 5px 0 var(--line);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.mlp-step:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0 var(--line); }
+.mlp-nr {
+  align-self: flex-start; font-family: var(--mono); font-weight: 500; font-size: 0.85em;
+  background: var(--mark); color: var(--on-mark); border: 1.5px solid var(--line); padding: 0.1em 0.45em;
+}
+.mlp-step h3 { margin: 0.2em 0 0; font-size: 1.3em; line-height: 1.15; letter-spacing: -0.01em; }
+.mlp-step h3 a { text-decoration: none; background: linear-gradient(transparent 60%, var(--highlight) 60%) no-repeat 0 0 / 0 100%; transition: background-size 0.25s; }
+.mlp-step h3 a:hover { background-size: 100% 100%; }
+.mlp-ext { font-family: var(--mono); font-size: 0.7em; color: var(--muted); }
+.mlp-by { margin: 0; font-size: 0.88em; color: var(--muted); }
+.mlp-text { margin: 0; font-size: 0.95em; }
+
+.mlp-agh { margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1.5px solid var(--line); }
+.mlp-groups { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 28px; align-items: stretch; }
+.mlp-group {
+  display: flex; flex-direction: column; gap: 0.7em; padding: 1.3em 1.35em 1.4em;
+  background: var(--card); border: 1.5px solid var(--line); box-shadow: 5px 5px 0 var(--line);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.mlp-group:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0 var(--line); }
+.mlp-group h3 { margin: 0; font-size: 1.6em; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+.mlp-group h3::before { content: "● "; color: var(--mark); -webkit-text-stroke: 1.5px var(--line); font-size: 0.7em; vertical-align: 0.12em; }
+.mlp-group > p { margin: 0; }
+.mlp-points { margin: 0; padding-left: 1.2em; font-size: 0.93em; display: grid; gap: 0.25em; }
+.mlp-points li::marker { content: "→  "; font-family: var(--mono); }
+.mlp-group .btn { align-self: flex-start; margin-top: auto; }
+.mlp-foot { margin-top: 2.5rem; }
+
+@media (max-width: 900px) {
+  .mlp-hero { grid-template-columns: minmax(0, 1fr); }
+  .mlp-net { max-width: 240px; justify-self: start; order: -1; }
+  .mlp-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .mlp-net { display: none; }
+  .mlp-hero h1 { font-size: 34px; }
+  .mlp-steps { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .mlp-step, .mlp-group { box-shadow: 3px 3px 0 var(--line); }
+}
+@media print { .mlp-net { display: none !important; } }
