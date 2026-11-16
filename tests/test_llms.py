@@ -56,6 +56,8 @@ class DocumentTest(unittest.TestCase):
         index = llms.index(self.exams, [], "https://skrypt/")
         self.assertIn(f"({llms.SITE_URL}rpis.md)", index)
         self.assertEqual(index.count("index.html.md"), 2)  # bliźniak z zestawu B tylko raz
+        self.assertNotIn(llms.CHEATSHEET, index)
+        self.assertIn(f"({llms.SITE_URL}{llms.CHEATSHEET})", llms.index(self.exams, [], "https://skrypt/", True))
 
 
 if __name__ == "__main__":

@@ -208,3 +208,13 @@ CI uruchamia te testy przed publikacją. Parser odrzuca powtórzone sekcje
 
 Jeśli znajdziesz błąd w zadaniu lub rozwiązaniu, zgłoś go w Issues (link jest na stronie każdego zadania)
 albo popraw plik i otwórz pull request.
+
+## Ściąga ze wzorami
+
+`sciaga/prawdopodobienstwo.md` to źródło treści strony `sciaga/` (na razie wersja robocza — oznaczona na stronie i na kafelku).
+Zawiera wzory z rozdziałów 2–4 (materiał na Kolokwium I) i warunki ich stosowania. Link znajduje
+się na stronie głównej oraz w menu „Więcej” przy Kolokwium I. Ściąga ma formę białego dokumentu
+z numerowanymi punktami, podpunktami i odnośnikami do definicji i twierdzeń w skrypcie.
+Odnośniki zapisujemy jak w zagadnieniach: `[tw. 2.3](skrypt:calculus/probability#thm-probability-properties)`.
+Notacja jest taka jak w skrypcie: $P(A,B)$ oznacza $P(A\cap B)$ i jest objaśniona na początku ściągi (każde oznaczenie w osobnej linii).
+Build zapisuje też wersję Markdown dla LLM-ów (`sciaga.md`, podlinkowaną w `llms.txt`).

@@ -31,7 +31,7 @@ import pdf
 from materials import load_materials
 from ml_paths import load_ml_paths
 from quizzes import collect_quizzes
-from tasks import ContentError, all_tasks, all_variants, collect, load_chapters, plural
+from tasks import ContentError, all_tasks, all_variants, collect, load_chapters, load_topics, plural
 
 ROOT = Path(__file__).resolve().parent.parent
 BUILD = ROOT / "build"
@@ -127,6 +127,9 @@ def main() -> int:
     # Strony.
     decks = collect_slides()
     write_page("", pages.index_page(exams, decks, quizzes, nearest_exam(date.today()), ml))
+    # Ściąga: odnośniki `skrypt:` rozwijamy tak samo jak w zagadnieniach.
+    cheatsheet = load_topics(ROOT / "sciaga" / "prawdopodobienstwo.md", chapters, ROOT)
+    write_page("sciaga", pages.cheatsheet_page(convert.to_html(cheatsheet, "sciaga")))
     write_page("zadania", pages.browse_page(exams, chapters, mats))
     write_page("materialy", pages.materials_page(mats, chapters))
     write_page("quizy", pages.quizzes_page(quizzes, exams))
@@ -146,7 +149,7 @@ def main() -> int:
                     (SITE / v.path).mkdir(parents=True, exist_ok=True)
                     shutil.copy2(asset, SITE / v.path / asset.name)
 
-    llms.write_all(SITE, exams, quizzes, chapters, script_url)
+    llms.write_all(SITE, exams, quizzes, chapters, script_url, cheatsheet)
     shutil.copytree(ROOT / "site" / "assets", SITE / "assets")
     if decks:
         (SITE / "prezentacje").mkdir()

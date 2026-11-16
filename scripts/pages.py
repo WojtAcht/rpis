@@ -31,6 +31,8 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
     more = "".join(
         f'<p class="nav-group">{title}</p>' + link(f"kolokwium-{n}/zagadnienia/", "Zagadnienia")
         + link(f"#kolokwium-{n}", "Zestawy z poprzednich lat")
+        # Ściąga obejmuje rozdziały 2–4, czyli materiał na Kolokwium I.
+        + (link("sciaga/", "Ściąga ze wzorami", "sciaga") if n == 1 else "")
         for n, title in ((1, "Kolokwium I"), (2, "Kolokwium II")))
     more += '<p class="nav-group">Zajęcia</p>' + link("#wejsciowki", "Wejściówki") + link("#prezentacje", "Prezentacje")
     more += '<p class="nav-group">Po RPiS</p>' + link("ml/", "Od czego zacząć ML")
@@ -136,7 +138,7 @@ def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz], next_e
   <p class="lead">Zadania z kolokwiów z rozwiązaniami, quizy i prezentacje z zajęć na AGH.</p>
 </header>
 <div class="wrap">
-{quick_tiles(nearest, tasks, quizzes)}
+{quick_tiles(nearest, tasks)}
 {"".join(sections)}
 </div>"""
     return layout("RPiS — materiały", body,
@@ -150,19 +152,19 @@ def tile(href: str, kicker: str, title: str, meta: str) -> str:
             f'<span class="tile-arrow" aria-hidden="true">→</span></a></li>')
 
 
-def quick_tiles(nearest: Exam, tasks: list[Task], quizzes: list[Quiz]) -> str:
-    """Główne wejścia zaraz pod tytułem: zagadnienia, bank zadań, quizy, PDF-y najbliższego kolokwium."""
+def quick_tiles(nearest: Exam, tasks: list[Task]) -> str:
+    """Główne wejścia zaraz pod tytułem: zagadnienia, ściąga, bank zadań, PDF-y najbliższego kolokwium.
+    Quizy są w górnym pasku nawigacji."""
     year, variants = exam_years(nearest)[0]  # lata są od najnowszego
 
     tiles = []
     if nearest.topics:
         tiles.append(tile(f"{R}{nearest.id}/zagadnienia/", e(nearest.title), "Zagadnienia",
                           "z odnośnikami do skryptu"))
+    tiles.append(tile(f"{R}sciaga/", "Wersja robocza", "Ściąga ze wzorami",
+                      "prawdopodobieństwo · rozdziały 2–4"))
     tiles.append(tile(f"{R}zadania/", "Bank zadań", "Zadania",
                       plural(len(tasks), "zadanie", "zadania", "zadań") + " z rozwiązaniami"))
-    if quizzes:
-        tiles.append(tile(f"{R}quizy/", "Sprawdź się", "Quizy",
-                          plural(len(quizzes), "quiz", "quizy", "quizów") + " z wyjaśnieniami"))
     tiles.append(tile(f"#{nearest.id}-{year}", e(nearest.title), "PDF-y zestawów",
                       f"{year} · {plural(len(variants), 'zestaw', 'zestawy', 'zestawów')}"))
     return f'<nav aria-label="Na skróty"><ul class="tiles">{"".join(tiles)}</ul></nav>'
@@ -667,3 +669,20 @@ def browse_page(exams: list[Exam], chapters: dict[str, Chapter], mats: Materials
 </div>"""
     return layout("Zadania · RPiS", body, current="zadania",
                   description="Wszystkie zadania z kolokwiów z RPiS z rozwiązaniami, przypisane do rozdziałów skryptu.")
+
+
+def cheatsheet_page(content: str) -> str:
+    body = f'''<div class="wrap cheatsheet-shell">
+<article class="cheatsheet">
+<header class="cheatsheet-heading">
+<p>RPiS · Rozdziały 2–4</p>
+<h1>Prawdopodobieństwo — wzory</h1>
+<p class="cheatsheet-wip"><strong>Wersja robocza.</strong> Ściąga jest w trakcie tworzenia — treść może się jeszcze zmieniać.
+Błędy i sugestie zgłaszaj w <a href="https://github.com/{REPO}/issues">Issues</a>.</p>
+</header>
+<div class="formula-document">{content}</div>
+</article>
+</div>'''
+    return layout("Ściąga ze wzorami — RPiS", body,
+                  description="Najważniejsze wzory z prawdopodobieństwa, warunkowania, niezależności i twierdzenia Bayesa.",
+                  current="sciaga")

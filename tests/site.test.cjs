@@ -124,3 +124,17 @@ test("quiz: jedno pytanie naraz, wyjaśnienie po odpowiedzi, podsumowanie i rese
     window.close();
   }
 });
+
+test("ściąga: odnośniki do skryptu są rozwinięte i siedzi w menu przy Kolokwium I", () => {
+  const page = fs.readFileSync(path.join(root, "_site/sciaga/index.html"), "utf8");
+  const { document } = new JSDOM(page).window;
+  const links = [...document.querySelectorAll(".formula-document a")].map(a => a.href);
+  assert.ok(links.length > 0);
+  assert.ok(links.every(h => h.startsWith("https://home.agh.edu.pl/~smolka/rpis-skrypt/") && h.includes(".html#")),
+    "każdy odnośnik prowadzi do kotwicy w skrypcie");
+  const menu = [...document.querySelectorAll(".nav-menu > *")].map(n => n.textContent.trim());
+  const at = menu.indexOf("Ściąga ze wzorami");
+  assert.ok(at > menu.indexOf("Kolokwium I") && at < menu.indexOf("Kolokwium II"));
+  const current = document.querySelector('.nav-menu a[aria-current="page"]');
+  assert.equal(current && current.textContent, "Ściąga ze wzorami");
+});
