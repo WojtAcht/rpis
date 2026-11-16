@@ -1,7 +1,7 @@
-**Oznaczenia (jak w skrypcie).** $\Omega$ — przestrzeń zdarzeń elementarnych,
-$A'=\Omega\setminus A$ — dopełnienie zdarzenia $A$.
-Przecinek oznacza iloczyn zdarzeń, czyli „zaszły oba”:
-$P(A,B)=P(A\cap B)$, $P(A,B,C)=P(A\cap B\cap C)$, $P(A\mid B,C)=P(A\mid B\cap C)$.
+**Oznaczenia (jak w skrypcie)**\
+$\Omega$ — przestrzeń zdarzeń elementarnych\
+$A'=\Omega\setminus A$ — dopełnienie zdarzenia $A$\
+$P(A,B)=P(A\cap B)$ — prawdopodobieństwo, że zaszły oba zdarzenia
 
 1. **Podstawowe własności prawdopodobieństwa**
 

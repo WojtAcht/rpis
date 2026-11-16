@@ -216,5 +216,5 @@ Zawiera wzory z rozdziałów 2–4 (materiał na Kolokwium I) i warunki ich stos
 się na stronie głównej oraz w menu „Więcej” przy Kolokwium I. Ściąga ma formę białego dokumentu
 z numerowanymi punktami, podpunktami i odnośnikami do definicji i twierdzeń w skrypcie.
 Odnośniki zapisujemy jak w zagadnieniach: `[tw. 2.3](skrypt:calculus/probability#thm-probability-properties)`.
-Notacja jest taka jak w skrypcie: $P(A,B)$ oznacza $P(A\cap B)$ i jest objaśniona na początku ściągi.
+Notacja jest taka jak w skrypcie: $P(A,B)$ oznacza $P(A\cap B)$ i jest objaśniona na początku ściągi (każde oznaczenie w osobnej linii).
 Build zapisuje też wersję Markdown dla LLM-ów (`sciaga.md`, podlinkowaną w `llms.txt`).
