@@ -138,7 +138,7 @@ def index_page(exams: list[Exam], decks: list[dict], quizzes: list[Quiz], next_e
   <p class="lead">Zadania z kolokwiów z rozwiązaniami, quizy i prezentacje z zajęć na AGH.</p>
 </header>
 <div class="wrap">
-{quick_tiles(nearest, tasks, quizzes)}
+{quick_tiles(nearest, tasks)}
 {"".join(sections)}
 </div>"""
     return layout("RPiS — materiały", body,
@@ -152,21 +152,19 @@ def tile(href: str, kicker: str, title: str, meta: str) -> str:
             f'<span class="tile-arrow" aria-hidden="true">→</span></a></li>')
 
 
-def quick_tiles(nearest: Exam, tasks: list[Task], quizzes: list[Quiz]) -> str:
-    """Główne wejścia zaraz pod tytułem: zagadnienia, bank zadań, quizy, PDF-y najbliższego kolokwium."""
+def quick_tiles(nearest: Exam, tasks: list[Task]) -> str:
+    """Główne wejścia zaraz pod tytułem: zagadnienia, ściąga, bank zadań, PDF-y najbliższego kolokwium.
+    Quizy są w górnym pasku nawigacji."""
     year, variants = exam_years(nearest)[0]  # lata są od najnowszego
 
     tiles = []
     if nearest.topics:
         tiles.append(tile(f"{R}{nearest.id}/zagadnienia/", e(nearest.title), "Zagadnienia",
                           "z odnośnikami do skryptu"))
-    tiles.append(tile(f"{R}sciaga/", "Pod ręką", "Ściąga ze wzorami",
+    tiles.append(tile(f"{R}sciaga/", "Wersja robocza", "Ściąga ze wzorami",
                       "prawdopodobieństwo · rozdziały 2–4"))
     tiles.append(tile(f"{R}zadania/", "Bank zadań", "Zadania",
                       plural(len(tasks), "zadanie", "zadania", "zadań") + " z rozwiązaniami"))
-    if quizzes:
-        tiles.append(tile(f"{R}quizy/", "Sprawdź się", "Quizy",
-                          plural(len(quizzes), "quiz", "quizy", "quizów") + " z wyjaśnieniami"))
     tiles.append(tile(f"#{nearest.id}-{year}", e(nearest.title), "PDF-y zestawów",
                       f"{year} · {plural(len(variants), 'zestaw', 'zestawy', 'zestawów')}"))
     return f'<nav aria-label="Na skróty"><ul class="tiles">{"".join(tiles)}</ul></nav>'
@@ -679,6 +677,8 @@ def cheatsheet_page(content: str) -> str:
 <header class="cheatsheet-heading">
 <p>RPiS · Rozdziały 2–4</p>
 <h1>Prawdopodobieństwo — wzory</h1>
+<p class="cheatsheet-wip"><strong>Wersja robocza.</strong> Ściąga jest w trakcie tworzenia — treść może się jeszcze zmieniać.
+Błędy i sugestie zgłaszaj w <a href="https://github.com/{REPO}/issues">Issues</a>.</p>
 </header>
 <div class="formula-document">{content}</div>
 </article>

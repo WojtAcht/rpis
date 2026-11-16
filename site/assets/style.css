@@ -648,6 +648,8 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 }
 .cheatsheet-heading { margin-bottom: 1.5em; }
 .cheatsheet-heading > p { font-size: 0.85em; margin: 0 0 0.5em; }
+.cheatsheet-heading > p.cheatsheet-wip { margin: 1em 0 0; padding: 0.6em 0.9em; border-left: 3px solid #e2452f; background: #fdf1ee; font-size: 0.9em; }
+.cheatsheet-wip a { color: inherit; }
 .cheatsheet h1 { font-family: inherit; font-size: clamp(24px, 3.5vw, 32px); font-weight: 700; max-width: none; margin: 0; letter-spacing: 0; }
 .formula-document > ol { padding-left: 1.5em; }
 .formula-document > ol > li { padding-left: 0.3em; margin: 1.6em 0; }
