@@ -30,8 +30,6 @@ $P(A,B)=P(A\cap B)$ — prawdopodobieństwo, że zaszły oba zdarzenia
     a) $\displaystyle P\left(\bigcup_{i=1}^n A_i\right)=1-P(A_1',\ldots,A_n')$.
     b) Jeśli $A_1,\ldots,A_n$ są niezależne (def. 3.2), to ich dopełnienia też, więc:
        $$P\left(\bigcup_{i=1}^n A_i\right)=1-\prod_{i=1}^n(1-P(A_i)).$$
-    c) Dla $n$ niezależnych prób z prawdopodobieństwem sukcesu $p$ w każdej:
-       $$P(\text{co najmniej jeden sukces})=1-(1-p)^n.$$
 
 4. **Prawdopodobieństwo warunkowe**
 
@@ -43,9 +41,9 @@ $P(A,B)=P(A\cap B)$ — prawdopodobieństwo, że zaszły oba zdarzenia
     a) $\displaystyle P(A\mid B)=\frac{P(A,B)}{P(B)}$.
     b) $P(A,B)=P(A\mid B)P(B)$; jeśli także $P(A)>0$, to $P(A,B)=P(B\mid A)P(A)$.
     c) Wniosek: $P(A'\mid B)=1-P(A\mid B)$.
-    d) Reguła łańcuchowa, dla $P(A_1,\ldots,A_{k-1})>0$:
-       $$P(A_1,\ldots,A_k)=P(A_1)\,P(A_2\mid A_1)\,P(A_3\mid A_1,A_2)\cdots P(A_k\mid A_1,\ldots,A_{k-1}).$$
-       W skrypcie ta sama reguła jest zapisana od końca: $P(A_1\mid A_2,\ldots,A_k)\cdots P(A_{k-1}\mid A_k)\,P(A_k)$.
+    d) Reguła łańcuchowa, dla $P(A,B)>0$:
+       $$P(A,B,C)=P(A)\,P(B\mid A)\,P(C\mid A,B).$$
+       W skrypcie ta reguła jest dla $k$ zdarzeń, zapisana od końca.
        [Skrypt: tw. 3.2](skrypt:calculus/conditional-independence#thm-chain-rule)
 
 5. **Niezależność zdarzeń**
