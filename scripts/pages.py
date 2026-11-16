@@ -32,6 +32,7 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
         f'<p class="nav-group">{title}</p>' + link(f"kolokwium-{n}/zagadnienia/", "Zagadnienia")
         + link(f"#kolokwium-{n}", "Zestawy z poprzednich lat")
         for n, title in ((1, "Kolokwium I"), (2, "Kolokwium II")))
+    more += link("sciaga/", "Ściąga ze wzorami", "sciaga")
     more += '<p class="nav-group">Zajęcia</p>' + link("#wejsciowki", "Wejściówki") + link("#prezentacje", "Prezentacje")
     more += '<p class="nav-group">Po RPiS</p>' + link("ml/", "Od czego zacząć ML")
     # Na telefonie przełącznik motywu jest w menu, żeby pasek zmieścił się w jednym rzędzie.
@@ -158,6 +159,8 @@ def quick_tiles(nearest: Exam, tasks: list[Task], quizzes: list[Quiz]) -> str:
     if nearest.topics:
         tiles.append(tile(f"{R}{nearest.id}/zagadnienia/", e(nearest.title), "Zagadnienia",
                           "z odnośnikami do skryptu"))
+    tiles.append(tile(f"{R}sciaga/", "Pod ręką", "Ściąga ze wzorami",
+                      "prawdopodobieństwo · rozdziały 2–4"))
     tiles.append(tile(f"{R}zadania/", "Bank zadań", "Zadania",
                       plural(len(tasks), "zadanie", "zadania", "zadań") + " z rozwiązaniami"))
     if quizzes:
@@ -667,3 +670,18 @@ def browse_page(exams: list[Exam], chapters: dict[str, Chapter], mats: Materials
 </div>"""
     return layout("Zadania · RPiS", body, current="zadania",
                   description="Wszystkie zadania z kolokwiów z RPiS z rozwiązaniami, przypisane do rozdziałów skryptu.")
+
+
+def cheatsheet_page(content: str) -> str:
+    body = f'''<div class="wrap cheatsheet-shell">
+<article class="cheatsheet">
+<header class="cheatsheet-heading">
+<p>RPiS · Rozdziały 2–4</p>
+<h1>Prawdopodobieństwo — wzory</h1>
+</header>
+<div class="formula-document">{content}</div>
+</article>
+</div>'''
+    return layout("Ściąga ze wzorami — RPiS", body,
+                  description="Najważniejsze wzory z prawdopodobieństwa, warunkowania, niezależności i twierdzenia Bayesa.",
+                  current="sciaga")

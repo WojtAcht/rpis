@@ -127,6 +127,8 @@ def main() -> int:
     # Strony.
     decks = collect_slides()
     write_page("", pages.index_page(exams, decks, quizzes, nearest_exam(date.today()), ml))
+    write_page("sciaga", pages.cheatsheet_page(convert.to_html(
+        (ROOT / "sciaga" / "prawdopodobienstwo.md").read_text(encoding="utf-8"), "sciaga")))
     write_page("zadania", pages.browse_page(exams, chapters, mats))
     write_page("materialy", pages.materials_page(mats, chapters))
     write_page("quizy", pages.quizzes_page(quizzes, exams))

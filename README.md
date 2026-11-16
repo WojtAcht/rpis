@@ -208,3 +208,10 @@ CI uruchamia te testy przed publikacją. Parser odrzuca powtórzone sekcje
 
 Jeśli znajdziesz błąd w zadaniu lub rozwiązaniu, zgłoś go w Issues (link jest na stronie każdego zadania)
 albo popraw plik i otwórz pull request.
+
+## Ściąga ze wzorami
+
+`sciaga/prawdopodobienstwo.md` to źródło treści strony `sciaga/`.
+Zawiera wzory z rozdziałów 2–4 i warunki ich stosowania. Link znajduje się na stronie
+głównej oraz w menu „Więcej”. Ściąga ma formę białego dokumentu z numerowanymi punktami,
+podpunktami i odnośnikami do definicji i twierdzeń w skrypcie.
