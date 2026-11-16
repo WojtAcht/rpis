@@ -3,6 +3,7 @@
     llms.txt                         spis plików (https://llmstxt.org)
     rpis.md, llms-full.txt           wszystko w jednym pliku: zagadnienia, zadania z rozwiązaniami, quizy
     kolokwium-N.md                   to samo dla jednego kolokwium (z wejściówkami z jego materiału)
+    sciaga.md                        ściąga ze wzorami z prawdopodobieństwa (rozdziały 2–4)
     <zadanie>/index.html.md          jedno zadanie, obok jego strony
 
 Wzory zostają w LaTeX-u ($...$), obrazki dostają pełne adresy, a odnośniki do skryptu są rozwinięte.
@@ -19,6 +20,7 @@ REPO = os.environ.get("GITHUB_REPOSITORY", "WojtAcht/rpis")
 _owner, _name = REPO.split("/")
 SITE_URL = os.environ.get("SITE_URL", f"https://{_owner.lower()}.github.io/{_name}/")
 FULL = "rpis.md"
+CHEATSHEET = "sciaga.md"
 IMAGE = re.compile(r"(!\[.*?\]\()(?![a-z]+:|/)")
 REFS = re.compile(r"\[(\[.*?)\]\{\.refs\}", re.S)
 
@@ -161,7 +163,7 @@ def exam_document(x: Exam, quizzes: list[Quiz], script_url: str) -> str:
     return document(f"RPiS — {x.title}", [exam_section(x, quizzes, 2, {})], script_url)
 
 
-def index(exams: list[Exam], quizzes: list[Quiz], script_url: str) -> str:
+def index(exams: list[Exam], quizzes: list[Quiz], script_url: str, cheatsheet: bool = False) -> str:
     """llms.txt: krótki opis i lista plików Markdown."""
     lines = ["# RPiS — Rachunek Prawdopodobieństwa i Statystyka (AGH)", "",
              "> Zagadnienia do kolokwiów, zadania z kolokwiów i wejściówek z rozwiązaniami oraz quizy, "
@@ -179,6 +181,10 @@ def index(exams: list[Exam], quizzes: list[Quiz], script_url: str) -> str:
         if any(z.exam == x.num for z in quizzes):
             what.append("quizy")
         lines.append(f"- [{x.title}]({url(x.id + '.md')}): " + ", ".join(what))
+    if cheatsheet:
+        lines += ["", "## Ściąga", "",
+                  f"- [{CHEATSHEET}]({url(CHEATSHEET)}): wzory z prawdopodobieństwa (rozdziały 2–4 skryptu) "
+                  "z warunkami stosowania i odnośnikami do definicji i twierdzeń"]
     lines += ["", "## Zadania", ""]
     for t in unique_tasks(exams):
         chs = ", ".join(f"{c.num}. {c.title}" for c in t.chapters)
@@ -190,11 +196,14 @@ def index(exams: list[Exam], quizzes: list[Quiz], script_url: str) -> str:
 
 
 def write_all(site: Path, exams: list[Exam], quizzes: list[Quiz], chapters: dict[str, Chapter],
-              script_url: str) -> None:
+              script_url: str, cheatsheet: str = "") -> None:
     full = full_document(exams, quizzes, chapters, script_url)
+    if cheatsheet:
+        doc = document("RPiS — ściąga ze wzorami z prawdopodobieństwa", [cheatsheet], script_url)
+        (site / CHEATSHEET).write_text(doc, encoding="utf-8")
     for name in (FULL, "llms-full.txt"):
         (site / name).write_text(full, encoding="utf-8")
-    (site / "llms.txt").write_text(index(exams, quizzes, script_url), encoding="utf-8")
+    (site / "llms.txt").write_text(index(exams, quizzes, script_url, bool(cheatsheet)), encoding="utf-8")
     for x in exams:
         (site / f"{x.id}.md").write_text(exam_document(x, quizzes, script_url), encoding="utf-8")
     for v in all_variants(exams):

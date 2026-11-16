@@ -31,8 +31,9 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
     more = "".join(
         f'<p class="nav-group">{title}</p>' + link(f"kolokwium-{n}/zagadnienia/", "Zagadnienia")
         + link(f"#kolokwium-{n}", "Zestawy z poprzednich lat")
+        # Ściąga obejmuje rozdziały 2–4, czyli materiał na Kolokwium I.
+        + (link("sciaga/", "Ściąga ze wzorami", "sciaga") if n == 1 else "")
         for n, title in ((1, "Kolokwium I"), (2, "Kolokwium II")))
-    more += link("sciaga/", "Ściąga ze wzorami", "sciaga")
     more += '<p class="nav-group">Zajęcia</p>' + link("#wejsciowki", "Wejściówki") + link("#prezentacje", "Prezentacje")
     more += '<p class="nav-group">Po RPiS</p>' + link("ml/", "Od czego zacząć ML")
     # Na telefonie przełącznik motywu jest w menu, żeby pasek zmieścił się w jednym rzędzie.
