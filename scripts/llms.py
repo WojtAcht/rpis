@@ -3,7 +3,7 @@
     llms.txt                         spis plików (https://llmstxt.org)
     rpis.md, llms-full.txt           wszystko w jednym pliku: zagadnienia, zadania z rozwiązaniami, quizy
     kolokwium-N.md                   to samo dla jednego kolokwium (z wejściówkami z jego materiału)
-    sciaga.md                        ściąga ze wzorami z prawdopodobieństwa (rozdziały 2–4)
+    sciaga.md                        ściąga ze wzorami z prawdopodobieństwa (rozdziały 2–4 i 6–7)
     <zadanie>/index.html.md          jedno zadanie, obok jego strony
 
 Wzory zostają w LaTeX-u ($...$), obrazki dostają pełne adresy, a odnośniki do skryptu są rozwinięte.
@@ -183,7 +183,7 @@ def index(exams: list[Exam], quizzes: list[Quiz], script_url: str, cheatsheet: b
         lines.append(f"- [{x.title}]({url(x.id + '.md')}): " + ", ".join(what))
     if cheatsheet:
         lines += ["", "## Ściąga", "",
-                  f"- [{CHEATSHEET}]({url(CHEATSHEET)}): wzory z prawdopodobieństwa (rozdziały 2–4 skryptu) "
+                  f"- [{CHEATSHEET}]({url(CHEATSHEET)}): wzory potrzebne do zadań (rozdziały 2–4 i 6–7 skryptu) "
                   "z warunkami stosowania i odnośnikami do definicji i twierdzeń"]
     lines += ["", "## Zadania", ""]
     for t in unique_tasks(exams):
