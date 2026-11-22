@@ -8,6 +8,7 @@ Bez JavaScriptu strona pokazuje wszystkie karty po kolei, z wzorami i opisami.
 import html
 import json
 import math
+import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -16,6 +17,7 @@ import yaml
 
 e = html.escape
 SCRIPT = "https://home.agh.edu.pl/~smolka/rpis-skrypt/"
+REPO = os.environ.get("GITHUB_REPOSITORY", "WojtAcht/rpis")
 MAP_W = 1200
 NODE_H = 64
 
@@ -333,6 +335,8 @@ def body(zoo: Zoo) -> str:
 <header class="zoo-hero wrap">
   <p class="kicker">RPiS · Rozdział 8 skryptu · interaktywnie</p>
   <h1>ZOO <mark>rozkładów</mark></h1>
+  <p class="zoo-wip"><strong>Wersja robocza.</strong> Strona jest w trakcie tworzenia i mogą się w niej zdarzyć błędy.
+  Jeśli coś się nie zgadza ze skryptem, zgłoś to w <a href="https://github.com/{REPO}/issues">Issues</a>.</p>
   <p class="lead">{n_d} rozkładów z rozdziału 8 i związki między nimi. Każdy rozkład odpowiada na jedno pytanie, np. „ile sukcesów?” albo „ile czekamy?”.</p>
   <ol class="zoo-how">
     <li>Kliknij rozkład albo strzałkę na mapie.</li>

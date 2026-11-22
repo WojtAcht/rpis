@@ -12,6 +12,7 @@ Najpierw spróbuj rozwiązać zadania samodzielnie, a dopiero potem zajrzyj do r
 ```
 rozdzialy.yml                       # rozdziały skryptu, do których przypisujemy zadania
 materialy.yml                       # materiały dodatkowe (książki, filmy, artykuły) do rozdziałów
+zoo.yml                             # ZOO rozkładów: rozkłady z rozdziału 8 i związki (strona zoo/)
 ml.yml                              # od czego zacząć ML: materiały i koła naukowe
 quizy/
 └── <nazwa>.yml                     # quiz: pytania zamknięte i prawda/fałsz
@@ -218,3 +219,13 @@ z numerowanymi punktami, podpunktami i odnośnikami do definicji i twierdzeń w 
 Odnośniki zapisujemy jak w zagadnieniach: `[tw. 2.3](skrypt:calculus/probability#thm-probability-properties)`.
 Notacja jest taka jak w skrypcie: $P(A,B)$ oznacza $P(A\cap B)$ i jest objaśniona na początku ściągi (każde oznaczenie w osobnej linii).
 Build zapisuje też wersję Markdown dla LLM-ów (`sciaga.md`, podlinkowaną w `llms.txt`).
+
+## ZOO rozkładów
+
+Strona `zoo/` to interaktywny przegląd rozkładów z rozdziału 8 skryptu (wersja robocza, oznaczona na stronie).
+Treść jest w `zoo.yml`: dla każdego rozkładu historyjka, pytanie, na które odpowiada, wzory, parametry suwaków
+i położenie na mapie; dla każdego związku krawędzie na mapie, „co zrobić”, wniosek w jednym zdaniu i zwinięte szczegóły.
+`scripts/zoo.py` generuje HTML (mapa w SVG, karty, tabela), a `site/assets/zoo.js` liczy rozkłady i rysuje wykresy
+oraz wizualizacje związków — klucze `id` są wspólne. Parametryzacje jak w skrypcie: `Geom` od 1, `N(μ, σ)`
+z odchyleniem, `Gamma(s, r)` z intensywnością. `tests/zoo.test.cjs` sprawdza numerykę (sumy i całki, E, Var, F)
+i to, że każda karta się montuje.

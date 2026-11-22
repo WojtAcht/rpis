@@ -165,7 +165,7 @@ def quick_tiles(nearest: Exam, tasks: list[Task]) -> str:
                           "z odnośnikami do skryptu"))
     tiles.append(tile(f"{R}sciaga/", "Wersja robocza", "Ściąga ze wzorami",
                       "rozdziały 2–4 i 6–7"))
-    tiles.append(tile(f"{R}zoo/", "Rozdział 8 · interaktywnie", "ZOO rozkładów",
+    tiles.append(tile(f"{R}zoo/", "Wersja robocza", "ZOO rozkładów",
                       "12 rozkładów i związki między nimi"))
     tiles.append(tile(f"{R}zadania/", "Bank zadań", "Zadania",
                       plural(len(tasks), "zadanie", "zadania", "zadań") + " z rozwiązaniami"))

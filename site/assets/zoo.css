@@ -54,6 +54,11 @@
 .zoo-hero { padding-top: clamp(32px, 7vh, 72px); padding-bottom: 1.2rem; }
 .zoo-hero h1 { font-size: clamp(48px, 9vw, 128px); letter-spacing: -0.04em; line-height: 0.92; margin-bottom: 0.3em; max-width: none; }
 .zoo-hero .lead { max-width: 62ch; }
+.zoo-wip {
+  max-width: 62ch; margin: 0 0 1.4rem; padding: 0.6em 0.9em; font-size: 0.92em;
+  border-left: 4px solid var(--red); background: color-mix(in srgb, var(--red) 10%, var(--surface));
+}
+.zoo-wip a { color: inherit; }
 .zoo-how { list-style: none; counter-reset: how; display: flex; flex-wrap: wrap; gap: 12px; margin: 0; padding: 0; }
 .zoo-how li {
   counter-increment: how; display: block;
