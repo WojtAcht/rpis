@@ -130,8 +130,10 @@ test("ściąga: odnośniki do skryptu są rozwinięte i siedzi w menu przy Kolok
   const { document } = new JSDOM(page).window;
   const links = [...document.querySelectorAll(".formula-document a")].map(a => a.href);
   assert.ok(links.length > 0);
-  assert.ok(links.every(h => h.startsWith("https://home.agh.edu.pl/~smolka/rpis-skrypt/") && h.includes(".html#")),
-    "każdy odnośnik prowadzi do kotwicy w skrypcie");
+  const script = links.filter(h => !h.startsWith("https://www.youtube.com/watch?v="));
+  assert.ok(script.length > 0);
+  assert.ok(script.every(h => h.startsWith("https://home.agh.edu.pl/~smolka/rpis-skrypt/") && h.includes(".html#")),
+    "poza filmami każdy odnośnik prowadzi do kotwicy w skrypcie");
   const menu = [...document.querySelectorAll(".nav-menu > *")].map(n => n.textContent.trim());
   const at = menu.indexOf("Ściąga ze wzorami");
   assert.ok(at > menu.indexOf("Kolokwium I") && at < menu.indexOf("Kolokwium II"));
