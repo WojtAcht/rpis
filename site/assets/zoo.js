@@ -150,6 +150,7 @@
       mean: function (p) { return (p.a + p.b) / 2; },
       variance: function (p) { return Math.pow(p.b - p.a, 2) / 12; },
       xr: function () { return [-6, 6]; },
+      extra: function (p) { return edges(Math.min(p.a, p.b), Math.max(p.a, p.b)); },
       valid: function (p) { return p.b > p.a; },
       Etex: "\\tfrac{a+b}{2}", Vtex: "\\tfrac{(b-a)^2}{12}",
     },
@@ -160,6 +161,7 @@
       mean: function (p) { return 1 / p.lambda; },
       variance: function (p) { return 1 / (p.lambda * p.lambda); },
       xr: function (p) { return [0, niceUp(-Math.log(0.004) / p.lambda)]; },
+      extra: function (p, xr) { return near0(xr[1]); },
       Etex: "\\tfrac{1}{\\lambda}", Vtex: "\\tfrac{1}{\\lambda^2}",
     },
     gamma: {
@@ -169,6 +171,7 @@
       mean: function (p) { return p.s / p.r; },
       variance: function (p) { return p.s / (p.r * p.r); },
       xr: function (p) { return [0, niceUp((p.s + 4.5 * Math.sqrt(p.s) + 2) / p.r)]; },
+      extra: function (p, xr) { return near0(xr[1]); },
       Etex: "\\tfrac{s}{r}", Vtex: "\\tfrac{s}{r^2}",
     },
     "chi-kwadrat": {
@@ -178,6 +181,7 @@
       mean: function (p) { return p.n; },
       variance: function (p) { return 2 * p.n; },
       xr: function (p) { return [0, niceUp(p.n + 4.5 * Math.sqrt(2 * p.n) + 3)]; },
+      extra: function (p, xr) { return near0(xr[1]); },
       Etex: "n", Vtex: "2n",
     },
     normalny: {
@@ -665,11 +669,20 @@
     this.tip.classList.toggle("is-flip", flip);
   };
 
-  function sample(f, a, b, n) {
-    var out = [];
-    for (var i = 0; i <= n; i++) { var x = a + (b - a) * i / n; out.push([x, f(x)]); }
-    return out;
+  // Próbki na równej siatce plus dodatkowe punkty `extra` (krańce nośnika, zagęszczenie przy zerze),
+  // żeby łamana nie rysowała skosów przez skoki gęstości ani nie gubiła wzrostu przy osobliwości w 0.
+  // Liczba punktów zależy tylko od `extra.length`, więc przejścia między stanami działają.
+  function sample(f, a, b, n, extra) {
+    var xs = [];
+    for (var i = 0; i <= n; i++) xs.push(a + (b - a) * i / n);
+    (extra || []).forEach(function (x) { xs.push(Math.min(b, Math.max(a, x))); });
+    xs.sort(function (u, v) { return u - v; });
+    return xs.map(function (x) { return [x, f(x)]; });
   }
+  // Krańce nośnika [lo, hi]: wartość tuż przed i tuż po skoku.
+  function edges(lo, hi) { return [lo - 1e-9, lo + 1e-9, hi - 1e-9, hi + 1e-9]; }
+  // Gęstość na (0, ∞): skok albo osobliwość w zerze.
+  function near0(X) { return [1e-9, 1e-4 * X, 4e-4 * X, 1e-3 * X, 3e-3 * X, 6e-3 * X]; }
   // Górna granica osi y dla gęstości: pomija pierwsze próbki, gdy gęstość ucieka do nieskończoności przy 0.
   function densityTop(pts) {
     var all = 0, rest = 0;
@@ -748,7 +761,8 @@
       } else {
         var N = 320;
         var f = mode === "pdf" ? dist.pdf : dist.cdf;
-        var pts = ok ? sample(function (x) { return f(x, p); }, xr[0], xr[1], N) : sample(function () { return 0; }, xr[0], xr[1], N);
+        var extra = dist.extra ? dist.extra(p, xr) : [];
+        var pts = sample(ok ? function (x) { return f(x, p); } : function () { return 0; }, xr[0], xr[1], N, extra);
         sc.series.push({ id: "main", type: mode === "pdf" ? "area" : "line", pts: pts });
         sc.y = mode === "pdf" ? [0, densityTop(pts)] : [0, 1.08];
         sc.yLabel = mode === "pdf" ? "f(x)" : "F(x)";
@@ -767,8 +781,8 @@
         var atoms = dist.atoms(p), best = null;
         atoms.forEach(function (a) { if (!best || Math.abs(a[0] - x) < Math.abs(best[0] - x)) best = a; });
         if (mode === "cdf") {
-          var F = cdfDiscrete(atoms, x);
-          return { x: x, points: [[x, F]], html: texHTML("F(" + tnum(x, 2) + ")=" + tnum(F, 4)) };
+          var xs = Math.round(x * 100) / 100, F = cdfDiscrete(atoms, xs + 1e-12);
+          return { x: xs, points: [[xs, F]], html: texHTML("F(" + tnum(xs, 2) + ")=" + tnum(F, 4)) };
         }
         if (!best || Math.abs(best[0] - x) > Math.max(0.6, (plot.cur.x[1] - plot.cur.x[0]) / 60)) return null;
         return { x: best[0], points: [[best[0], best[1]]],
@@ -787,7 +801,8 @@
       }
       var s;
       if (discrete) {
-        var atoms = dist.atoms(p), inside = atoms.filter(function (a) { return a[0] >= sel[0] - 1e-9 && a[0] <= sel[1] + 1e-9; });
+        var atoms = dist.atoms(p), inside = atoms.filter(function (a) { return a[0] >= sel[0] - 1e-9 && a[0] <= sel[1] + 1e-9; })
+          .sort(function (a, b) { return a[0] - b[0]; });
         var prob = inside.reduce(function (acc, a) { return acc + a[1]; }, 0);
         if (!inside.length) {
           s = "P(" + tnum(sel[0], 2) + "\\le X\\le " + tnum(sel[1], 2) + ")=0";
@@ -994,12 +1009,13 @@
     var T = 10;
     var timeline = h("div", { class: "ztimeline" }), out = readoutBox();
     var hostA = h("div", { class: "zr-plot" }), hostB = h("div", { class: "zr-plot" });
-    function regen() {
-      // Pierwsza realizacja: ziarno z czytelnym pierwszym odstępem (T nie przy samym zerze).
+    function regen(first) {
+      // Tylko pierwszy przykład ma dobrane ziarno (czytelny pierwszy odstęp); każda „nowa realizacja”
+      // to zwykły proces Poissona, bez odrzucania.
       for (;;) {
         var r = rng(seed), s = 0; unit = [];
         while (s < 40) { s += -Math.log(1 - r()); unit.push(s); }
-        if (unit[0] > 0.35 && unit[0] < 2.5) break;
+        if (!first || (unit[0] > 0.35 && unit[0] < 2.5)) break;
         seed = (seed * 7919 + 17) % 100003;
       }
     }
@@ -1039,7 +1055,7 @@
           { id: "d", type: "dot", x: t, y: Math.exp(-lambda * t), cls: "is-hl" }], yLabel: "P(T > t)" });
       setTex(out, "P(N_t=0)=e^{-\\lambda t}=e^{-" + tnum(m, 2) + "}=" + tnum(Math.exp(-m), 4) + "=P(T>t)");
     }
-    regen();
+    regen(true);
     upd();
   };
 
@@ -1101,9 +1117,9 @@
     function upd() {
       var X = niceUp((12 + 4.5 * Math.sqrt(12)) / r), series = [];
       for (var k = 1; k < s; k++) {
-        series.push({ id: "h" + k, type: "line", cls: "is-history", pts: sample(function (x) { return gammaPdf(x, k, r); }, 0, X, 240) });
+        series.push({ id: "h" + k, type: "line", cls: "is-history", pts: sample(function (x) { return gammaPdf(x, k, r); }, 0, X, 240, near0(X)) });
       }
-      var main = sample(function (x) { return gammaPdf(x, s, r); }, 0, X, 240);
+      var main = sample(function (x) { return gammaPdf(x, s, r); }, 0, X, 240, near0(X));
       series.push({ id: "m", type: "area", cls: "is-z-gamma", pts: main });
       plot.set({ x: [0, X], y: [0, niceY(r * 1.1)], series: series,
         marks: [{ id: "mu", type: "v", x: s / r, label: "E = s/r", cls: "is-mean" }], yLabel: "f(x)" });
@@ -1123,10 +1139,10 @@
     var plot = new Plot(host, { height: 360 });
     function upd() {
       var X = niceUp(n + 4.5 * Math.sqrt(2 * n) + 3);
-      var chi = sample(function (x) { return gammaPdf(x, n / 2, 0.5); }, 0, X, 300);
+      var chi = sample(function (x) { return gammaPdf(x, n / 2, 0.5); }, 0, X, 300, near0(X));
       var series = [{ id: "c", type: "area", cls: "is-z-chi-kwadrat", pts: chi },
-        { id: "g", type: "line", cls: "is-z-gamma is-dash", pts: sample(function (x) { return gammaPdf(x, n / 2, 0.5); }, 0, X, 300) }];
-      series.push({ id: "e", type: "line", cls: "is-z-wykladniczy is-dot" + (n === 2 ? "" : " is-off"), pts: sample(function (x) { return 0.5 * Math.exp(-x / 2); }, 0, X, 300) });
+        { id: "g", type: "line", cls: "is-z-gamma is-dash", pts: sample(function (x) { return gammaPdf(x, n / 2, 0.5); }, 0, X, 300, near0(X)) }];
+      series.push({ id: "e", type: "line", cls: "is-z-wykladniczy is-dot" + (n === 2 ? "" : " is-off"), pts: sample(function (x) { return x > 0 ? 0.5 * Math.exp(-x / 2) : 0; }, 0, X, 300, near0(X)) });
       plot.set({ x: [0, X], y: [0, densityTop(chi)], series: series, marks: [{ id: "mu", type: "v", x: n, label: "E = n", cls: "is-mean" }], yLabel: "f(x)" });
       badge.innerHTML = '<span class="zbadge is-z-wykladniczy' + (n === 2 ? " is-on" : "") + '">' + texHTML("\\chi^2(2)=Exp(\\tfrac12)") + "</span>";
       setTex(out, "\\begin{aligned}\\chi^2(" + n + ")&=Gamma\\left(" + tnum(n / 2) + ",\\tfrac12\\right)\\\\ E&=\\tfrac{" + tnum(n / 2) + "}{1/2}=" + n + ",\\ \\ Var=\\tfrac{" + tnum(n / 2) + "}{1/4}=" + 2 * n + "\\end{aligned}");
@@ -1156,7 +1172,7 @@
         pb.set({ x: [0, 8], y: [0, 1.08], series: [{ id: "m", type: "line", cls: "is-z-chi-kwadrat", pts: sample(function (x) { return gammaCdf(x, 0.5, 0.5); }, 0, 8, 300) }],
           marks: [{ id: "g", type: "seg", x1: y, y1: 0, x2: y, y2: F, cls: "is-guide" }, { id: "g2", type: "seg", x1: 0, y1: F, x2: y, y2: F, cls: "is-guide" }, { id: "d", type: "dot", x: y, y: F, cls: "is-hl" }], yLabel: "F_Y(y)" });
       } else {
-        var pts = sample(function (x) { return gammaPdf(x, 0.5, 0.5); }, 0, 8, 300);
+        var pts = sample(function (x) { return gammaPdf(x, 0.5, 0.5); }, 0, 8, 300, near0(8));
         pb.set({ x: [0, 8], y: [0, 1.2], series: [{ id: "m", type: "area", cls: "is-z-chi-kwadrat", pts: pts }],
           marks: [{ id: "g", type: "seg", x1: y, y1: 0, x2: y, y2: gammaPdf(y, 0.5, 0.5), cls: "is-guide" }, { id: "d", type: "dot", x: y, y: gammaPdf(y, 0.5, 0.5), cls: "is-hl" }], yLabel: "f_Y(y)" });
       }
@@ -1166,12 +1182,12 @@
   };
 
   R.ctg = function (root) {
-    var src = "dwumianowy", size = { dwumianowy: 5, poisson: 2, gamma: 2 };
+    var src = "dwumianowy", size = { dwumianowy: 5, poisson: 2, gamma: 2 };  // gamma: całkowite s
     var host = h("div", { class: "zr-plot" }), out = readoutBox(), sliderBox = h("div");
     var cfg = {
       dwumianowy: { tex: "n", min: 1, max: 200, step: 1, note: "Binom(n,\\ 0{,}2)" },
       poisson: { tex: "\\lambda", min: 0.5, max: 100, step: 0.5, note: "Pois(\\lambda)" },
-      gamma: { tex: "s", min: 0.5, max: 100, step: 0.5, note: "Gamma(s,\\ 1)" },
+      gamma: { tex: "s", min: 1, max: 100, step: 1, note: "Gamma(s,\\ 1)" },
     };
     var sl;
     function makeSlider() {
@@ -1197,7 +1213,7 @@
         mu = src === "dwumianowy" ? v * 0.2 : v;
         sd = Math.sqrt(src === "dwumianowy" ? v * 0.2 * 0.8 : v);
         skew = src === "dwumianowy" ? 0.6 / Math.sqrt(v * 0.16) : 1 / Math.sqrt(v);
-        series.push({ id: "d" + src, type: "bars", cls: "is-src", w: 1 / sd * 0.92, bars: atoms.map(function (a) { return [(a[0] - mu) / sd, a[1] * sd]; }).filter(function (b) { return b[0] > -5 && b[0] < 5; }) });
+        series.push({ id: "d" + src, type: "bars", cls: "is-src", w: 1 / sd, bars: atoms.map(function (a) { return [(a[0] - mu) / sd, a[1] * sd]; }).filter(function (b) { return b[0] > -5 && b[0] < 5; }) });
       }
       series.push({ id: "phi", type: "line", cls: "is-z-normalny is-thick", pts: sample(phi, -4, 4, 240) });
       var top = 0.45;
@@ -1218,7 +1234,8 @@
       panel("zr-controls", [sl.el, su.el, legend([["is-z-jednostajny", texHTML("u_i=\\tfrac{i-1/2}{" + N + "}") + " (równo co " + texHTML("\\tfrac1{" + N + "}") + ")"], ["is-z-wykladniczy", texHTML("x_i=F^{-1}(u_i)")]]), out]), host]));
     var plot = new Plot(host, { height: 380, width: 720 });
     function upd() {
-      var X = 6, x = -Math.log(1 - u) / lambda, marks = [];
+      // Oś sięga do kwantyla rzędu 0,99, więc znacznik zawsze leży na krzywej.
+      var X = niceUp(-Math.log(0.01) / lambda), x = -Math.log(1 - u) / lambda, marks = [];
       for (var i = 1; i <= N; i++) {
         var ui = (i - 0.5) / N, xi = -Math.log(1 - ui) / lambda;
         marks.push({ id: "ru" + i, type: "dot", x: 0, y: ui, r: 3.5, cls: "is-z-jednostajny" });
@@ -1228,9 +1245,9 @@
           marks.push({ id: "rx" + i, type: "dot", x: xi, y: 0, r: 4, cls: "is-z-wykladniczy" });
         }
       }
-      marks.push({ id: "h", type: "seg", x1: 0, y1: u, x2: Math.min(x, X), y2: u, cls: "is-guide is-strong" });
-      marks.push({ id: "v", type: "seg", x1: Math.min(x, X), y1: u, x2: Math.min(x, X), y2: 0, cls: "is-guide is-strong" });
-      marks.push({ id: "d", type: "dot", x: Math.min(x, X), y: u, cls: "is-hl" });
+      marks.push({ id: "h", type: "seg", x1: 0, y1: u, x2: x, y2: u, cls: "is-guide is-strong" });
+      marks.push({ id: "v", type: "seg", x1: x, y1: u, x2: x, y2: 0, cls: "is-guide is-strong" });
+      marks.push({ id: "d", type: "dot", x: x, y: u, cls: "is-hl" });
       plot.set({ x: [0, X], y: [0, 1.05], series: [{ id: "F", type: "line", cls: "is-z-wykladniczy is-thick", pts: sample(function (t) { return 1 - Math.exp(-lambda * t); }, 0, X, 240) }],
         marks: marks, yLabel: "u = F(x)", xLabel: "x" });
       setTex(out, "x=-\\frac{\\ln(1-u)}{\\lambda}=-\\frac{\\ln(1-" + tnum(u, 2) + ")}{" + tnum(lambda, 2) + "}=" + tnum(x, 3));
@@ -1254,7 +1271,7 @@
       pb.set({ x: [0, 1.05], y: [0, 1.08], xDigits: 1, series: [
         { id: "line", type: "line", cls: "is-z-jednostajny is-thick", pts: [[0, 0], [1, 1], [1.05, 1]] },
         { id: "s" + n, type: "steps", cls: "is-z-jednostajny-dyskretny", noDots: n > 25, bars: pts.map(function (q) { acc += q[1]; return [q[0], acc]; }) }], marks: [], yLabel: "F(x)" });
-      setTex(out, "\\max_x|F_n(x)-x|=\\tfrac1n=" + tnum(1 / n, 4));
+      setTex(out, "\\sup_x|F_n(x)-F(x)|=\\tfrac1n=" + tnum(1 / n, 4));
     }
     upd();
   };

@@ -69,7 +69,7 @@ rozklady:
       - Każda zmienna o dwóch wartościach; Bernoulli to przypadek $x_1=1$, $x_2=0$.
     wzory:
       - [Nośnik, '$\mathcal{S}=\{x_1,x_2\}$']
-      - [Funkcja prawdopodobieństwa, '$p(x_1)=\theta,\quad p(x_2)=1-\theta$']
+      - [Funkcja prawdopodobieństwa, '$p(x_1)=\theta,\quad p(x_2)=1-\theta\quad(x_1\neq x_2)$']
       - [Wartość oczekiwana, '$E(X)=\theta x_1+(1-\theta)x_2$']
       - [Wariancja, '$Var(X)=\theta(1-\theta)(x_1-x_2)^2$']
       - [Funkcja tworząca momenty, '$M_X(t)=\theta e^{t x_1}+(1-\theta)e^{t x_2}$']
@@ -193,7 +193,7 @@ rozklady:
     kotwica: sec-poisson
     mapa: [790, 340]
     pytanie: 'ile zdarzeń w przedziale?'
-    historia: Liczba zdarzeń w ustalonym przedziale czasu, gdy zdarzenia przychodzą niezależnie, średnio $\lambda$ na przedział.
+    historia: Liczba zdarzeń w ustalonym przedziale czasu, gdy zdarzenia przychodzą niezależnie, pojedynczo i ze stałą średnią $\lambda$ na przedział.
     rozpoznasz:
       - '„Średnio $\lambda$ klientów / telefonów / awarii na godzinę” — pytanie o liczbę zdarzeń.'
       - 'Wiele prób, każda mało prawdopodobna: $Binom(n,\theta)\approx Pois(n\theta)$.'
@@ -221,13 +221,13 @@ rozklady:
     historia: Punkt wybrany „na ślepo” z przedziału $[a,b]$ — prawdopodobieństwo zależy tylko od długości kawałka.
     rozpoznasz:
       - '„Losowy moment w ciągu godziny”, „punkt wybrany losowo z odcinka”.'
-      - 'Prawdopodobieństwo geometryczne w jednym wymiarze: $P(c<X<d)=\frac{d-c}{b-a}$.'
+      - 'Prawdopodobieństwo geometryczne w jednym wymiarze: $P(c<X<d)=\frac{d-c}{b-a}$ dla $a\le c\le d\le b$.'
     wzory:
       - [Gęstość, '$f(x)=\dfrac{1}{b-a}\ \text{dla}\ x\in[a,b]$']
       - [Dystrybuanta, '$F(x)=\dfrac{x-a}{b-a}\ \text{dla}\ x\in[a,b]$']
       - [Wartość oczekiwana, '$E(X)=\dfrac{a+b}{2}$']
       - [Wariancja, '$Var(X)=\dfrac{(b-a)^2}{12}$']
-      - [Funkcja tworząca momenty, '$M_X(t)=\dfrac{e^{bt}-e^{at}}{t(b-a)},\ t\neq0$']
+      - [Funkcja tworząca momenty, '$M_X(t)=\dfrac{e^{bt}-e^{at}}{t(b-a)}\ (t\neq0),\ \ M_X(0)=1$']
     uwagi:
       - 'Gęstość może być większa niż $1$ (gdy $b-a<1$) — liczy się pole, a nie wysokość.'
     parametry:
@@ -272,7 +272,7 @@ rozklady:
     pytanie: 'ile czekamy na s-te?'
     historia: Dla całkowitego $s$ — czas oczekiwania na $s$-te zdarzenie w procesie Poissona z intensywnością $r$.
     rozpoznasz:
-      - '„Czas do trzeciej awarii”, „łączny czas obsługi $s$ klientów”, gdy pojedyncze czasy są wykładnicze.'
+      - '„Czas do trzeciej awarii”, „łączny czas obsługi $s$ klientów”, gdy pojedyncze czasy są niezależne i mają ten sam rozkład $Exp(r)$.'
       - Elastyczny model czasu oczekiwania; $s$ zmienia kształt, $r$ skalę.
     wzory:
       - [Gęstość, '$f(x)=\dfrac{r^s}{\Gamma(s)}x^{s-1}e^{-rx}\ \text{dla}\ x>0$']
@@ -324,7 +324,7 @@ rozklady:
     pytanie: 'suma wielu małych wpływów'
     historia: Suma wielu drobnych, niezależnych wpływów — dlatego pojawia się wszędzie (centralne twierdzenie graniczne).
     rozpoznasz:
-      - Wzrost, błędy pomiaru, wyniki testów; przybliżenie sumy wielu niezależnych zmiennych.
+      - Wzrost, błędy pomiaru, wyniki testów; przybliżenie sumy wielu niezależnych zmiennych o tym samym rozkładzie.
       - 'Zadania liczymy przez standaryzację $Z=\frac{X-\mu}{\sigma}$ i tablice $\Phi$.'
     wzory:
       - [Gęstość, '$\varphi_{\mu,\sigma}(x)=\dfrac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$']
@@ -459,9 +459,9 @@ zwiazki:
       - [poisson, normalny, 'λ→∞']
     bez_strzalki: ['dwumianowy>normalny']  # łuk nad Poissonem zaśmiecał mapę; Poisson → normalny wystarczy
     wstep: 'Wybierz rozkład i zwiększaj parametr — słupki coraz lepiej pasują do dzwonu.'
-    wniosek: 'Suma wielu niezależnych składników ma w przybliżeniu rozkład normalny.'
+    wniosek: 'Suma wielu niezależnych składników o tym samym rozkładzie (ze skończoną wariancją) ma w przybliżeniu rozkład normalny.'
     tresc:
-      - '$Binom(n,\theta)$ to suma $n$ Bernoullich, $Pois(\lambda)$ dla całkowitego $\lambda$ to suma $\lambda$ zmiennych $Pois(1)$, a $Gamma(s,r)$ to suma $s$ wykładniczych.'
+      - '$Binom(n,\theta)$ to suma $n$ Bernoullich, $Pois(\lambda)$ dla całkowitego $\lambda$ to suma $\lambda$ zmiennych $Pois(1)$, a $Gamma(s,r)$ dla całkowitego $s$ to suma $s$ niezależnych $Exp(r)$.'
       - 'Standaryzacja: $Z=\dfrac{X-E(X)}{\sqrt{Var(X)}}$ ma średnią $0$ i wariancję $1$. Słupki rysujemy w skali gęstości (pole $=$ prawdopodobieństwo).'
       - 'Przybliżenie normalne: $P(X\le x)\approx\Phi\left(\frac{x-E(X)}{\sqrt{Var(X)}}\right)$. Dokładnie — rozdział 15.'
     skrypt: [[8.2.5, sec-normal], [rozdz. 15, 'rv/convergence']]
@@ -474,17 +474,17 @@ zwiazki:
     wstep: 'Równo rozłożone punkty z osi pionowej po przejściu przez krzywą zagęszczają się przy zerze.'
     wniosek: 'Jeśli $U\sim\mathcal{U}(0,1)$, to $-\frac{\ln(1-U)}{\lambda}\sim Exp(\lambda)$.'
     tresc:
-      - '$X=-\dfrac{\ln(1-U)}{\lambda}$: $P(X\le x)=P\left(U\le1-e^{-\lambda x}\right)=1-e^{-\lambda x}$, więc $X\sim Exp(\lambda)$.'
-      - 'Tak samo działa każda ciągła dystrybuanta: $F^{-1}(U)\sim F$. Tak komputer losuje z dowolnego rozkładu (rozdział 9).'
+      - '$X=-\dfrac{\ln(1-U)}{\lambda}\ge0$, a dla $x\ge0$: $P(X\le x)=P\left(U\le1-e^{-\lambda x}\right)=1-e^{-\lambda x}$, więc $X\sim Exp(\lambda)$.'
+      - 'Tak samo działa każda ciągła i ściśle rosnąca dystrybuanta: $F^{-1}(U)\sim F$. Tak komputer losuje z innych rozkładów (rozdział 9).'
     skrypt: [[8.2.1, sec-uniform], [8.2.2, sec-exponential]]
 
   - id: jednostajny-dyskretny-ciagly
     tytul: Coraz gęstsza kostka
     krawedzie:
       - [jednostajny-dyskretny, jednostajny, 'n→∞']
-    wstep: 'Zwiększaj $n$ — schodki dystrybuanty zlewają się w prostą.'
-    wniosek: 'Coraz więcej równo rozłożonych punktów daje w granicy $\mathcal{U}(0,1)$.'
+    wstep: 'Kostka ma $n$ ścian, wynik dzielimy przez $n$ (punkty $\frac1n,\ldots,1$). Zwiększaj $n$ — schodki dystrybuanty zlewają się w prostą.'
+    wniosek: 'Jeśli $X_n$ jest jednostajny na $\{1,\ldots,n\}$, to $\frac{X_n}{n}$ w granicy daje $\mathcal{U}(0,1)$.'
     tresc:
-      - 'Największa różnica między dystrybuantami to $\frac1n$.'
+      - 'Dystrybuanta $F_n$ zmiennej $\frac{X_n}{n}$ różni się od $F(x)=x$ o co najwyżej $\frac1n$: $\sup_{x}|F_n(x)-F(x)|=\frac1n\to0$.'
       - 'Każdy pojedynczy punkt ma prawdopodobieństwo $\frac1n\to0$ — w rozkładzie ciągłym $P(X=x)=0$ dla każdego $x$.'
     skrypt: [[8.1.4, sec-discrete-uniform], [8.2.1, sec-uniform]]
