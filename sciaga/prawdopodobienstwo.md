@@ -41,6 +41,7 @@ $P(A,B)=P(A\cap B)$ — prawdopodobieństwo, że zaszły oba zdarzenia
 
     [Skrypt: def. 3.1](skrypt:calculus/conditional-independence#def-conditional-probability),
     [tw. 3.1](skrypt:calculus/conditional-independence#thm-conditional-probability-properties)
+    · [Film: prawdopodobieństwo warunkowe](https://www.youtube.com/watch?v=ddeJJGCsHI8)
 
     Dla $P(B)>0$:
 
@@ -56,6 +57,7 @@ $P(A,B)=P(A\cap B)$ — prawdopodobieństwo, że zaszły oba zdarzenia
 
     [Skrypt: def. 3.2](skrypt:calculus/conditional-independence#def-event-independence),
     [tw. 3.3](skrypt:calculus/conditional-independence#thm-independence-properties)
+    · [Film: niezależność zdarzeń](https://www.youtube.com/watch?v=sRAIC-UVkbE)
 
     a) $A,B$ są niezależne wtedy i tylko wtedy, gdy $P(A,B)=P(A)P(B)$.
        Dla $P(B)>0$ równoważnie: $P(A\mid B)=P(A)$.
@@ -66,7 +68,8 @@ $P(A,B)=P(A\cap B)$ — prawdopodobieństwo, że zaszły oba zdarzenia
        nie wystarcza. [Skrypt: przykł. 3.2](skrypt:calculus/conditional-independence#exm-independence-4)
     d) Niezależność $A,B$ pociąga niezależność par $A',B$; $A,B'$ oraz $A',B'$.
        [Skrypt: zad. 3.7](skrypt:calculus/conditional-independence#exr-conditional-independence-independent-complements)
-    e) Rozłączne zdarzenia o dodatnich prawdopodobieństwach są zależne.
+    e) **Rozłączność to nie niezależność.** Rozłączne zdarzenia ($A\cap B=\emptyset$)
+       o dodatnich prawdopodobieństwach są zależne, bo $P(A,B)=0\ne P(A)P(B)$.
 
 6. **Niezależność warunkowa**
 
@@ -85,6 +88,7 @@ $P(A,B)=P(A\cap B)$ — prawdopodobieństwo, że zaszły oba zdarzenia
 
     [Skrypt: def. 4.1](skrypt:calculus/bayes#def-complete-event-system),
     [tw. 4.1](skrypt:calculus/bayes#thm-total-probability-law)
+    · [Film: prawdopodobieństwo całkowite](https://www.youtube.com/watch?v=x-EjxOMjP5k)
 
     a) Skończony lub nieskończony ciąg $A_1,A_2,\ldots$ tworzy układ zupełny, gdy
        $$A_i\cap A_j=\emptyset\ (i\ne j),\qquad \bigcup_i A_i=\Omega.$$
@@ -95,6 +99,7 @@ $P(A,B)=P(A\cap B)$ — prawdopodobieństwo, że zaszły oba zdarzenia
 
     [Skrypt: tw. 4.2](skrypt:calculus/bayes#thm-bayes-simple),
     [tw. 4.3](skrypt:calculus/bayes#thm-bayes-full)
+    · [Film: twierdzenie Bayesa](https://www.youtube.com/watch?v=swimsJrbmdQ)
 
     a) Dla $P(A)>0$ i $P(B)>0$:
        $$P(A\mid B)=\frac{P(B\mid A)P(A)}{P(B)}.$$
@@ -113,6 +118,7 @@ $\mu=E(X)$ — wartość oczekiwana, $\sigma^2=Var(X)$ — wariancja
 
     [Skrypt: def. 6.1](skrypt:rv/real/distributions#def-cdf),
     [tw. 6.1](skrypt:rv/real/distributions#thm-cdf-properties)
+    · [Film: po co nam dystrybuanta?](https://www.youtube.com/watch?v=p3Qh-teTjr8)
 
     a) $F_X(x)=P(X\le x)$.
     b) Dla $a<b$: $P(a<X\le b)=F(b)-F(a)$. Wniosek: $P(X>a)=1-F(a)$.
@@ -120,13 +126,12 @@ $\mu=E(X)$ — wartość oczekiwana, $\sigma^2=Var(X)$ — wariancja
        $$\lim_{x\to-\infty}F(x)=0,\qquad \lim_{x\to+\infty}F(x)=1.$$
        Przydaje się w zadaniach „jakie warunki muszą spełniać stałe, żeby $F$ była dystrybuantą”.
        [Skrypt: zad. 6.1](skrypt:rv/real/distributions#exr-real-valued-cdf)
-    d) $P(X=x_0)=F(x_0)-F(x_0-)$, gdzie $F(x_0-)=\lim_{x\to x_0^-}F(x)$, więc
-       $F$ jest ciągła w $x_0$ wtedy i tylko wtedy, gdy $P(X=x_0)=0$.
 
 10. **Rozkład dyskretny**
 
     [Skrypt: def. 6.3](skrypt:rv/real/distributions#def-pmf),
     [tw. 6.2](skrypt:rv/real/distributions#thm-discrete-distribution-properties)
+    · [Film: rozkład dyskretny i ciągły](https://www.youtube.com/watch?v=AindbNXmPHc)
 
     a) $p(x)=P(X=x)$, przy czym $p(x)\ge0$ i $\displaystyle\sum_{x\in\mathcal{S}}p(x)=1$.
     b) $P(X\in A)=\displaystyle\sum_{x\in A\cap\mathcal{S}}p(x)$.
@@ -137,6 +142,7 @@ $\mu=E(X)$ — wartość oczekiwana, $\sigma^2=Var(X)$ — wariancja
 
     [Skrypt: def. 6.4](skrypt:rv/real/distributions#def-continuous-distribution),
     [tw. 6.3](skrypt:rv/real/distributions#thm-continuous-distribution-properties)
+    · [Film: rozkład dyskretny i ciągły](https://www.youtube.com/watch?v=AindbNXmPHc)
 
     a) Funkcja $f$ jest gęstością, gdy spełnia **oba** warunki:
        $$f(x)\ge0\ \text{ dla każdego } x\in\mathbb{R},\qquad \int_{-\infty}^{+\infty}f(x)\,dx=1.$$
@@ -144,6 +150,7 @@ $\mu=E(X)$ — wartość oczekiwana, $\sigma^2=Var(X)$ — wariancja
        często dodatkowo ogranicza parametr (np. znak stałej).
        [Skrypt: przykł. 6.3](skrypt:rv/real/distributions#exm-triangle-distribution),
        [zad. 6.7](skrypt:rv/real/distributions#exr-real-valued-pdf-double-exp)
+       · [Film: gęstość z parametrem, zadanie z kolokwium](https://www.youtube.com/watch?v=RCSw_W6eshU)
     b) $P(X\in A)=\displaystyle\int_A f(x)\,dx$, w szczególności
        $$P(a<X<b)=\int_a^b f(x)\,dx=F(b)-F(a).$$
        $P(X=x)=0$, więc nie ma znaczenia, czy nierówności są ostre: $P(a<X<b)=P(a\le X\le b)$.
@@ -160,7 +167,8 @@ $\mu=E(X)$ — wartość oczekiwana, $\sigma^2=Var(X)$ — wariancja
     a) $\displaystyle E(X)=\sum_{s\in\mathcal{S}}s\,p(s)$ (dyskretny), $\qquad\displaystyle E(X)=\int_{-\infty}^{+\infty}x f(x)\,dx$ (ciągły).
     b) Wartość oczekiwana może nie istnieć, gdy całka (szereg) jest rozbieżna.
        [Skrypt: przykł. 7.3](skrypt:rv/real/moments#exm-no-expval)
-    c) Dla dowolnych $a,b,c\in\mathbb{R}$: $E(aX+bY)=a\,E(X)+b\,E(Y)$, $E(c)=c$. Wniosek: $E(aX+b)=a\,E(X)+b$.
+    c) **Wartość oczekiwana jest liniowa**: stałe wyciągamy przed $E$, a sumę rozbijamy na sumę.
+       Dla $a,b\in\mathbb{R}$: $E(aX+bY)=a\,E(X)+b\,E(Y)$, w szczególności $E(aX+b)=a\,E(X)+b$.
 
 13. **Momenty i wariancja**
 
@@ -172,7 +180,8 @@ $\mu=E(X)$ — wartość oczekiwana, $\sigma^2=Var(X)$ — wariancja
     a) $\displaystyle E(X^k)=\sum_{s\in\mathcal{S}}s^k\,p(s)$ (dyskretny), $\qquad\displaystyle E(X^k)=\int_{-\infty}^{+\infty}x^k f(x)\,dx$ (ciągły).
     b) $Var(X)=E\bigl((X-\mu)^2\bigr)$, ale często łatwiej użyć wzoru
        $$Var(X)=E(X^2)-\bigl(E(X)\bigr)^2.$$
-    c) Dla dowolnych $a,b\in\mathbb{R}$: $Var(aX+b)=a^2\,Var(X)$.
+    c) **Wariancja nie jest liniowa.** Dla $a,b\in\mathbb{R}$: $Var(aX+b)=a^2\,Var(X)$ —
+       przesunięcie o $b$ nie zmienia rozrzutu, a $a$ wychodzi do kwadratu (np. $Var(-X)=Var(X)$).
     d) Odchylenie standardowe: $\sigma=\sqrt{Var(X)}$.
        [Skrypt: def. 7.5](skrypt:rv/real/moments#def-stddev)
     e) Wskaźnik asymetrii (dla $\sigma>0$): $A=\dfrac{\mu_3}{\sigma^3}$, gdzie $\mu_3=E\bigl((X-\mu)^3\bigr)$.
