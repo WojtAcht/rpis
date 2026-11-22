@@ -1,0 +1,454 @@
+# ZOO rozkładów — strona zoo/ z interaktywnymi wykresami (rozdział 8 skryptu).
+#
+# Każdy rozkład ma: `id` (adres w zoo/#id; ten sam klucz zna site/assets/zoo.js, który liczy
+# funkcję prawdopodobieństwa, gęstość, dystrybuantę, E i Var), nazwę, zapis w TeX-u, numer
+# podrozdziału i kotwicę w skrypcie (rv/real/well-known), położenie na mapie (`mapa`, w układzie
+# 1200 × 560) i parametry suwaków. Teksty mogą zawierać $wzory$ i **pogrubienia**.
+#
+# Związki łączą rozkłady na mapie: każda krawędź `[z, do, etykieta]` otwiera stronę związku
+# z własną wizualizacją (`id` jest kluczem w zoo.js). `luk` wygina krawędź (px, + w lewo od kierunku),
+# a `etykieta` przesuwa jej etykietę wzdłuż krawędzi (0 = początek, 1 = koniec); klucz to 'z>do'.
+# Pole `symbol` to zapis rozkładu zwykłym tekstem (na mapie, w SVG nie ma KaTeX-a).
+# W `skrypt` podajemy [etykieta, kotwica] w rozdziale 8 albo [etykieta, 'rozdział#kotwica'].
+#
+# Parametryzacje jak w skrypcie: Geom(θ) liczy próby do pierwszego sukcesu (nośnik od 1),
+# N(μ, σ) ma drugi parametr σ (odchylenie, nie wariancję), Gamma(s, r) ma intensywność r.
+
+rozdzial: rv/real/well-known
+
+rozklady:
+  - id: jednopunktowy
+    nazwa: Rozkład jednopunktowy
+    krotko: jednopunktowy
+    symbol: 'δ(x₀)'
+    zapis: '\delta_{x_0}'
+    typ: dyskretny
+    sekcja: "8.1.1"
+    kotwica: sec-dirac-delta
+    mapa: [120, 215]
+    historia: Zmienna, która tylko udaje losową — zawsze przyjmuje tę samą wartość $x_0$.
+    rozpoznasz:
+      - Stała $c$ traktowana jako zmienna losowa, np. we wzorze $E(c)=c$.
+      - Granica innych rozkładów, gdy rozrzut znika (np. $\sigma\to0$).
+    wzory:
+      - [Nośnik, '$\mathcal{S}=\{x_0\}$']
+      - [Funkcja prawdopodobieństwa, '$p(x_0)=1$']
+      - [Wartość oczekiwana, '$E(X)=x_0$']
+      - [Wariancja, '$Var(X)=0$']
+      - [Funkcja tworząca momenty, '$M_X(t)=e^{t x_0}$']
+    uwagi:
+      - Wariancja $0$ oznacza brak rozrzutu. Działa też w drugą stronę — jeśli $Var(X)=0$, to $X$ jest (prawie na pewno) stała.
+    parametry:
+      - { klucz: x0, tex: 'x_0', min: -5, max: 5, krok: 0.5, start: 1.5 }
+
+  - id: dwupunktowy
+    nazwa: Rozkład dwupunktowy
+    krotko: dwupunktowy
+    symbol: 'x₁ albo x₂'
+    zapis: 'X\in\{x_1,x_2\}'
+    typ: dyskretny
+    sekcja: "8.1.2"
+    kotwica: sec-2-point
+    mapa: [350, 80]
+    historia: Dwa możliwe wyniki — $x_1$ z prawdopodobieństwem $\theta$ i $x_2$ z prawdopodobieństwem $1-\theta$.
+    rozpoznasz:
+      - Gra „wygrywasz $x_1$ albo tracisz” — jedna stawka, dwa wyniki.
+      - Każda zmienna o dwóch wartościach; Bernoulli to przypadek $x_1=1$, $x_2=0$.
+    wzory:
+      - [Nośnik, '$\mathcal{S}=\{x_1,x_2\}$']
+      - [Funkcja prawdopodobieństwa, '$p(x_1)=\theta,\quad p(x_2)=1-\theta$']
+      - [Wartość oczekiwana, '$E(X)=\theta x_1+(1-\theta)x_2$']
+      - [Wariancja, '$Var(X)=\theta(1-\theta)(x_1-x_2)^2$']
+      - [Funkcja tworząca momenty, '$M_X(t)=\theta e^{t x_1}+(1-\theta)e^{t x_2}$']
+    uwagi:
+      - 'Skrót: $X=x_2+(x_1-x_2)\,B$, gdzie $B\sim Bern(\theta)$. Z liniowości od razu $E(X)$, a z $Var(aB+b)=a^2Var(B)$ — wariancja.'
+    parametry:
+      - { klucz: x1, tex: 'x_1', min: -5, max: 5, krok: 0.5, start: 3 }
+      - { klucz: x2, tex: 'x_2', min: -5, max: 5, krok: 0.5, start: -1 }
+      - { klucz: theta, tex: '\theta', min: 0.01, max: 0.99, krok: 0.01, start: 0.3 }
+
+  - id: bernoulli
+    nazwa: Rozkład Bernoulliego
+    krotko: Bernoulli
+    symbol: 'Bern(θ)'
+    zapis: 'Bern(\theta)'
+    typ: dyskretny
+    sekcja: "8.1.3"
+    kotwica: sec-bernoulli-distribution
+    mapa: [350, 215]
+    historia: 'Jedna próba: sukces ($1$) z prawdopodobieństwem $\theta$ albo porażka ($0$).'
+    rozpoznasz:
+      - Jeden rzut monetą, jedna sztuka towaru (wadliwa / dobra), jeden strzał.
+      - '**Wskaźnik zdarzenia**: $\mathbb{1}_A\sim Bern(P(A))$, więc $E(\mathbb{1}_A)=P(A)$ — z tego budujemy dwumianowy i geometryczny.'
+    wzory:
+      - [Nośnik, '$\mathcal{S}=\{0,1\}$']
+      - [Funkcja prawdopodobieństwa, '$p(1)=\theta,\quad p(0)=1-\theta$']
+      - [Wartość oczekiwana, '$E(X)=\theta$']
+      - [Wariancja, '$Var(X)=\theta(1-\theta)$']
+      - [Funkcja tworząca momenty, '$M_X(t)=\theta e^{t}+1-\theta$']
+    uwagi:
+      - Wariancja jest największa dla $\theta=\tfrac12$ (najtrudniej zgadnąć wynik), a znika dla $\theta\to0$ i $\theta\to1$.
+    parametry:
+      - { klucz: theta, tex: '\theta', min: 0.01, max: 0.99, krok: 0.01, start: 0.3 }
+
+  - id: jednostajny-dyskretny
+    nazwa: Dyskretny rozkład jednostajny
+    krotko: jednostajny dyskr.
+    symbol: 'U{1, …, n}'
+    zapis: 'X\in\{x_1,\ldots,x_n\}'
+    typ: dyskretny
+    sekcja: "8.1.4"
+    kotwica: sec-discrete-uniform
+    mapa: [580, 215]
+    historia: '$n$ wyników i każdy jest tak samo prawdopodobny — uczciwa kostka, losowanie numerka z urny.'
+    rozpoznasz:
+      - '„Losujemy jedną z $n$ możliwości” — to prawdopodobieństwo klasyczne.'
+      - 'Na wykresie: $\{1,\ldots,n\}$; dla $n=6$ to rzut kostką.'
+    wzory:
+      - [Nośnik, '$\mathcal{S}=\{x_1,\ldots,x_n\}$']
+      - [Funkcja prawdopodobieństwa, '$p(x_i)=\dfrac1n$']
+      - [Wartość oczekiwana, '$E(X)=\dfrac1n\sum_{i=1}^n x_i$']
+      - [Wariancja, '$Var(X)=\dfrac1n\sum_{i=1}^n (x_i-\mu)^2$']
+      - [Funkcja tworząca momenty, '$M_X(t)=\dfrac1n\sum_{i=1}^n e^{t x_i}$']
+    uwagi:
+      - 'Dla $\{1,\ldots,n\}$: $E(X)=\dfrac{n+1}{2}$ i $Var(X)=\dfrac{n^2-1}{12}$; kostka: $E(X)=3{,}5$.'
+    parametry:
+      - { klucz: n, tex: 'n', min: 2, max: 20, krok: 1, start: 6 }
+
+  - id: dwumianowy
+    nazwa: Rozkład dwumianowy
+    krotko: dwumianowy
+    symbol: 'Binom(n, θ)'
+    zapis: 'Binom(n,\theta)'
+    typ: dyskretny
+    sekcja: "8.1.5"
+    kotwica: sec-binomial
+    mapa: [225, 350]
+    historia: Liczba sukcesów w $n$ niezależnych próbach, każda z tym samym prawdopodobieństwem sukcesu $\theta$.
+    rozpoznasz:
+      - '„Rzucamy $n$ razy… ile razy wypadnie…”, „$n$ elementów, każdy psuje się niezależnie z prawd. $\theta$”.'
+      - Losowanie **ze zwracaniem** — bez zwracania próby nie są niezależne.
+    wzory:
+      - [Nośnik, '$\mathcal{S}=\{0,1,\ldots,n\}$']
+      - [Funkcja prawdopodobieństwa, '$p(k)=\dbinom{n}{k}\theta^k(1-\theta)^{n-k}$']
+      - [Wartość oczekiwana, '$E(X)=n\theta$']
+      - [Wariancja, '$Var(X)=n\theta(1-\theta)$']
+      - [Funkcja tworząca momenty, '$M_X(t)=(1-\theta+\theta e^t)^n$']
+    uwagi:
+      - '$\binom{n}{k}$ liczy, na ilu pozycjach mogą stać sukcesy, a $\theta^k(1-\theta)^{n-k}$ to prawdopodobieństwo jednego takiego ciągu.'
+      - '$Binom(1,\theta)=Bern(\theta)$.'
+    parametry:
+      - { klucz: n, tex: 'n', min: 1, max: 60, krok: 1, start: 20 }
+      - { klucz: theta, tex: '\theta', min: 0.01, max: 0.99, krok: 0.01, start: 0.3 }
+
+  - id: geometryczny
+    nazwa: Rozkład geometryczny
+    krotko: geometryczny
+    symbol: 'Geom(θ)'
+    zapis: 'Geom(\theta)'
+    typ: dyskretny
+    sekcja: "8.1.6"
+    kotwica: sec-geometric
+    mapa: [475, 350]
+    historia: Numer próby, w której **pierwszy raz** pojawił się sukces (próby niezależne, sukces z prawd. $\theta$).
+    rozpoznasz:
+      - '„Rzucamy, aż wypadnie…”, „ile prób do pierwszego trafienia”.'
+      - 'Brak pamięci: dotychczasowe porażki nic nie zmieniają, $P(X>m+k\mid X>m)=P(X>k)$.'
+    wzory:
+      - [Nośnik, '$\mathcal{S}=\{1,2,3,\ldots\}$']
+      - [Funkcja prawdopodobieństwa, '$p(k)=(1-\theta)^{k-1}\theta$']
+      - [Ogon, '$P(X>k)=(1-\theta)^k$']
+      - [Wartość oczekiwana, '$E(X)=\dfrac1\theta$']
+      - [Wariancja, '$Var(X)=\dfrac{1-\theta}{\theta^2}$']
+      - [Funkcja tworząca momenty, '$M_X(t)=\dfrac{\theta e^t}{1-(1-\theta)e^t},\ t<-\ln(1-\theta)$']
+    uwagi:
+      - 'Uwaga na konwencję: niektóre źródła liczą **porażki przed** sukcesem (nośnik od $0$, $E=\frac{1-\theta}{\theta}$). W skrypcie liczymy próby, razem z udaną.'
+    parametry:
+      - { klucz: theta, tex: '\theta', min: 0.05, max: 0.95, krok: 0.01, start: 0.25 }
+
+  - id: poisson
+    nazwa: Rozkład Poissona
+    krotko: Poisson
+    symbol: 'Pois(λ)'
+    zapis: 'Pois(\lambda)'
+    typ: dyskretny
+    sekcja: "8.1.7"
+    kotwica: sec-poisson
+    mapa: [350, 485]
+    historia: Liczba zdarzeń w ustalonym przedziale czasu, gdy zdarzenia przychodzą niezależnie, średnio $\lambda$ na przedział.
+    rozpoznasz:
+      - '„Średnio $\lambda$ klientów / telefonów / awarii na godzinę” — pytanie o liczbę zdarzeń.'
+      - 'Wiele prób, każda mało prawdopodobna: $Binom(n,\theta)\approx Pois(n\theta)$.'
+    wzory:
+      - [Nośnik, '$\mathcal{S}=\{0,1,2,\ldots\}$']
+      - [Funkcja prawdopodobieństwa, '$p(k)=\dfrac{e^{-\lambda}\lambda^k}{k!}$']
+      - [Wartość oczekiwana, '$E(X)=\lambda$']
+      - [Wariancja, '$Var(X)=\lambda$']
+      - [Funkcja tworząca momenty, '$M_X(t)=e^{\lambda(e^t-1)}$']
+    uwagi:
+      - 'Średnia i wariancja są równe. W przedziale $t$ razy dłuższym liczba zdarzeń ma rozkład $Pois(\lambda t)$.'
+    parametry:
+      - { klucz: lambda, tex: '\lambda', min: 0.2, max: 20, krok: 0.1, start: 4 }
+
+  - id: jednostajny
+    nazwa: Rozkład jednostajny
+    krotko: jednostajny
+    symbol: 'U(a, b)'
+    zapis: '\mathcal{U}(a,b)'
+    typ: ciągły
+    sekcja: "8.2.1"
+    kotwica: sec-uniform
+    mapa: [840, 80]
+    historia: Punkt wybrany „na ślepo” z przedziału $[a,b]$ — prawdopodobieństwo zależy tylko od długości kawałka.
+    rozpoznasz:
+      - '„Losowy moment w ciągu godziny”, „punkt wybrany losowo z odcinka”.'
+      - 'Prawdopodobieństwo geometryczne w jednym wymiarze: $P(c<X<d)=\frac{d-c}{b-a}$.'
+    wzory:
+      - [Gęstość, '$f(x)=\dfrac{1}{b-a}\ \text{dla}\ x\in[a,b]$']
+      - [Dystrybuanta, '$F(x)=\dfrac{x-a}{b-a}\ \text{dla}\ x\in[a,b]$']
+      - [Wartość oczekiwana, '$E(X)=\dfrac{a+b}{2}$']
+      - [Wariancja, '$Var(X)=\dfrac{(b-a)^2}{12}$']
+      - [Funkcja tworząca momenty, '$M_X(t)=\dfrac{e^{bt}-e^{at}}{t(b-a)},\ t\neq0$']
+    uwagi:
+      - 'Gęstość może być większa niż $1$ (gdy $b-a<1$) — liczy się pole, a nie wysokość.'
+    parametry:
+      - { klucz: a, tex: 'a', min: -5, max: 4.5, krok: 0.5, start: 0 }
+      - { klucz: b, tex: 'b', min: -4.5, max: 5, krok: 0.5, start: 3 }
+
+  - id: wykladniczy
+    nazwa: Rozkład wykładniczy
+    krotko: wykładniczy
+    symbol: 'Exp(λ)'
+    zapis: 'Exp(\lambda)'
+    typ: ciągły
+    sekcja: "8.2.2"
+    kotwica: sec-exponential
+    mapa: [840, 350]
+    historia: Czas oczekiwania na pierwsze zdarzenie, gdy zdarzenia przychodzą jak u Poissona — średnio $\lambda$ na jednostkę czasu.
+    rozpoznasz:
+      - '„Czas do następnego klienta / awarii”, „czas życia elementu, który się nie starzeje”.'
+      - 'Brak pamięci: $P(T>s+t\mid T>s)=P(T>t)$ — to jedyny taki rozkład ciągły.'
+    wzory:
+      - [Gęstość, '$f(x)=\lambda e^{-\lambda x}\ \text{dla}\ x>0$']
+      - [Dystrybuanta, '$F(x)=1-e^{-\lambda x}\ \text{dla}\ x>0$']
+      - [Wartość oczekiwana, '$E(X)=\dfrac1\lambda$']
+      - [Wariancja, '$Var(X)=\dfrac1{\lambda^2}$']
+      - [Mediana, '$q_{1/2}=\dfrac{\ln2}{\lambda}$']
+      - [Funkcja tworząca momenty, '$M_X(t)=\dfrac{\lambda}{\lambda-t},\ t<\lambda$']
+    uwagi:
+      - '$\lambda$ to intensywność (zdarzenia na jednostkę czasu), a średni czas czekania to $\frac1\lambda$. Ogon $P(X>x)=e^{-\lambda x}$ przydaje się częściej niż sama gęstość.'
+    parametry:
+      - { klucz: lambda, tex: '\lambda', min: 0.2, max: 4, krok: 0.05, start: 1 }
+
+  - id: gamma
+    nazwa: Rozkład gamma
+    krotko: gamma
+    symbol: 'Gamma(s, r)'
+    zapis: 'Gamma(s,r)'
+    typ: ciągły
+    sekcja: "8.2.3"
+    kotwica: sec-gamma
+    mapa: [1080, 215]
+    historia: Dla całkowitego $s$ — czas oczekiwania na $s$-te zdarzenie w procesie Poissona z intensywnością $r$.
+    rozpoznasz:
+      - '„Czas do trzeciej awarii”, „łączny czas obsługi $s$ klientów”, gdy pojedyncze czasy są wykładnicze.'
+      - Elastyczny model czasu oczekiwania; $s$ zmienia kształt, $r$ skalę.
+    wzory:
+      - [Gęstość, '$f(x)=\dfrac{r^s}{\Gamma(s)}x^{s-1}e^{-rx}\ \text{dla}\ x>0$']
+      - [Wartość oczekiwana, '$E(X)=\dfrac sr$']
+      - [Wariancja, '$Var(X)=\dfrac{s}{r^2}$']
+      - [Funkcja tworząca momenty, '$M_X(t)=\left(\dfrac{r}{r-t}\right)^s,\ t<r$']
+      - [Funkcja Γ, '$\Gamma(s+1)=s\,\Gamma(s),\ \ \Gamma(n+1)=n!,\ \ \Gamma(\tfrac12)=\sqrt\pi$']
+    uwagi:
+      - '$Gamma(1,r)=Exp(r)$, a $Gamma(\tfrac n2,\tfrac12)=\chi^2(n)$.'
+      - 'Całka, która wszystko załatwia: $\displaystyle\int_0^\infty x^{s-1}e^{-rx}\,dx=\frac{\Gamma(s)}{r^s}$.'
+    parametry:
+      - { klucz: s, tex: 's', min: 0.5, max: 20, krok: 0.5, start: 3 }
+      - { klucz: r, tex: 'r', min: 0.2, max: 4, krok: 0.1, start: 1 }
+
+  - id: chi-kwadrat
+    nazwa: Rozkład chi-kwadrat
+    krotko: chi-kwadrat
+    symbol: 'χ²(n)'
+    zapis: '\chi^2(n)'
+    typ: ciągły
+    sekcja: "8.2.4"
+    kotwica: sec-chi-square
+    mapa: [1080, 485]
+    historia: 'Suma kwadratów $n$ niezależnych zmiennych $\mathcal{N}(0,1)$. To gamma z $s=\frac n2$, $r=\frac12$; $n$ to liczba stopni swobody.'
+    rozpoznasz:
+      - Statystyka — przedziały ufności dla wariancji i testy $\chi^2$ (rozdziały 18–19).
+      - '$Z^2$ dla $Z\sim\mathcal{N}(0,1)$ ma rozkład $\chi^2(1)$.'
+    wzory:
+      - [Definicja, '$\chi^2(n)=Gamma\left(\tfrac n2,\tfrac12\right)$']
+      - [Gęstość, '$f(x)=\dfrac{x^{\frac n2-1}e^{-\frac x2}}{2^{n/2}\,\Gamma\left(\frac n2\right)}\ \text{dla}\ x>0$']
+      - [Wartość oczekiwana, '$E(X)=n$']
+      - [Wariancja, '$Var(X)=2n$']
+      - [Funkcja tworząca momenty, '$M_X(t)=(1-2t)^{-n/2},\ t<\tfrac12$']
+    uwagi:
+      - '$E$ i $Var$ wychodzą z gammy: $\frac{n/2}{1/2}=n$ oraz $\frac{n/2}{1/4}=2n$.'
+    parametry:
+      - { klucz: n, tex: 'n', min: 1, max: 30, krok: 1, start: 4 }
+
+  - id: normalny
+    nazwa: Rozkład normalny
+    krotko: normalny
+    symbol: 'N(μ, σ)'
+    zapis: '\mathcal{N}(\mu,\sigma)'
+    typ: ciągły
+    sekcja: "8.2.5"
+    kotwica: sec-normal
+    mapa: [840, 485]
+    historia: Suma wielu drobnych, niezależnych wpływów — dlatego pojawia się wszędzie (centralne twierdzenie graniczne).
+    rozpoznasz:
+      - Wzrost, błędy pomiaru, wyniki testów; przybliżenie sumy wielu niezależnych zmiennych.
+      - 'Zadania liczymy przez standaryzację $Z=\frac{X-\mu}{\sigma}$ i tablice $\Phi$.'
+    wzory:
+      - [Gęstość, '$\varphi_{\mu,\sigma}(x)=\dfrac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$']
+      - [Standaryzacja, '$P(a<X\le b)=\Phi\left(\tfrac{b-\mu}{\sigma}\right)-\Phi\left(\tfrac{a-\mu}{\sigma}\right)$']
+      - [Wartość oczekiwana, '$E(X)=\mu$']
+      - [Wariancja, '$Var(X)=\sigma^2$']
+      - [Funkcja tworząca momenty, '$M_X(t)=e^{\mu t+\frac12\sigma^2t^2}$']
+      - [Symetria, '$\Phi(-z)=1-\Phi(z)$']
+    uwagi:
+      - 'Uwaga: w skrypcie drugi parametr to **odchylenie** $\sigma$, nie wariancja. $\mathcal{N}(0,4)$ ma $Var=16$.'
+      - 'Reguły: $P(|X-\mu|>2\sigma)\approx0{,}0455$ oraz $P(|X-\mu|>3\sigma)\approx0{,}0027$.'
+    parametry:
+      - { klucz: mu, tex: '\mu', min: -4, max: 4, krok: 0.1, start: 0 }
+      - { klucz: sigma, tex: '\sigma', min: 0.3, max: 3, krok: 0.05, start: 1 }
+
+zwiazki:
+  - id: dwupunktowy-szczegolne
+    tytul: Dwupunktowy i jego szczególne przypadki
+    krawedzie:
+      - [dwupunktowy, bernoulli, 'x₁=1, x₂=0']
+      - [dwupunktowy, jednostajny-dyskretny, 'θ=½']
+      - [dwupunktowy, jednopunktowy, 'θ→1']
+    wstep: Trzy rozkłady to ten sam dwupunktowy z dobranymi parametrami. Kliknij przycisk i zobacz, jak wykres przechodzi w szczególny przypadek.
+    tresc:
+      - '$x_1=1,\ x_2=0$: to **Bernoulli** $Bern(\theta)$.'
+      - '$\theta=\tfrac12$: oba punkty tak samo prawdopodobne, czyli **jednostajny** na dwóch punktach.'
+      - '$\theta\to1$ (albo $x_1=x_2$): cała masa w jednym punkcie, w granicy **jednopunktowy**.'
+      - 'Każdy dwupunktowy to przeskalowany Bernoulli: $X=x_2+(x_1-x_2)B$, więc $E(X)=x_2+(x_1-x_2)\theta$ i $Var(X)=(x_1-x_2)^2\theta(1-\theta)$.'
+    skrypt: [[8.1.2, sec-2-point], [8.1.3, sec-bernoulli-distribution]]
+
+  - id: bernoulli-dwumianowy
+    tytul: Suma prób Bernoulliego to rozkład dwumianowy
+    krawedzie:
+      - [bernoulli, dwumianowy, 'suma n prób']
+    wstep: 'Dokładaj próby jedna po drugiej. Każda nowa próba albo nic nie zmienia (porażka, z prawd. $1-\theta$), albo przesuwa wynik o $1$ (sukces, z prawd. $\theta$).'
+    tresc:
+      - 'Jeśli $X_1,\ldots,X_n\sim Bern(\theta)$ są niezależne, to $S_n=X_1+\cdots+X_n\sim Binom(n,\theta)$.'
+      - 'Rekurencja widoczna na wykresie: $P(S_n=k)=(1-\theta)\,P(S_{n-1}=k)+\theta\,P(S_{n-1}=k-1)$.'
+      - 'Z liniowości: $E(S_n)=E(X_1)+\cdots+E(X_n)=n\theta$ — bez żadnego sumowania z $\binom nk$.'
+      - '$Binom(1,\theta)=Bern(\theta)$.'
+    skrypt: [[def. 8.2, def-binomial-scheme], [8.1.5, sec-binomial]]
+
+  - id: bernoulli-geometryczny
+    tytul: Czekanie na pierwszy sukces
+    krawedzie:
+      - [bernoulli, geometryczny, '1. sukces']
+    wstep: 'Powtarzamy próby Bernoulliego aż do sukcesu. Patyk długości $1$ to całe prawdopodobieństwo: każda próba odcina ułamek $\theta$ z tego, co zostało.'
+    tresc:
+      - '$P(X=k)=\underbrace{(1-\theta)^{k-1}}_{k-1\text{ porażek}}\cdot\underbrace{\theta}_{\text{sukces}}$'
+      - 'To, co zostaje z patyka po $k$ próbach, to $P(X>k)=(1-\theta)^k$ — wszystkie $k$ prób były porażkami.'
+      - 'Kawałki sumują się do $1$ (szereg geometryczny — stąd nazwa).'
+    skrypt: [[8.1.6, sec-geometric]]
+
+  - id: dwumianowy-poisson
+    tytul: Twierdzenie Poissona
+    krawedzie:
+      - [dwumianowy, poisson, 'n→∞, nθ=λ']
+    wstep: 'Bardzo dużo prób, każda mało prawdopodobna, a średnia liczba sukcesów $n\theta=\lambda$ stała. Zwiększaj $n$ i patrz, jak słupki dwumianowego siadają na kropkach Poissona.'
+    tresc:
+      - 'Jeśli $X_n\sim Binom(n,\theta_n)$ i $n\theta_n\to\lambda$, to $P(X_n=k)\to\dfrac{e^{-\lambda}\lambda^k}{k!}$.'
+      - 'W praktyce: $n$ duże, $\theta$ małe, a $Binom(n,\theta)\approx Pois(n\theta)$. Zadanie 8.1: $n=500$, $\theta=0{,}002$, czyli $\lambda=1$.'
+    skrypt: [[tw. 8.1, thm-poisson], [zad. 8.1, exr-distributions-device]]
+
+  - id: poisson-wykladniczy
+    tytul: Proces Poissona — liczba zdarzeń i czas czekania
+    krawedzie:
+      - [poisson, wykladniczy, 'czas do 1. zdarzenia']
+    etykieta: { poisson>wykladniczy: 0.72 }
+    wstep: 'Te same zdarzenia na osi czasu można opisać na dwa sposoby: **ile** ich było do chwili $t$ (Poisson) albo **jak długo** czekamy na pierwsze (wykładniczy). Przesuwaj $t$.'
+    tresc:
+      - 'Liczba zdarzeń w $[0,t]$: $N_t\sim Pois(\lambda t)$.'
+      - 'Czas do pierwszego zdarzenia $T$: $P(T>t)=P(N_t=0)=e^{-\lambda t}$, więc $T\sim Exp(\lambda)$. Tak skrypt wyprowadza rozkład wykładniczy.'
+      - 'Odstępy między kolejnymi zdarzeniami też mają rozkład $Exp(\lambda)$ i są niezależne.'
+    skrypt: [[8.2.2, sec-exponential]]
+
+  - id: geometryczny-wykladniczy
+    tytul: Geometryczny to dyskretny wykładniczy
+    krawedzie:
+      - [geometryczny, wykladniczy, 'Δ→0']
+    wstep: 'Robimy próbę co $\Delta$ sekund, z szansą sukcesu $\theta=\lambda\Delta$. Czas do pierwszego sukcesu to $\Delta\cdot Geom(\lambda\Delta)$. Zmniejszaj $\Delta$: schodki dystrybuanty zlewają się z krzywą $1-e^{-\lambda x}$.'
+    tresc:
+      - '$P(\Delta X>x)\approx(1-\lambda\Delta)^{x/\Delta}\ \xrightarrow{\ \Delta\to0\ }\ e^{-\lambda x}$.'
+      - '**Brak pamięci** ma i jeden, i drugi: $P(X>m+k\mid X>m)=P(X>k)$ oraz $P(T>s+t\mid T>s)=P(T>t)$. Na drugim wykresie ogon za $s$ po przeskalowaniu wygląda jak cały rozkład.'
+    skrypt: [[8.1.6, sec-geometric], [8.2.2, sec-exponential]]
+
+  - id: wykladniczy-gamma
+    tytul: Suma czasów wykładniczych to gamma
+    krawedzie:
+      - [wykladniczy, gamma, 'suma s czasów']
+    wstep: 'Czekamy nie na pierwsze, tylko na $s$-te zdarzenie. Czas czekania to suma $s$ niezależnych czasów $Exp(r)$. Dodawaj zdarzenia — kolejne gęstości przesuwają się w prawo i robią się coraz bardziej symetryczne.'
+    tresc:
+      - '$Gamma(1,r)=Exp(r)$, a dla niezależnych $T_1,\ldots,T_s\sim Exp(r)$: $T_1+\cdots+T_s\sim Gamma(s,r)$.'
+      - 'Dowód przez funkcje tworzące momenty (rozdział 14): MGF sumy niezależnych to iloczyn, a $\left(\frac{r}{r-t}\right)^s$ to MGF gammy.'
+      - 'Z liniowości: $E=\frac sr$; dla niezależnych wariancje też się dodają: $Var=\frac{s}{r^2}$.'
+    skrypt: [[8.2.3, sec-gamma], [przykł. 8.2, exm-mgf-gamma]]
+
+  - id: gamma-chi-kwadrat
+    tytul: Chi-kwadrat to gamma
+    krawedzie:
+      - [gamma, chi-kwadrat, 's=n/2, r=½']
+    wstep: '$\chi^2(n)$ to nie osobne zwierzę, tylko gamma z $s=\frac n2$ i $r=\frac12$. Zmieniaj $n$ — obie krzywe pokrywają się co do piksela.'
+    tresc:
+      - '$\chi^2(n)=Gamma\left(\tfrac n2,\tfrac12\right)$, więc $E=\frac{n/2}{1/2}=n$ i $Var=\frac{n/2}{(1/2)^2}=2n$.'
+      - '$\chi^2(2)=Gamma(1,\tfrac12)=Exp(\tfrac12)$.'
+    skrypt: [[8.2.4, sec-chi-square]]
+
+  - id: normalny-chi-kwadrat
+    tytul: Kwadrat standardowego normalnego
+    krawedzie:
+      - [normalny, chi-kwadrat, 'Z²']
+    wstep: 'Jeśli $Z\sim\mathcal{N}(0,1)$, to $Y=Z^2\sim\chi^2(1)$. Przesuwaj $y$: pole pod gęstością normalną między $-\sqrt y$ i $\sqrt y$ to dokładnie dystrybuanta $Y$ w punkcie $y$.'
+    tresc:
+      - '$F_Y(y)=P(Z^2\le y)=P(-\sqrt y\le Z\le\sqrt y)=2\Phi(\sqrt y)-1$ dla $y>0$ — metoda dystrybuanty z rozdziału 9.'
+      - 'Różniczkując: $f_Y(y)=\dfrac{1}{\sqrt y}\varphi(\sqrt y)=\dfrac{1}{\sqrt{2\pi y}}e^{-y/2}$, czyli gęstość $\chi^2(1)$.'
+      - 'Suma kwadratów $n$ niezależnych $\mathcal{N}(0,1)$ ma rozkład $\chi^2(n)$ (rozdział 14).'
+    skrypt: [[8.2.4, sec-chi-square], [rozdz. 9, 'rv/real/functions']]
+
+  - id: ctg
+    tytul: Centralne twierdzenie graniczne
+    krawedzie:
+      - [dwumianowy, normalny, 'CTG']
+      - [poisson, normalny, 'λ→∞']
+      - [gamma, normalny, 's→∞']
+    etykieta: { dwumianowy>normalny: 0.3, gamma>normalny: 0.65 }
+    wstep: 'Suma wielu niezależnych składników po standaryzacji wygląda jak $\mathcal{N}(0,1)$ — niezależnie od tego, z czego zaczynamy. Wybierz rozkład i zwiększaj parametr.'
+    tresc:
+      - '$Binom(n,\theta)$ to suma $n$ Bernoullich, $Pois(\lambda)$ dla całkowitego $\lambda$ to suma $\lambda$ zmiennych $Pois(1)$, a $Gamma(s,r)$ to suma $s$ wykładniczych.'
+      - 'Standaryzacja: $Z=\dfrac{X-E(X)}{\sqrt{Var(X)}}$ ma średnią $0$ i wariancję $1$. Słupki rysujemy w skali gęstości (pole $=$ prawdopodobieństwo).'
+      - 'Przybliżenie normalne: $P(X\le x)\approx\Phi\left(\frac{x-E(X)}{\sqrt{Var(X)}}\right)$. Dokładnie — rozdział 15.'
+    skrypt: [[8.2.5, sec-normal], [rozdz. 15, 'rv/convergence']]
+
+  - id: jednostajny-wykladniczy
+    tytul: Z jednostajnego robimy wykładniczy
+    krawedzie:
+      - [jednostajny, wykladniczy, '−ln(1−U)/λ']
+    wstep: 'Weź $U\sim\mathcal{U}(0,1)$ i przepuść przez odwrotność dystrybuanty. Równo rozłożone wartości $u$ (na osi pionowej) po przekształceniu zagęszczają się przy zerze — dokładnie tak, jak gęstość wykładnicza.'
+    tresc:
+      - '$X=-\dfrac{\ln(1-U)}{\lambda}$: $P(X\le x)=P\left(U\le1-e^{-\lambda x}\right)=1-e^{-\lambda x}$, więc $X\sim Exp(\lambda)$.'
+      - 'Tak samo działa każda ciągła dystrybuanta: $F^{-1}(U)\sim F$. Tak komputer losuje z dowolnego rozkładu (rozdział 9).'
+    skrypt: [[8.2.1, sec-uniform], [8.2.2, sec-exponential]]
+
+  - id: jednostajny-dyskretny-ciagly
+    tytul: Coraz gęstsza kostka
+    krawedzie:
+      - [jednostajny-dyskretny, jednostajny, 'n→∞']
+    wstep: 'Jednostajny na punktach $\frac1n,\frac2n,\ldots,1$. Gdy $n$ rośnie, schodki dystrybuanty robią się coraz drobniejsze i w granicy dają prostą $F(x)=x$, czyli $\mathcal{U}(0,1)$.'
+    tresc:
+      - 'Największa różnica między dystrybuantami to $\frac1n$.'
+      - 'Każdy pojedynczy punkt ma prawdopodobieństwo $\frac1n\to0$ — w rozkładzie ciągłym $P(X=x)=0$ dla każdego $x$.'
+    skrypt: [[8.1.4, sec-discrete-uniform], [8.2.1, sec-uniform]]
