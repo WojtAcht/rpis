@@ -31,7 +31,7 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
     more = "".join(
         f'<p class="nav-group">{title}</p>' + link(f"kolokwium-{n}/zagadnienia/", "Zagadnienia")
         + link(f"#kolokwium-{n}", "Zestawy z poprzednich lat")
-        # Ściąga obejmuje rozdziały 2–4, czyli materiał na Kolokwium I.
+        # Ściąga obejmuje rozdziały 2–4 i 6–7, czyli materiał na Kolokwium I.
         + (link("sciaga/", "Ściąga ze wzorami", "sciaga") if n == 1 else "")
         for n, title in ((1, "Kolokwium I"), (2, "Kolokwium II")))
     more += '<p class="nav-group">Zajęcia</p>' + link("#wejsciowki", "Wejściówki") + link("#prezentacje", "Prezentacje")
@@ -162,7 +162,7 @@ def quick_tiles(nearest: Exam, tasks: list[Task]) -> str:
         tiles.append(tile(f"{R}{nearest.id}/zagadnienia/", e(nearest.title), "Zagadnienia",
                           "z odnośnikami do skryptu"))
     tiles.append(tile(f"{R}sciaga/", "Wersja robocza", "Ściąga ze wzorami",
-                      "prawdopodobieństwo · rozdziały 2–4"))
+                      "rozdziały 2–4 i 6–7"))
     tiles.append(tile(f"{R}zadania/", "Bank zadań", "Zadania",
                       plural(len(tasks), "zadanie", "zadania", "zadań") + " z rozwiązaniami"))
     tiles.append(tile(f"#{nearest.id}-{year}", e(nearest.title), "PDF-y zestawów",
@@ -675,7 +675,7 @@ def cheatsheet_page(content: str) -> str:
     body = f'''<div class="wrap cheatsheet-shell">
 <article class="cheatsheet">
 <header class="cheatsheet-heading">
-<p>RPiS · Rozdziały 2–4</p>
+<p>RPiS · Rozdziały 2–4 i 6–7</p>
 <h1>Prawdopodobieństwo — wzory</h1>
 <p class="cheatsheet-wip"><strong>Wersja robocza.</strong> Ściąga jest w trakcie tworzenia — treść może się jeszcze zmieniać.
 Błędy i sugestie zgłaszaj w <a href="https://github.com/{REPO}/issues">Issues</a>.</p>
@@ -684,5 +684,5 @@ Błędy i sugestie zgłaszaj w <a href="https://github.com/{REPO}/issues">Issues
 </article>
 </div>'''
     return layout("Ściąga ze wzorami — RPiS", body,
-                  description="Najważniejsze wzory z prawdopodobieństwa, warunkowania, niezależności i twierdzenia Bayesa.",
+                  description="Wzory potrzebne do zadań z kolokwium: prawdopodobieństwo, warunkowanie, Bayes, dystrybuanta, gęstość, wartość oczekiwana i wariancja.",
                   current="sciaga")

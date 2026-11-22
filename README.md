@@ -212,7 +212,7 @@ albo popraw plik i otwórz pull request.
 ## Ściąga ze wzorami
 
 `sciaga/prawdopodobienstwo.md` to źródło treści strony `sciaga/` (na razie wersja robocza — oznaczona na stronie i na kafelku).
-Zawiera wzory z rozdziałów 2–4 (materiał na Kolokwium I) i warunki ich stosowania. Link znajduje
+Zawiera wzory z rozdziałów 2–4 i 6–7 (materiał na Kolokwium I) i warunki ich stosowania — tylko te, których faktycznie używa się w zadaniach, a nie streszczenie wykładu (cel jest napisany na początku ściągi). Sekcje (`##`) dzielą ją na zdarzenia i zmienne losowe; numeracja punktów jest ciągła, więc druga lista zaczyna się od `9.`. Link znajduje
 się na stronie głównej oraz w menu „Więcej” przy Kolokwium I. Ściąga ma formę białego dokumentu
 z numerowanymi punktami, podpunktami i odnośnikami do definicji i twierdzeń w skrypcie.
 Odnośniki zapisujemy jak w zagadnieniach: `[tw. 2.3](skrypt:calculus/probability#thm-probability-properties)`.

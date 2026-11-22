@@ -1,3 +1,9 @@
+**Do czego jest ta ściąga.** To nie jest streszczenie wykładu. Są tu tylko wzory i warunki,
+których faktycznie używa się w rozwiązaniach zadań z kolokwiów i ze skryptu.
+Definicji, pełnych twierdzeń i dowodów (do zadań teoretycznych) szukaj w liście zagadnień i w skrypcie.
+
+## Zdarzenia (rozdziały 2–4)
+
 **Oznaczenia (jak w skrypcie)**\
 $\Omega$ — przestrzeń zdarzeń elementarnych\
 $A'=\Omega\setminus A$ — dopełnienie zdarzenia $A$\
@@ -94,3 +100,94 @@ $P(A,B)=P(A\cap B)$ — prawdopodobieństwo, że zaszły oba zdarzenia
        $$P(A\mid B)=\frac{P(B\mid A)P(A)}{P(B)}.$$
     b) Dla układu zupełnego jak w 7b) i $P(B)>0$:
        $$P(A_k\mid B)=\frac{P(B\mid A_k)P(A_k)}{\sum_i P(B\mid A_i)P(A_i)}.$$
+
+## Zmienne losowe jednowymiarowe (rozdziały 6–7)
+
+**Oznaczenia**\
+$F$ lub $F_X$ — dystrybuanta zmiennej $X$\
+$p$ — funkcja prawdopodobieństwa (rozkład dyskretny), $\mathcal{S}$ — nośnik: przeliczalny zbiór wartości $X$, na którym $P(X\in\mathcal{S})=1$\
+$f$ — gęstość (rozkład ciągły)\
+$\mu=E(X)$ — wartość oczekiwana, $\sigma^2=Var(X)$ — wariancja
+
+9. **Dystrybuanta**
+
+    [Skrypt: def. 6.1](skrypt:rv/real/distributions#def-cdf),
+    [tw. 6.1](skrypt:rv/real/distributions#thm-cdf-properties)
+
+    a) $F_X(x)=P(X\le x)$.
+    b) Dla $a<b$: $P(a<X\le b)=F(b)-F(a)$. Wniosek: $P(X>a)=1-F(a)$.
+    c) Funkcja $F$ jest dystrybuantą pewnego rozkładu, gdy jest niemalejąca, prawostronnie ciągła oraz
+       $$\lim_{x\to-\infty}F(x)=0,\qquad \lim_{x\to+\infty}F(x)=1.$$
+       Przydaje się w zadaniach „jakie warunki muszą spełniać stałe, żeby $F$ była dystrybuantą”.
+       [Skrypt: zad. 6.1](skrypt:rv/real/distributions#exr-real-valued-cdf)
+    d) $P(X=x_0)=F(x_0)-F(x_0-)$, gdzie $F(x_0-)=\lim_{x\to x_0^-}F(x)$, więc
+       $F$ jest ciągła w $x_0$ wtedy i tylko wtedy, gdy $P(X=x_0)=0$.
+
+10. **Rozkład dyskretny**
+
+    [Skrypt: def. 6.3](skrypt:rv/real/distributions#def-pmf),
+    [tw. 6.2](skrypt:rv/real/distributions#thm-discrete-distribution-properties)
+
+    a) $p(x)=P(X=x)$, przy czym $p(x)\ge0$ i $\displaystyle\sum_{x\in\mathcal{S}}p(x)=1$.
+    b) $P(X\in A)=\displaystyle\sum_{x\in A\cap\mathcal{S}}p(x)$.
+    c) $F(x)=\displaystyle\sum_{s\in\mathcal{S},\ s\le x}p(s)$ — funkcja schodkowa,
+       w punkcie $x\in\mathcal{S}$ skacze o $p(x)$.
+
+11. **Rozkład ciągły i gęstość**
+
+    [Skrypt: def. 6.4](skrypt:rv/real/distributions#def-continuous-distribution),
+    [tw. 6.3](skrypt:rv/real/distributions#thm-continuous-distribution-properties)
+
+    a) Funkcja $f$ jest gęstością, gdy spełnia **oba** warunki:
+       $$f(x)\ge0\ \text{ dla każdego } x\in\mathbb{R},\qquad \int_{-\infty}^{+\infty}f(x)\,dx=1.$$
+       Z całki wychodzi równanie na stałą, a nieujemność
+       często dodatkowo ogranicza parametr (np. znak stałej).
+       [Skrypt: przykł. 6.3](skrypt:rv/real/distributions#exm-triangle-distribution),
+       [zad. 6.7](skrypt:rv/real/distributions#exr-real-valued-pdf-double-exp)
+    b) $P(X\in A)=\displaystyle\int_A f(x)\,dx$, w szczególności
+       $$P(a<X<b)=\int_a^b f(x)\,dx=F(b)-F(a).$$
+       $P(X=x)=0$, więc nie ma znaczenia, czy nierówności są ostre: $P(a<X<b)=P(a\le X\le b)$.
+    c) $F(x)=\displaystyle\int_{-\infty}^{x}f(s)\,ds$.
+    d) $F$ jest funkcją ciągłą.
+    e) Tam, gdzie $f$ jest ciągła: $f(x)=F'(x)$.
+
+12. **Wartość oczekiwana**
+
+    [Skrypt: tw. 7.1](skrypt:rv/real/moments#thm-expected-value-discrete-distribution),
+    [tw. 7.2](skrypt:rv/real/moments#thm-expected-value-continuous-distribution),
+    [tw. 7.3](skrypt:rv/real/moments#thm-expval-properties)
+
+    a) $\displaystyle E(X)=\sum_{s\in\mathcal{S}}s\,p(s)$ (dyskretny), $\qquad\displaystyle E(X)=\int_{-\infty}^{+\infty}x f(x)\,dx$ (ciągły).
+    b) Wartość oczekiwana może nie istnieć, gdy całka (szereg) jest rozbieżna.
+       [Skrypt: przykł. 7.3](skrypt:rv/real/moments#exm-no-expval)
+    c) Dla dowolnych $a,b,c\in\mathbb{R}$: $E(aX+bY)=a\,E(X)+b\,E(Y)$, $E(c)=c$. Wniosek: $E(aX+b)=a\,E(X)+b$.
+
+13. **Momenty i wariancja**
+
+    [Skrypt: def. 7.2](skrypt:rv/real/moments#def-moment-simple),
+    [tw. 7.4](skrypt:rv/real/moments#thm-expval-computation),
+    [def. 7.4](skrypt:rv/real/moments#def-variance),
+    [tw. 7.6](skrypt:rv/real/moments#thm-variance-properties)
+
+    a) $\displaystyle E(X^k)=\sum_{s\in\mathcal{S}}s^k\,p(s)$ (dyskretny), $\qquad\displaystyle E(X^k)=\int_{-\infty}^{+\infty}x^k f(x)\,dx$ (ciągły).
+    b) $Var(X)=E\bigl((X-\mu)^2\bigr)$, ale często łatwiej użyć wzoru
+       $$Var(X)=E(X^2)-\bigl(E(X)\bigr)^2.$$
+    c) Dla dowolnych $a,b\in\mathbb{R}$: $Var(aX+b)=a^2\,Var(X)$.
+    d) Odchylenie standardowe: $\sigma=\sqrt{Var(X)}$.
+       [Skrypt: def. 7.5](skrypt:rv/real/moments#def-stddev)
+    e) Wskaźnik asymetrii (dla $\sigma>0$): $A=\dfrac{\mu_3}{\sigma^3}$, gdzie $\mu_3=E\bigl((X-\mu)^3\bigr)$.
+       [Skrypt: def. 7.9](skrypt:rv/real/moments#def-skewness)
+
+14. **Kwantyle, mediana, moda**
+
+    [Skrypt: def. 7.12](skrypt:rv/real/moments#def-quantile),
+    [def. 7.13](skrypt:rv/real/moments#def-mode-discrete),
+    [def. 7.14](skrypt:rv/real/moments#def-mode-continuous)
+
+    a) Rozkład ciągły: kwantyl rzędu $p\in(0,1)$ to rozwiązanie równania $F(q_p)=p$.
+       Mediana: $p=\frac12$, dolny kwartyl: $p=\frac14$, górny kwartyl: $p=\frac34$.
+    b) Dowolny rozkład (w szczególności dyskretny): $q_p$ spełnia
+       $$F(q_p-)\le p\le F(q_p),\quad\text{czyli}\quad P(X\le q_p)\ge p,\ \ P(X\ge q_p)\ge1-p.$$
+       Kwantyl nie musi być jednoznaczny — może nim być cały przedział.
+       [Skrypt: przykł. 7.10](skrypt:rv/real/moments#exm-2dice-quantile)
+    c) Moda: punkt, w którym funkcja prawdopodobieństwa (dyskretny) albo gęstość (ciągły, maksimum lokalne) osiąga maksimum.
