@@ -692,10 +692,10 @@
     var id = card.getAttribute("data-dist"), dist = D[id];
     if (!dist) return;
     var spec = JSON.parse(card.getAttribute("data-params"));
-    var p = {}, p0 = {};
-    spec.forEach(function (s) { p[s.key] = s.value; p0[s.key] = s.value; });
+    var p = {};
+    spec.forEach(function (s) { p[s.key] = s.value; });
     var discrete = dist.kind === "d";
-    var mode = "pdf", showMoments = true;
+    var mode = "pdf";
     var slot = function (n) { return card.querySelector('[data-slot="' + n + '"]'); };
     var controls = slot("controls"), live = slot("live"), readout = slot("readout");
 
@@ -710,9 +710,7 @@
         update();
       }, "zbtn-ghost"),
     ]);
-    var mom = h("label", { class: "zcheck" }, [h("input", { type: "checkbox", checked: "" }), h("span", { html: texHTML("E(X)") + " i " + texHTML("\\pm\\sigma") })]);
-    mom.querySelector("input").addEventListener("change", function (ev) { showMoments = ev.target.checked; update(); });
-    tools.appendChild(mom);
+    tools.appendChild(h("span", { class: "zc-key", html: '<i class="is-mean"></i>' + texHTML("E(X)") + ' <i class="is-sigma"></i>' + texHTML("E(X)\\pm\\sigma") }));
     controls.appendChild(tools);
 
     slot("tabs").appendChild(seg([
@@ -732,13 +730,11 @@
       var xr = dist.xr(p), sc = { x: xr, y: [0, 1], series: [], marks: [], discrete: discrete, integer: !!dist.integer };
       var ok = valid();
       var mu = ok ? dist.mean(p) : NaN, sd = ok ? Math.sqrt(dist.variance(p)) : NaN;
-      var same = spec.every(function (s) { return p[s.key] === p0[s.key]; });
       if (discrete) {
-        var atoms = dist.atoms(p), ghost = dist.atoms(p0);
+        var atoms = dist.atoms(p);
         var w = id === "jednopunktowy" || id === "dwupunktowy" ? 0.55 : Math.min(0.72, 0.72 * Math.max(1, (xr[1] - xr[0]) / 40));
         if (mode === "pdf") {
           sc.series.push({ id: "main", type: "bars", w: w, bars: atoms.map(function (a) { return [a[0], a[1]]; }) });
-          if (!same) sc.series.push({ id: "ghost", type: "dots", cls: "is-ghost", r: 3.5, bars: ghost.map(function (a) { return [a[0], a[1]]; }) });
           var top = 0;
           atoms.forEach(function (a) { if (a[0] >= xr[0] && a[0] <= xr[1]) top = Math.max(top, a[1]); });
           sc.y = [0, niceY(Math.max(top, 0.02) * 1.15)];
@@ -754,14 +750,12 @@
         var f = mode === "pdf" ? dist.pdf : dist.cdf;
         var pts = ok ? sample(function (x) { return f(x, p); }, xr[0], xr[1], N) : sample(function () { return 0; }, xr[0], xr[1], N);
         sc.series.push({ id: "main", type: mode === "pdf" ? "area" : "line", pts: pts });
-        if (!same) sc.series.push({ id: "ghost", type: "line", cls: "is-ghost", pts: sample(function (x) { return f(x, p0); }, xr[0], xr[1], N) });
         sc.y = mode === "pdf" ? [0, densityTop(pts)] : [0, 1.08];
         sc.yLabel = mode === "pdf" ? "f(x)" : "F(x)";
       }
-      if (showMoments && ok && mode === "pdf") {
+      if (ok && mode === "pdf") {
         if (sd > 0) sc.marks.push({ id: "band", type: "band", x0: mu - sd, x1: mu + sd, cls: "is-sigma" });
         sc.marks.push({ id: "mu", type: "v", x: mu, label: "E(X)", cls: "is-mean" });
-        if (sd > 0) sc.marks.push({ id: "sdl", type: "text", x: mu + sd, y: sc.y[1], dy: 34, text: "+σ", cls: "is-sigma-t", anchor: "start" });
       }
       if (mode === "cdf") sc.marks.push({ id: "one", type: "h", y: 1, cls: "is-one" });
       return sc;
@@ -906,8 +900,8 @@
     function stop() { if (playing) clearInterval(playing); playing = 0; play.innerHTML = "▶ Odtwórz"; }
     root.appendChild(h("div", { class: "zr-grid" }, [
       panel("zr-controls", [counter, h("div", { class: "zpresets" }, [add, sub, play]), s.el,
-        legend([["is-stack-a", "<span>ostatnia próba: porażka<br>" + texHTML("(1-\\theta)\\,P(S_{n-1}=k)") + "</span>"],
-          ["is-stack-b", "<span>ostatnia próba: sukces<br>" + texHTML("\\theta\\,P(S_{n-1}=k-1)") + "</span>"]]), out]),
+        legend([["is-stack-a", "jasna część: ostatnia próba była porażką"],
+          ["is-stack-b", "ciemna część: ostatnia próba była sukcesem"]]), out]),
       host]));
     var plot = new Plot(host, { height: 360 });
     function pmf(m, k) { return binomPmf(k, m, theta); }
@@ -923,7 +917,7 @@
         series: [{ id: "m", type: "stack", w: 0.72, bars: bars }],
         marks: [{ id: "mu", type: "v", x: n * theta, label: "E(Sₙ) = nθ", cls: "is-mean" }], yLabel: "P(Sₙ = k)" });
       counter.innerHTML = texHTML("S_{" + n + "}=X_1+\\dots+X_{" + n + "}\\sim Binom(" + n + "," + tnum(theta) + ")");
-      setTex(out, "E(S_{" + n + "})=" + n + "\\cdot" + tnum(theta) + "=" + tnum(n * theta) + ",\\quad Var(S_{" + n + "})=" + tnum(n * theta * (1 - theta)));
+      setTex(out, "E(S_{" + n + "})=n\\theta=" + n + "\\cdot" + tnum(theta) + "=" + tnum(n * theta));
     }
     upd();
   };
@@ -983,15 +977,13 @@
       var theta = lambda / n, K = Math.ceil(lambda + 5 * Math.sqrt(lambda) + 5);
       var bin = range(0, Math.min(n, K)).map(function (k) { return [k, binomPmf(k, n, theta)]; });
       var poi = range(0, K).map(function (k) { return [k, poisPmf(k, lambda)]; });
-      var tv = 0;
-      for (var k = 0; k <= Math.max(K, 0); k++) tv += Math.abs(binomPmf(k, n, theta) - poisPmf(k, lambda));
       var top = 0; bin.concat(poi).forEach(function (a) { top = Math.max(top, a[1]); });
       plot.set({ x: [-1, niceUp(lambda + 4 * Math.sqrt(lambda) + 3)], y: [0, niceY(top * 1.15)], integer: true, discrete: true,
         series: [{ id: "b", type: "bars", w: 0.62, cls: "is-z-dwumianowy", bars: bin },
           { id: "p", type: "stems", cls: "is-z-poisson", r: 5.5, bars: poi }], marks: [], yLabel: "P(X = k)" });
-      setTex(out, "\\begin{aligned}\\theta&=\\tfrac{\\lambda}{n}=" + tnum(theta, 4) +
-        "\\\\ P(X=0)&:\\ \\left(1-\\tfrac{\\lambda}{n}\\right)^{n}=" + tnum(Math.pow(1 - theta, n), 4) + "\\ \\ \\text{vs}\\ \\ e^{-\\lambda}=" + tnum(Math.exp(-lambda), 4) +
-        "\\\\ \\textstyle\\sum_k|p_k-q_k|&=" + tnum(tv, 4) + "\\end{aligned}");
+      var gap = 0;
+      for (var j = 0; j <= K; j++) gap = Math.max(gap, Math.abs(binomPmf(j, n, theta) - poisPmf(j, lambda)));
+      out.innerHTML = texHTML("\\theta=\\lambda/n=" + tnum(theta, 4)) + "<br>największa różnica słupka i kropki: <b>" + fmt(gap, 4) + "</b>";
     }
     clampN();
     upd();
@@ -1116,7 +1108,7 @@
       plot.set({ x: [0, X], y: [0, niceY(r * 1.1)], series: series,
         marks: [{ id: "mu", type: "v", x: s / r, label: "E = s/r", cls: "is-mean" }], yLabel: "f(x)" });
       counter.innerHTML = texHTML((s === 1 ? "T_1\\sim Exp(" + tnum(r) + ")=Gamma(1," + tnum(r) + ")" : "T_1+\\dots+T_{" + s + "}\\sim Gamma(" + s + "," + tnum(r) + ")"));
-      setTex(out, "\\begin{aligned}M(t)&=\\left(\\tfrac{r}{r-t}\\right)^{" + s + "}=\\big(M_{Exp}(t)\\big)^{" + s + "}\\\\ E&=\\tfrac{s}{r}=" + tnum(s / r) + ",\\ \\ Var=\\tfrac{s}{r^2}=" + tnum(s / (r * r)) + "\\end{aligned}");
+      setTex(out, "E=\\tfrac{s}{r}=" + tnum(s / r) + ",\\quad Var=\\tfrac{s}{r^2}=" + tnum(s / (r * r)));
     }
     upd();
   };
@@ -1299,29 +1291,41 @@
   }
 
   function initMap(map, show) {
-    var nodes = map.querySelectorAll(".zm-node"), edges = map.querySelectorAll(".zm-edge, .zm-label");
+    var nodes = map.querySelectorAll(".zm-node"), edges = map.querySelectorAll(".zm-edge");
+    // id rozkładu: podświetl go razem z sąsiadami; id związku: jego strzałki i oba końce.
     function focus(id) {
       map.classList.toggle("is-focus", !!id);
-      nodes.forEach(function (n) {
-        var nid = n.getAttribute("data-dist");
-        var near = id && (nid === id || Array.prototype.some.call(edges, function (e) {
-          return (e.getAttribute("data-from") === id && e.getAttribute("data-to") === nid) || (e.getAttribute("data-to") === id && e.getAttribute("data-from") === nid);
-        }));
-        n.classList.toggle("is-near", !!near);
-      });
+      var lit = {};
       edges.forEach(function (e) {
-        e.classList.toggle("is-near", !!id && (e.getAttribute("data-from") === id || e.getAttribute("data-to") === id || e.getAttribute("data-rel") === id));
+        var a = e.getAttribute("data-from"), b = e.getAttribute("data-to");
+        var on = !!id && (a === id || b === id || e.getAttribute("data-rel") === id);
+        e.classList.toggle("is-near", on);
+        if (on) { lit[a] = 1; lit[b] = 1; }
       });
+      if (id) lit[id] = 1;
+      nodes.forEach(function (n) { n.classList.toggle("is-near", !!lit[n.getAttribute("data-dist")]); });
     }
+    var hint = document.querySelector('[data-slot="map-hint"]'), hint0 = hint ? hint.innerHTML : "";
+    function say(html) { if (hint) hint.innerHTML = html || hint0; }
+    function name(id) { var n = map.querySelector('[data-dist="' + id + '"]'); return n ? n.getAttribute("data-title") : id; }
     nodes.forEach(function (n) {
-      n.addEventListener("pointerenter", function () { focus(n.getAttribute("data-dist")); });
-      n.addEventListener("focus", function () { focus(n.getAttribute("data-dist")); });
+      var on = function () {
+        focus(n.getAttribute("data-dist"));
+        say("<b>" + n.getAttribute("data-title") + "</b> — " + n.querySelector("title").textContent.split(": ").slice(1).join(": ") + ". Kliknij, żeby otworzyć.");
+      };
+      n.addEventListener("pointerenter", on);
+      n.addEventListener("focus", on);
     });
     edges.forEach(function (e) {
-      e.addEventListener("pointerenter", function () { focus(e.getAttribute("data-rel")); });
+      var on = function () {
+        focus(e.getAttribute("data-rel"));
+        say(name(e.getAttribute("data-from")) + " → " + name(e.getAttribute("data-to")) + ": <b>" + e.getAttribute("data-title") + "</b> (" + e.getAttribute("data-label") + "). Kliknij, żeby zobaczyć.");
+      };
+      e.addEventListener("pointerenter", on);
+      e.addEventListener("focus", on);
     });
-    map.addEventListener("pointerleave", function () { focus(null); });
-    map.addEventListener("focusout", function () { focus(null); });
+    map.addEventListener("pointerleave", function () { focus(null); say(null); });
+    map.addEventListener("focusout", function () { focus(null); say(null); });
     void show;
   }
 
