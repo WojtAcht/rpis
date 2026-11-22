@@ -9,6 +9,7 @@ Konwencja katalogów:
     kolokwium-N/RRRR/<wariant>/*.png               obrazki używane w zadaniach
     quizy/<nazwa>.yml                              quizy (pytania zamknięte i prawda/fałsz)
     ml.yml                                         od czego zacząć ML: ścieżki po trzy materiały (strona ml/)
+    zoo.yml                                        ZOO rozkładów: rozkłady z rozdziału 8 i związki (strona zoo/)
     prezentacje/NN-nazwa.html                      samodzielne slajdy
 
 Oprócz HTML-a i PDF-ów build zapisuje treści w Markdownie dla LLM-ów (llms.txt, rpis.md; zob. llms.py).
@@ -28,6 +29,7 @@ import convert
 import llms
 import pages
 import pdf
+import zoo
 from materials import load_materials
 from ml_paths import load_ml_paths
 from quizzes import collect_quizzes
@@ -130,6 +132,8 @@ def main() -> int:
     # Ściąga: odnośniki `skrypt:` rozwijamy tak samo jak w zagadnieniach.
     cheatsheet = load_topics(ROOT / "sciaga" / "prawdopodobienstwo.md", chapters, ROOT)
     write_page("sciaga", pages.cheatsheet_page(convert.to_html(cheatsheet, "sciaga")))
+    # ZOO rozkładów: treść z zoo.yml, wykresy rysuje site/assets/zoo.js.
+    write_page("zoo", pages.zoo_page(zoo.body(zoo.load_zoo(ROOT / "zoo.yml"))))
     write_page("zadania", pages.browse_page(exams, chapters, mats))
     write_page("materialy", pages.materials_page(mats, chapters))
     write_page("quizy", pages.quizzes_page(quizzes, exams))

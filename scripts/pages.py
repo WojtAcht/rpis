@@ -21,7 +21,7 @@ KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist"
 R = "{{ROOT}}"
 
 
-def layout(title: str, body: str, *, description: str, current: str = "") -> str:
+def layout(title: str, body: str, *, description: str, current: str = "", head: str = "") -> str:
     def link(href, label, key=""):
         cur = ' aria-current="page"' if key and key == current else ""
         return f'<a href="{R}{href}"{cur}>{label}</a>'
@@ -33,6 +33,8 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
         + link(f"#kolokwium-{n}", "Zestawy z poprzednich lat")
         # Ściąga obejmuje rozdziały 2–4 i 6–7, czyli materiał na Kolokwium I.
         + (link("sciaga/", "Ściąga ze wzorami", "sciaga") if n == 1 else "")
+        # ZOO rozkładów to rozdział 8 (znane rozkłady), też materiał na Kolokwium I.
+        + (link("zoo/", "ZOO rozkładów", "zoo") if n == 1 else "")
         for n, title in ((1, "Kolokwium I"), (2, "Kolokwium II")))
     more += '<p class="nav-group">Zajęcia</p>' + link("#wejsciowki", "Wejściówki") + link("#prezentacje", "Prezentacje")
     more += '<p class="nav-group">Po RPiS</p>' + link("ml/", "Od czego zacząć ML")
@@ -58,7 +60,7 @@ def layout(title: str, body: str, *, description: str, current: str = "") -> str
 <script>try{{var t=localStorage.getItem("motyw");if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 <link rel="stylesheet" href="{R}assets/style.css">
 <script defer src="{R}assets/site.js"></script>
-</head>
+{head}</head>
 <body>
 <a class="skip" href="#tresc">Przejdź do treści</a>
 <header class="topbar"><div class="wrap">
@@ -163,6 +165,8 @@ def quick_tiles(nearest: Exam, tasks: list[Task]) -> str:
                           "z odnośnikami do skryptu"))
     tiles.append(tile(f"{R}sciaga/", "Wersja robocza", "Ściąga ze wzorami",
                       "rozdziały 2–4 i 6–7"))
+    tiles.append(tile(f"{R}zoo/", "Wersja robocza", "ZOO rozkładów",
+                      "12 rozkładów i związki między nimi"))
     tiles.append(tile(f"{R}zadania/", "Bank zadań", "Zadania",
                       plural(len(tasks), "zadanie", "zadania", "zadań") + " z rozwiązaniami"))
     tiles.append(tile(f"#{nearest.id}-{year}", e(nearest.title), "PDF-y zestawów",
@@ -686,3 +690,11 @@ Błędy i sugestie zgłaszaj w <a href="https://github.com/{REPO}/issues">Issues
     return layout("Ściąga ze wzorami — RPiS", body,
                   description="Wzory potrzebne do zadań z kolokwium: prawdopodobieństwo, warunkowanie, Bayes, dystrybuanta, gęstość, wartość oczekiwana i wariancja.",
                   current="sciaga")
+
+
+def zoo_page(zoo_body: str) -> str:
+    head = (f'<link rel="stylesheet" href="{R}assets/zoo.css">\n'
+            f'<script defer src="{R}assets/zoo.js"></script>\n')
+    return layout("ZOO rozkładów — RPiS", zoo_body, current="zoo", head=head,
+                  description="Interaktywne wykresy rozkładów z rozdziału 8: dwumianowy, geometryczny, Poisson, "
+                              "jednostajny, wykładniczy, gamma, chi-kwadrat i normalny — oraz związki między nimi.")
