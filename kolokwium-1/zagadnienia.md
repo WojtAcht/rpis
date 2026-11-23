@@ -56,14 +56,9 @@
     [Wn. 7.2](skrypt:rv/real/moments#cor-mgf-computation) obliczanie ·
     [Tw. 7.8](skrypt:rv/real/moments#thm-mgf-properties) własności]{.refs}
 
-12. Metoda dystrybuanty i metoda transformacji dla zmiennych jednowymiarowych.\
-    [[§9.1](skrypt:rv/real/functions#metoda-dystrybuanty) metoda dystrybuanty ·
-    [Tw. 9.1](skrypt:rv/real/functions#thm-transformation-method) metoda transformacji]{.refs}
-
-13. Rozkłady: dwumianowy, geometryczny, Poissona, jednostajny, wykładniczy, normalny.\
+12. Rozkłady: dwumianowy, geometryczny, Poissona, jednostajny, wykładniczy.\
     [[§8.1.5](skrypt:rv/real/well-known#sec-binomial) dwumianowy ·
     [§8.1.6](skrypt:rv/real/well-known#sec-geometric) geometryczny ·
     [§8.1.7](skrypt:rv/real/well-known#sec-poisson) Poissona ·
     [§8.2.1](skrypt:rv/real/well-known#sec-uniform) jednostajny ·
-    [§8.2.2](skrypt:rv/real/well-known#sec-exponential) wykładniczy ·
-    [§8.2.5](skrypt:rv/real/well-known#sec-normal) normalny]{.refs}
+    [§8.2.2](skrypt:rv/real/well-known#sec-exponential) wykładniczy]{.refs}
