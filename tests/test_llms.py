@@ -21,6 +21,11 @@ class HelpersTest(unittest.TestCase):
         self.assertEqual(llms.plain_refs(md),
                          "1.  Bayes.\\\n    [Tw. 4.2](https://s/b.html#t) prostsza ·\n    [Tw. 4.3](https://s/b.html#u) pełna")
 
+    def test_films_span_gets_label(self):
+        md = "[[Tw. 4.2](https://s/b.html#t) prostsza]{.refs}\n    [[Bayes](https://www.youtube.com/watch?v=x)]{.films}"
+        self.assertEqual(llms.plain_refs(md),
+                         "[Tw. 4.2](https://s/b.html#t) prostsza\n    Filmy: [Bayes](https://www.youtube.com/watch?v=x)")
+
     def test_relative_images_get_site_url(self):
         md = "![Rysunek $A$](tree.png) i ![x](https://inny/obraz.png)"
         self.assertEqual(llms.absolute_images(md, "kolokwium-1/2024/kolokwium"),

@@ -22,7 +22,7 @@ SITE_URL = os.environ.get("SITE_URL", f"https://{_owner.lower()}.github.io/{_nam
 FULL = "rpis.md"
 CHEATSHEET = "sciaga.md"
 IMAGE = re.compile(r"(!\[.*?\]\()(?![a-z]+:|/)")
-REFS = re.compile(r"\[(\[.*?)\]\{\.refs\}", re.S)
+REFS = re.compile(r"\[(\[.*?)\]\{\.(refs|films)\}", re.S)
 
 
 def url(rel: str) -> str:
@@ -50,8 +50,9 @@ def absolute_images(md: str, variant_path: str) -> str:
 
 
 def plain_refs(md: str) -> str:
-    """`[[Def. 2.3](…) opis · …]{.refs}` (span pandoca) -> `[Def. 2.3](…) opis · …`."""
-    return REFS.sub(r"\1", md)
+    """`[[Def. 2.3](…) opis · …]{.refs}` (span pandoca) -> `[Def. 2.3](…) opis · …`,
+    a `[[Tytuł](…) · …]{.films}` -> `Filmy: [Tytuł](…) · …`."""
+    return REFS.sub(lambda m: ("Filmy: " if m.group(2) == "films" else "") + m.group(1), md)
 
 
 def chapter_link(c: Chapter) -> str:

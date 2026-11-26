@@ -452,6 +452,15 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 .topics-list > ol > li { margin: 0 0 1.1em; padding-left: 0.2em; }
 .topics-list .refs { display: block; margin-top: 0.35em; font-size: 0.86em; line-height: 1.6; color: var(--muted); }
 .topics-list .refs a { font-family: var(--mono); font-weight: 500; white-space: nowrap; }
+.topics-list .films { display: block; margin-top: 0.25em; font-size: 0.86em; line-height: 1.6; color: var(--muted); }
+.topics-list .films a { font-weight: 500; }
+.topics-list .refs, .topics-list .films { padding-left: 5.1em; text-indent: -5.1em; }
+.topics-list .refs::before, .topics-list .films::before {
+  display: inline-block; width: 6.2em; text-indent: 0;
+  font-size: 0.82em; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg);
+}
+.topics-list .refs::before { content: "Wykład"; }
+.topics-list .films::before { content: "Filmy"; }
 
 /* --- materiały dodatkowe --- */
 .materials h1 { font-size: clamp(30px, 4.2vw, 54px); margin-bottom: 0.2em; }
